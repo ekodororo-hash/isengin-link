@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import VerifyBox from '../VerifyBox';
 
 // Kekuatan sandi: 0 sampai 4. Panjang paling berpengaruh, lalu ragam jenis karakter.
 function strength(p) {
@@ -40,6 +41,7 @@ export default function Pengaturan() {
   const [dpass, setDpass] = useState(''), [dconf, setDconf] = useState('');
   const [dm, setDm] = useState(null);
   const [busy, setBusy] = useState('');
+  const [sm, setSm] = useState(null);
   const st = strength(nw);
 
   useEffect(() => {
@@ -51,6 +53,12 @@ export default function Pengaturan() {
     const { ok, d } = await call('PUT', { email });
     setEm({ t: ok ? (d.email ? 'Email tersimpan.' : 'Email dihapus.') : d.error || 'Gagal menyimpan.', err: !ok });
     if (ok) { setEmail(d.email); setAcc((a) => ({ ...a, email: d.email })); }
+    setBusy('');
+  }
+  async function toggleSmart(on) {
+    setBusy('smart'); setSm(null);
+    const { ok, d } = await call('PUT', { mode: 'smart', smart: on });
+    if (ok) setAcc((a) => ({ ...a, smart: d.smart })); else setSm({ t: d.error || 'Gagal menyimpan.', err: true });
     setBusy('');
   }
   async function savePass(e) {
@@ -90,6 +98,15 @@ export default function Pengaturan() {
             <Msg m={em} />
           </div>
         </form>
+      </section>
+
+      <VerifyBox />
+
+      <section className="px-sec">
+        <h2>Link pintar</h2>
+        <label className="px-check"><input type="checkbox" checked={acc.smart !== false} disabled={busy === 'smart'} onChange={(e) => toggleSmart(e.target.checked)} /> Buka link YouTube, Instagram, TikTok, WhatsApp, dan lainnya langsung di aplikasinya</label>
+        <p className="px-hint">Berlaku di HP untuk pengunjung halamanmu. Kalau aplikasinya tidak terpasang, link dibuka di browser seperti biasa. Klik tetap dihitung.</p>
+        <Msg m={sm} />
       </section>
 
       <section className="px-sec">

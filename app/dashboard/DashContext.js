@@ -9,7 +9,7 @@ import { COLOR_KEYS } from '@/lib/themes';
 let CACHE = null;
 const Ctx = createContext(null);
 export const useDash = () => useContext(Ctx);
-const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan'], ['/dashboard/paket', 'Paket'], ['/dashboard/domain', 'Domain'], ['/dashboard/pengaturan', 'Pengaturan']];
+const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan'], ['/dashboard/paket', 'Paket'], ['/dashboard/undang', 'Undang'], ['/dashboard/domain', 'Domain'], ['/dashboard/pengaturan', 'Pengaturan']];
 
 // Bagian yang bisa diubah pengguna, dipisah per halaman dashboard supaya kelihatan halaman mana yang berubah.
 const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];

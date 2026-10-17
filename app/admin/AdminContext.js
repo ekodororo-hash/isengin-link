@@ -32,6 +32,11 @@ export function AdminProvider({ children }) {
     if (!r.ok) alert((await r.json().catch(() => ({}))).error || 'Gagal mengubah verifikasi.');
     load();
   }
+  async function decide(id, kind, reason = '') {
+    const r = await fetch('/api/admin', { method: 'PATCH', headers: J, body: JSON.stringify({ id, decide: kind, reason }) });
+    if (!r.ok) alert((await r.json().catch(() => ({}))).error || 'Gagal menyimpan keputusan.');
+    load();
+  }
   async function pro(id, proDays) {
     const r = await fetch('/api/admin', { method: 'PATCH', headers: J, body: JSON.stringify({ id, proDays }) });
     if (!r.ok) alert((await r.json().catch(() => ({}))).error || 'Gagal mengubah paket.');
@@ -53,7 +58,7 @@ export function AdminProvider({ children }) {
     </main></div>
   );
   return (
-    <Ctx.Provider value={{ d, tog, verify, pro, del }}>
+    <Ctx.Provider value={{ d, tog, verify, pro, del, decide }}>
       <Shell title="Admin" menu={MENU} out={out}>{children}</Shell>
     </Ctx.Provider>
   );

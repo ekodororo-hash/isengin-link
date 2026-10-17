@@ -84,7 +84,7 @@ export default async function Profile({ params, searchParams }) {
             </a>
           );
         })}
-        {!pro && <div className="foot">Dibuat di <a href="https://isengin.site">isengin.site</a></div>}
+        {!pro && <div className="foot">Dibuat di <a href={`${(process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site').replace(/\/$/, '')}/?ref=${u.username}`}>isengin.site</a></div>}
       </main>
     </div>
   );

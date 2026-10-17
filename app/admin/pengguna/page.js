@@ -2,9 +2,26 @@
 import { useAdmin } from '../AdminContext';
 import Verified from '../../Verified';
 export default function Pengguna() {
-  const { d, tog, verify, pro, del } = useAdmin();
+  const { d, tog, verify, pro, del, decide } = useAdmin();
+  const reqs = d.requests || [];
   return (<>
     <h1>Pengguna</h1><p className="px-sub">Nonaktifkan halaman yang melanggar aturan, beri centang verifikasi pada akun resmi, atau hapus akun sepenuhnya.</p>
+    {reqs.length > 0 && (
+      <div className="px-card px-tw"><h2>Pengajuan centang ({reqs.length})</h2><table>
+        <thead><tr><th>Halaman</th><th>Link</th><th>Kunjungan</th><th>Alasan / bukti</th><th></th></tr></thead>
+        <tbody>{reqs.map((x) => (
+          <tr key={x.id}>
+            <td><a href={`/${x.username}`} target="_blank">isengin.site/{x.username}</a><br /><small>{new Date(x.created_at).toLocaleDateString('id-ID')}</small></td>
+            <td>{x.links}</td><td>{x.views || 0}</td>
+            <td style={{ maxWidth: 320, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{x.note}</td>
+            <td><div className="px-cell-act">
+              <button className="px-btn sm" onClick={() => decide(x.id, 'approve')}>Setujui</button>
+              <button className="px-btn d sm" onClick={() => { const r = prompt('Alasan penolakan (dilihat pengguna):', 'Belum bisa kami pastikan keasliannya.'); if (r !== null) decide(x.id, 'reject', r); }}>Tolak</button>
+            </div></td>
+          </tr>
+        ))}</tbody>
+      </table></div>
+    )}
     <div className="px-card px-tw"><table>
       <thead><tr><th>Halaman</th><th>Link</th><th>Klik</th><th>Kunjungan</th><th>Status</th><th></th></tr></thead>
       <tbody>{d.users.map((x) => (

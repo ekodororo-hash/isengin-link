@@ -1,6 +1,7 @@
 import { sql } from '@/lib/db';
 import { isBot } from '@/lib/bot';
 import { normSrc } from '@/lib/source';
+import { smartTarget, smartHtml } from '@/lib/deeplink';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export async function GET(req, { params }) {
@@ -55,5 +56,14 @@ export async function GET(req, { params }) {
       }
     }
   }
-  return Response.redirect(r[0]?.url || new URL('/', req.url).toString(), 302);
+  const dest = r[0]?.url;
+  // Link pintar: di HP, link ke aplikasi populer dibuka di aplikasinya. Bot dan desktop tetap dialihkan biasa.
+  const ua = req.headers.get('user-agent') || '';
+  const t = dest && !isBot(ua) ? smartTarget(dest, ua) : null;
+  if (t) {
+    const on = (await sql`select u.smart_links from links l join users u on u.id=l.user_id where l.id=${id}`.catch(() => []))[0]?.smart_links;
+    if (on !== false)
+      return new Response(smartHtml({ ...t, web: dest }), { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+  }
+  return Response.redirect(dest || new URL('/', req.url).toString(), 302);
 }

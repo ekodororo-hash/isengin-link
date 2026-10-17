@@ -4,7 +4,7 @@ import { setSession, clearSession } from '@/lib/auth';
 import { hit, clear, ipOf, tooMany } from '@/lib/limit';
 const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', '_next'];
 export async function POST(req) {
-  const { mode, username = '', password = '' } = await req.json();
+  const { mode, username = '', password = '', ref = '' } = await req.json();
   if (mode === 'logout') { clearSession(); return Response.json({ ok: true }); }
   const u = String(username).trim().toLowerCase();
   // Saat masuk, kolom nama boleh berisi email yang sudah disimpan di Pengaturan.
@@ -19,6 +19,14 @@ export async function POST(req) {
       return Response.json({ error: 'Nama sudah dipakai.' }, { status: 409 });
     const hash = await bcrypt.hash(password, 10);
     const r = await sql`insert into users(username,password_hash,display_name) values(${u},${hash},${u}) returning id`;
+    // Referral: catat pengundang bila kodenya (nama pengguna) ada. Dipisah supaya daftar tetap jalan walau kolomnya belum ada.
+    const code = String(ref).trim().toLowerCase();
+    if (/^[a-z0-9_]{3,20}$/.test(code)) {
+      try {
+        const by = (await sql`select id from users where username=${code} and active is not false`)[0];
+        if (by) await sql`update users set referred_by=${by.id} where id=${r[0].id}`;
+      } catch (e) { console.error('Referral gagal dicatat (sudah jalankan schema-update.sql?):', e.message); }
+    }
     await setSession(r[0].id);
     return Response.json({ ok: true });
   }

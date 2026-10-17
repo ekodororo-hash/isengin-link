@@ -1,6 +1,6 @@
 'use client';
 import './landing.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { themeStyle } from '@/lib/themes';
 
 const LINKS = ['Pesan lewat WhatsApp', 'Portofolio di Instagram', 'Preset Lightroom (toko)', 'Video terbaru di YouTube', 'Kirim email'];
@@ -13,10 +13,20 @@ export default function Home() {
   const t = 'kobalt';
   const [c, setC] = useState(LINKS.map(() => 0));
   const nm = username || 'rani';
+  const [ref, setRef] = useState('');
+  // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
+  useEffect(() => {
+    try {
+      const q = (new URLSearchParams(location.search).get('ref') || '').toLowerCase();
+      if (/^[a-z0-9_]{3,20}$/.test(q)) localStorage.setItem('ref', q);
+      const v = localStorage.getItem('ref') || '';
+      if (/^[a-z0-9_]{3,20}$/.test(v)) setRef(v);
+    } catch {}
+  }, []);
 
   async function go() {
     setErr('');
-    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode, username, password }) });
+    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode, username, password, ref }) });
     const d = await r.json();
     if (r.ok) location.href = '/dashboard'; else setErr(d.error || 'Gagal.');
   }
@@ -27,6 +37,7 @@ export default function Home() {
         <h1 className="lp-h1">Satu link untuk semua kontenmu.</h1>
         <p className="lp-lead">Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman. Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
         <div className="lp-claim">
+          {ref && mode === 'register' && <p className="lp-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
           <label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>
           <div className="lp-field">
             {mode === 'register' && <span>isengin.site/</span>}

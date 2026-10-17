@@ -74,3 +74,21 @@ create table if not exists payments(
   created_at timestamptz default now(),
   paid_at timestamptz);
 create index if not exists payments_user on payments(user_id);
+
+-- Pengajuan centang verifikasi oleh pengguna (status: pending | rejected; yang disetujui dihapus dari sini dan users.verified jadi true)
+create table if not exists verify_requests(
+  user_id int primary key references users(id) on delete cascade,
+  note text not null default '',
+  status text not null default 'pending',
+  reason text default '',
+  created_at timestamptz default now(),
+  decided_at timestamptz);
+
+-- Program referral: siapa yang mengundang, dan kapan hadiahnya sudah dibayarkan
+alter table users add column if not exists created_at timestamptz default now();
+alter table users add column if not exists referred_by int references users(id) on delete set null;
+alter table users add column if not exists ref_rewarded_at timestamptz;
+create index if not exists users_referred_by on users(referred_by);
+
+-- Link pintar: buka link YouTube, Instagram, dll langsung di aplikasinya (bisa dimatikan pengguna)
+alter table users add column if not exists smart_links boolean default true;

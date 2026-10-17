@@ -21,11 +21,30 @@ export async function GET() {
   if (!(await isAdmin())) return no();
   const users = await sql`select u.id,u.username,u.active,u.verified,(u.plan_until > now()) as pro,u.plan_until,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`
     .catch((e) => { console.error('Kolom verified belum ada (jalankan schema-update.sql):', e.message); return sql`select u.id,u.username,u.active,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`; });
-  return Response.json({ users });
+  const requests = await sql`select r.user_id as id, u.username, u.display_name, r.note, r.created_at, u.views,
+      (select count(*)::int from links l where l.user_id=u.id and l.hidden is not true and coalesce(l.kind,'link')='link') as links
+    from verify_requests r join users u on u.id=r.user_id where r.status='pending' order by r.created_at`
+    .catch((e) => { console.error('Tabel verify_requests belum ada (jalankan schema-update.sql):', e.message); return []; });
+  return Response.json({ users, requests });
 }
 export async function PATCH(req) {
   if (!(await isAdmin())) return no();
-  const { id, active, verified, proDays } = await req.json();
+  const { id, active, verified, proDays, decide, reason } = await req.json();
+  // Keputusan atas pengajuan centang dari pengguna.
+  if (decide === 'approve' || decide === 'reject') {
+    try {
+      if (decide === 'approve') {
+        await sql`update users set verified=true where id=${Number(id)}`;
+        await sql`delete from verify_requests where user_id=${Number(id)}`;
+      } else {
+        await sql`update verify_requests set status='rejected', reason=${String(reason || '').trim().slice(0, 200)}, decided_at=now() where user_id=${Number(id)}`;
+      }
+    } catch (e) {
+      console.error('Keputusan centang gagal (sudah jalankan schema-update.sql?):', e.message);
+      return Response.json({ error: 'Gagal. Jalankan schema-update.sql di database.' }, { status: 500 });
+    }
+    return Response.json({ ok: true });
+  }
   // Centang verifikasi hanya bisa diubah dari sini (pengguna tidak punya akses lewat /api/me).
   if (typeof verified === 'boolean') {
     try { await sql`update users set verified=${verified} where id=${Number(id)}`; }
