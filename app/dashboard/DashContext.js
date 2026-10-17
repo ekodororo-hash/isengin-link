@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
+import Loader from '../Loader';
 import { SOCIALS } from '@/lib/socials';
 import { COLOR_KEYS } from '@/lib/themes';
 // Salinan data tersimpan terakhir. Kalau provider sempat dibuat ulang (mis. Next memuat halaman penuh), isi halaman langsung tampil.
@@ -43,6 +44,7 @@ export function DashProvider({ children }) {
   const [saved, setSaved] = useState(CACHE);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
+  const [nav, setNav] = useState(false);
   const path = usePathname();
   const pm = m ? parts(m) : null, ps = saved ? parts(saved) : null;
   const changed = pm && ps ? SECTIONS.filter(([k]) => pm[k] !== ps[k]) : [];
@@ -51,19 +53,21 @@ export function DashProvider({ children }) {
     fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); } });
   }, []);
   useEffect(() => { setMsg(''); }, [path]);
-  // Pindah menu terasa seperti memuat ulang halaman (perubahan yang belum disimpan dibuang, data diambil ulang),
-  // tapi berjalan diam-diam di dalam tab: tidak ada animasi loading di tab dan tidak ada kedip putih.
+  // Pindah menu terasa seperti memuat ulang halaman: perubahan yang belum disimpan dibuang, animasi memuat tampil,
+  // dan data diambil ulang. Semua berjalan di dalam tab, jadi ikon tab browser tidak ikut berputar.
   const savedRef = useRef(null);
   savedRef.current = saved;
   if (saved) CACHE = saved;
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
+    setNav(true);
     if (savedRef.current) setM(savedRef.current);
-    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {});
+    const t0 = Date.now();
+    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {})
+      .then(() => setTimeout(() => setNav(false), Math.max(0, 450 - (Date.now() - t0))));
   }, [path]);
-  // Sebelum data siap, kerangka (menu samping) tetap tampil dan isinya kosong: tanpa animasi loading.
-  if (!m) return <Shell title="isengin.site" menu={MENU} out={out}><div aria-busy="true" /></Shell>;
+  if (!m || nav) return <Loader />;
   const set = (k, v) => { setMsg(''); setM({ ...m, [k]: v }); };
   // Memilih tema berarti mulai dari warna tema itu, jadi warna kustom dikosongkan.
   const setTheme = (key) => { setMsg(''); setM({ ...m, theme: key, colors: {} }); };
