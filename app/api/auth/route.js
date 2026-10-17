@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/db';
 import { setSession, clearSession } from '@/lib/auth';
 import { hit, clear, ipOf, tooMany } from '@/lib/limit';
-const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', '_next', 'privasi', 'syarat', 'domain'];
+const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', '_next', 'privasi', 'syarat', 'domain', 'daftar', 'masuk'];
 export async function POST(req) {
   const { mode, username = '', password = '', ref = '' } = await req.json();
   if (mode === 'logout') { clearSession(); return Response.json({ ok: true }); }
