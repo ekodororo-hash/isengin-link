@@ -1,0 +1,23 @@
+body:has(.au-wrap){background:#ffd23f}
+.au-wrap{--navy:#1f2255;--red:#ff5a43;--cream:#fffbe8;min-height:100vh;display:grid;place-items:center;padding:28px 16px;color:var(--navy);font-family:"Plus Jakarta Sans",system-ui,sans-serif}
+.au-card{width:100%;max-width:420px;background:var(--cream);border:3px solid var(--navy);border-radius:24px;box-shadow:8px 8px 0 var(--navy);padding:28px 24px}
+.au-logo{display:inline-block;font-family:Bungee,sans-serif;font-size:.95rem;color:var(--navy);text-decoration:none;margin-bottom:18px}
+.au-h1{font-family:Bungee,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(1.6rem,6vw,2.1rem);line-height:1.1;margin:0 0 8px}
+.au-sub{font-weight:600;margin:0 0 22px;opacity:.85}
+.au-form{display:grid;gap:8px}
+.au-form label{font-weight:800}
+.au-field{display:flex;align-items:center;background:#fff;border:3px solid var(--navy);border-radius:14px;padding:0 14px;min-height:52px;margin-bottom:8px}
+.au-field span{opacity:.6;white-space:nowrap;font-weight:600}
+.au-field input{border:0;outline:0;flex:1;min-width:0;font:inherit;font-weight:700;color:var(--navy);background:transparent;padding:12px 2px}
+.au-field:focus-within{box-shadow:4px 4px 0 var(--red)}
+.au-note{margin:0 0 6px;font-size:.9rem;font-weight:600}
+.au-err{margin:0 0 6px;color:#a00018;font-weight:700}
+.au-btn{min-height:52px;margin-top:6px;padding:0 22px;border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);background:var(--red);color:#fff;font-family:Bungee,sans-serif;font-size:.9rem;cursor:pointer;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.au-btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--navy)}
+.au-btn:disabled{opacity:.6;cursor:wait}
+.au-btn:focus-visible,.au-alt a:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
+.au-alt{text-align:center;font-weight:600;margin:20px 0 0}
+.au-alt a{color:var(--navy);font-weight:800}
+.au-legal{text-align:center;font-size:.78rem;margin:14px 0 0;opacity:.75}
+.au-legal a{color:inherit}
+@media(prefers-reduced-motion:reduce){.au-btn{transition:none}}

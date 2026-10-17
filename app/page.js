@@ -1,16 +1,13 @@
 'use client';
 import './landing.css';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { themeStyle } from '@/lib/themes';
 import { LinkIcon, NamedIcon } from './icons';
 
 const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/rani'], ['Video terbaru di YouTube', 'https://youtube.com/@rani'], ['Kirim email', 'mailto:rani@email.com']];
 
-// initialMode dan dedicated dipakai oleh halaman /daftar dan /masuk. Di beranda keduanya tidak diisi.
-export default function Home({ initialMode, dedicated = false }) {
-  const router = useRouter();
-  const [mode, setMode] = useState(initialMode === 'login' ? 'login' : 'register');
+export default function Home() {
+  const [mode, setMode] = useState('register');
   const [username, setU] = useState('');
   const [password, setP] = useState('');
   const [err, setErr] = useState('');
@@ -54,7 +51,7 @@ export default function Home({ initialMode, dedicated = false }) {
           </div>
           {err && <p className="lp-err" role="alert">{err}</p>}
           <button className="lp-btn" onClick={go}>{mode === 'register' ? 'Klaim nama' : 'Masuk'}</button>
-          <button className="lp-btn alt" onClick={() => { if (dedicated) { router.push(mode === 'register' ? '/masuk' : '/daftar'); return; } setMode(mode === 'register' ? 'login' : 'register'); setErr(''); }}>
+          <button className="lp-btn alt" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setErr(''); }}>
             {mode === 'register' ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar'}
           </button>
         </div>
