@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Shell from '../Shell';
+import Loader from '../Loader';
 const MENU = [['ringkasan', 'Ringkasan'], ['link', 'Link'], ['tampilan', 'Tampilan'], ['profil', 'Profil']];
 export default function Dashboard() {
   const [m, setM] = useState(null);
@@ -9,7 +10,7 @@ export default function Dashboard() {
   useEffect(() => {
     fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => d && setM(d));
   }, []);
-  if (!m) return <main className="px-main"><p>Memuat…</p></main>;
+  if (!m) return <Loader />;
   const set = (k, v) => setM({ ...m, [k]: v });
   const setL = (i, k, v) => set('links', m.links.map((l, j) => (j === i ? { ...l, [k]: v } : l)));
   async function save() {

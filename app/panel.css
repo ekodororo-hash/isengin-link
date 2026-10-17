@@ -50,3 +50,11 @@
 .px-main input[type="file"]{padding:7px 10px;cursor:pointer;font-size:.9rem}
 .px-main input[type="file"]::file-selector-button{font-family:Bungee,sans-serif;font-size:.8rem;border:3px solid var(--navy);border-radius:999px;background:var(--yel);color:var(--navy);box-shadow:3px 3px 0 var(--navy);padding:6px 14px;margin-right:12px;cursor:pointer}
 .px-main input[type="file"]::file-selector-button:active{transform:translate(3px,3px);box-shadow:none}
+.px-load{min-height:100vh;display:grid;place-content:center;justify-items:center;gap:22px;background:#ffd23f;color:#1f2255;font-family:Bungee,sans-serif}
+.px-load p{margin:0;font-size:1.1rem}
+.px-dots{display:flex;gap:14px}
+.px-dots i{width:26px;height:26px;border-radius:50%;background:#ff5a43;border:3px solid #1f2255;box-shadow:4px 4px 0 #1f2255;animation:px-bounce .9s ease-in-out infinite}
+.px-dots i:nth-child(2){animation-delay:.15s;background:#fffbe8}
+.px-dots i:nth-child(3){animation-delay:.3s}
+@keyframes px-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@media(prefers-reduced-motion:reduce){.px-dots i{animation:none}}

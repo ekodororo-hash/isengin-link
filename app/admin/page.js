@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Shell from '../Shell';
+import Loader from '../Loader';
 const MENU = [['ringkasan', 'Ringkasan'], ['pengguna', 'Pengguna']];
 export default function Admin() {
   const [d, setD] = useState(undefined);
@@ -10,7 +11,7 @@ export default function Admin() {
   const [err, setErr] = useState('');
   const load = () => fetch('/api/admin').then((r) => (r.ok ? r.json() : null)).then(setD);
   useEffect(() => { load(); }, []);
-  if (d === undefined) return <main className="px-main"><p>Memuat…</p></main>;
+  if (d === undefined) return <Loader />;
   async function login() {
     setErr('');
     const r = await fetch('/api/admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'login', username: u, password: pw }) });
