@@ -79,9 +79,9 @@ export default function LinkPage() {
                     <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan link ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
                     <span className="px-tg" aria-hidden="true" />
                   </label>
-                  <button className={'px-ib' + (ed ? ' on' : '')} aria-label={ed ? `Selesai mengedit link ${i + 1}` : `Edit link ${i + 1}`} aria-expanded={ed} title={ed ? 'Selesai' : 'Edit'} onClick={() => toggle(l, i)}>{ed ? <Check /> : <Pencil />}</button>
                   <button className="px-ib" aria-label={`Naikkan link ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
                   <button className="px-ib" aria-label={`Turunkan link ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
+                  <button className={'px-ib' + (ed ? ' on' : '')} aria-label={ed ? `Selesai mengedit link ${i + 1}` : `Edit link ${i + 1}`} aria-expanded={ed} title={ed ? 'Selesai' : 'Edit'} onClick={() => toggle(l, i)}>{ed ? <Check /> : <Pencil />}</button>
                   <button className="px-ib d" aria-label={`Hapus link ${i + 1}`} title="Hapus" onClick={() => delLink(i)}><Trash /></button>
                 </div>
               </div>
