@@ -74,8 +74,6 @@ export function DashProvider({ children }) {
     if (!window.confirm('Buang semua perubahan yang belum disimpan?')) return;
     setM(saved); setMsg('');
   };
-  // Titik penanda di menu untuk halaman yang punya perubahan belum disimpan.
-  const menu = MENU.map(([h, l]) => [h, l, changed.some(([k]) => h === '/dashboard/' + k)]);
   async function save() {
     if (busy) return;
     setBusy(true); setMsg('');
@@ -126,11 +124,11 @@ export function DashProvider({ children }) {
   }
   return (
     <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
-      <Shell title="isengin.site" menu={menu} out={out}>
+      <Shell title="isengin.site" menu={MENU} out={out} reload>
         {children}
         {dirty && (
           <div className="px-dirty" role="status">
-            <span>Belum disimpan: {changed.map(([, l]) => l).join(', ')}</span>
+            <span>Ada perubahan yang belum disimpan</span>
             <button className="px-btn g" onClick={discard} disabled={busy}>Batalkan</button>
             <button className="px-btn" onClick={save} disabled={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
           </div>

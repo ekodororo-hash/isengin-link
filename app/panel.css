@@ -159,8 +159,6 @@
 .px-main input[type="color"]{width:46px;height:40px;padding:2px;flex:none;cursor:pointer;border-radius:12px}
 .px-ph .so{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 0 12px}
 .px-ph .so .s{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--pb);color:var(--pi)}
-/* penanda perubahan belum disimpan per halaman */
-.px-dot{display:inline-block;width:11px;height:11px;margin-left:8px;border-radius:50%;background:var(--yel);border:2px solid var(--navy);vertical-align:middle}
 .px-dirty .px-btn.g{background:#fff}
 @media(max-width:560px){.px-dirty{flex-wrap:wrap;justify-content:center;border-radius:22px;padding:10px 14px}}
 

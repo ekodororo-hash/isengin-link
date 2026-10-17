@@ -3,9 +3,11 @@ import './panel.css';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-export default function Shell({ title, menu, out, children }) {
+export default function Shell({ title, menu, out, reload = false, children }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
+  // reload: menu berupa tautan biasa, jadi tiap pindah menu memuat ulang halaman (keadaan halaman lama tidak terbawa).
+  const Item = reload ? 'a' : Link;
   useEffect(() => { setOpen(false); }, [path]);
   useEffect(() => {
     if (!open) return;
@@ -30,8 +32,8 @@ export default function Shell({ title, menu, out, children }) {
           <button className="px-close" aria-label="Tutup menu" onClick={() => setOpen(false)}>✕</button>
         </div>
         <nav aria-label="Menu">
-          {menu.map(([href, label, mark]) => (
-            <Link key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}{mark && <span className="px-dot" role="img" aria-label="ada perubahan belum disimpan" />}</Link>
+          {menu.map(([href, label]) => (
+            <Item key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}</Item>
           ))}
         </nav>
         <button className="px-out" onClick={out}>Keluar</button>
