@@ -2,12 +2,13 @@ import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { sql } from '@/lib/db';
 import { isBot } from '@/lib/bot';
-import { themeStyle } from '@/lib/themes';
+import { themeStyle, bgStyle } from '@/lib/themes';
 import { socialList } from '@/lib/socials';
 import { detectSource } from '@/lib/source';
 import { fmtPrice, labelText, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont, fontCss } from '@/lib/style';
 import { NamedIcon, LinkIcon } from '../icons';
+import Verified from '../Verified';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 const find = async (name) =>
@@ -40,7 +41,8 @@ export default async function Profile({ params, searchParams }) {
       try { await sql`update users set views=views+1 where id=${u.id}`; } catch {}
     }
   }
-  const links = await sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`
+  const links = await sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`
+    .catch(() => sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch((e) => { console.error('Kolom thumb/hidden belum ada (jalankan schema-update.sql):', e.message); return sql`select id,title,url from links where user_id=${u.id} order by position,id`; });
   // Ikon sosial dan warna kustom dibaca terpisah supaya halaman tetap terbuka walau schema-update.sql belum dijalankan.
@@ -51,13 +53,15 @@ export default async function Profile({ params, searchParams }) {
   const sp = searchParams || {};
   const param = [sp.src, sp.utm_source, sp.ref].find((v) => typeof v === 'string' && v);
   const src = detectSource({ param, referer: h.get('referer'), ua: h.get('user-agent'), ownHost: (h.get('host') || '').split(':')[0].replace(/^www\./, '').toLowerCase() });
+  // Latar belakang dan centang verifikasi dibaca terpisah supaya halaman tetap terbuka walau schema-update.sql belum dijalankan.
+  const more = (await sql`select bg,verified from users where id=${u.id}`.catch(() => []))[0] || {};
   const look = (await sql`select btn_style,font_key from users where id=${u.id}`.catch(() => []))[0] || {};
   const name = u.display_name || u.username;
   return (
-    <div className="phone" data-t={u.theme} data-b={cleanBtn(look.btn_style)} data-f={cleanFont(look.font_key)} style={{ ...themeStyle(u.theme, extra.colors), '--pfont': fontCss(cleanFont(look.font_key)) }}>
+    <div className="phone" data-t={u.theme} data-b={cleanBtn(look.btn_style)} data-f={cleanFont(look.font_key)} style={{ ...themeStyle(u.theme, extra.colors), ...bgStyle(more.bg, u.theme, extra.colors), '--pfont': fontCss(cleanFont(look.font_key)) }}>
       <main className="pub">
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
-        <h1 className="name">{name}</h1>
+        <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
         {u.bio && <p className="bio">{u.bio}</p>}
         {socials.length > 0 && (
           <div className="socials">
@@ -65,6 +69,7 @@ export default async function Profile({ params, searchParams }) {
           </div>
         )}
         {links.map((l) => {
+          if (l.kind === 'header') return <h2 key={l.id} className="phead"><span>{l.title}</span></h2>;
           const price = fmtPrice(l.price), old = fmtPrice(l.old_price), lab = cleanLabel(l.label);
           const cat = !!(price || old || lab);
           return (

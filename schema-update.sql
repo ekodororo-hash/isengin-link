@@ -43,3 +43,8 @@ alter table users add column if not exists email text default '';
 
 -- Email dipakai untuk masuk, jadi harus unik (kolom kosong tidak dihitung)
 create unique index if not exists users_email_uniq on users (email) where email <> '';
+
+-- Pembatas antar link ('header' = judul seksi tanpa alamat), latar belakang (JSON teks), dan centang verifikasi
+alter table links add column if not exists kind text default 'link';
+alter table users add column if not exists bg text default '';
+alter table users add column if not exists verified boolean default false;

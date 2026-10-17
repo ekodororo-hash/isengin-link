@@ -26,6 +26,7 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | `ADMIN_USER` | Nama login untuk `/admin` (terpisah dari akun pengguna) |
 | `ADMIN_PASS` | Sandi login untuk `/admin`. Pakai yang kuat |
 | `BLOB_READ_WRITE_TOKEN` | Terisi otomatis saat Vercel Blob disambungkan ke project |
+| `CRON_SECRET` | Teks acak panjang. Dipakai Vercel Cron untuk memanggil `/api/cron/blob` (pembersih file Blob yatim). Tanpa ini endpoint menolak semua permintaan |
 | `NEXT_PUBLIC_SITE_URL` | Alamat situs, mis. `https://isengin.site`. Dipakai untuk kode QR dan gambar preview saat link dibagikan |
 
 Setelah mengubah environment variable di Vercel, lakukan **Redeploy**.
@@ -96,3 +97,11 @@ schema.sql, schema-update.sql skema database
 - **Gaya tombol dan font** di Tampilan, disimpan di kolom `btn_style` dan `font_key`; daftar pilihan ada di `lib/style.js`.
 - **Pengaturan** (`/dashboard/pengaturan`, API `/api/account`): email opsional, ganti sandi (sandi baru minimal 8 karakter, ada meter kekuatan), dan hapus akun (konfirmasi nama pengguna dan sandi). Kolom `email` pada tabel `users`.
 - Jalankan `schema-update.sql` lagi sebelum memakai semua fitur di atas.
+
+## Pembersihan Blob, pembatas, latar belakang, verifikasi
+
+- **Pembersihan Blob**: saat Simpan, file yang tidak lagi dipakai (foto profil, gambar link, gambar latar, atau gambar milik link yang dihapus) langsung dihapus dari Vercel Blob. Hapus akun (oleh pengguna maupun admin) ikut menghapus semua filenya. Hanya file milik pengguna itu (nama diawali `avatars/<id>-`, `thumbs/<id>-`, atau `backgrounds/<id>-`) yang bisa dihapus, dan server menolak alamat Blob milik pengguna lain saat menyimpan. Unggahan yang tidak jadi disimpan disapu cron harian (`vercel.json`, 03.00 WIB, `/api/cron/blob`) setelah lewat 24 jam. Isi `CRON_SECRET` di Vercel lalu Redeploy.
+- **Pembatas antar link**: di Link, tombol “Tambah pembatas” membuat judul seksi tanpa alamat (kolom `kind = 'header'` pada tabel `links`). Pembatas bisa diseret, disembunyikan, dan dihapus seperti link, tapi tidak punya klik, harga, atau gambar. Dihitung dalam batas 30 item.
+- **Latar belakang**: di Tampilan, pilih warna tema, gradasi dua warna (3 arah), atau gambar (dipudarkan ke warna latar tema, 0–90%). Disimpan sebagai JSON di kolom `users.bg`; gambar diunggah dengan `kind=bg` ke folder `backgrounds/`. Gradasi ikut tampil di gambar preview saat link dibagikan; gambar latar tidak.
+- **Verified badge**: admin memberi atau mencabut centang di `/admin/pengguna` (kolom `users.verified`). Pengguna tidak bisa mengubahnya sendiri. Centang tampil di samping nama di halaman publik dan pratinjau dashboard.
+- Jalankan `schema-update.sql` lagi (menambah `links.kind`, `users.bg`, `users.verified`) sebelum deploy.

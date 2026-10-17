@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import { useDash } from './DashContext';
 import { LinkIcon, NamedIcon } from '../icons';
-import { themeStyle } from '@/lib/themes';
+import { themeStyle, bgStyle } from '@/lib/themes';
+import Verified from '../Verified';
 import { socialList } from '@/lib/socials';
 import { fmtPrice, labelText } from '@/lib/catalog';
 import { fontCss } from '@/lib/style';
@@ -12,11 +13,12 @@ export function Phone() {
   const n = m.display_name || m.username;
   const soc = socialList(m.socials);
   return (
-    <div className="px-ph" data-t={m.theme} data-b={m.btn_style || 'bulat'} style={{ ...themeStyle(m.theme, m.colors), '--pfont': fontCss(m.font_key) }}>
+    <div className="px-ph" data-t={m.theme} data-b={m.btn_style || 'bulat'} style={{ ...themeStyle(m.theme, m.colors), ...bgStyle(m.bg, m.theme, m.colors), '--pfont': fontCss(m.font_key) }}>
       {m.photo_url ? <img className="a" src={m.photo_url} alt="" /> : <div className="a">{n[0].toUpperCase()}</div>}
-      <h3>{n}</h3><p>{m.bio}</p>
+      <h3>{n}{m.verified && <Verified size={14} />}</h3><p>{m.bio}</p>
       {soc.length > 0 && <div className="so">{soc.map((x) => <span className="s" key={x.key}><NamedIcon name={x.key} size={14} /></span>)}</div>}
       {m.links.filter((l) => !l.hidden).map((l, i) => {
+        if (l.kind === 'header') return <div className="hd" key={l.id || l._k || i}><span>{l.title || 'Judul pembatas'}</span></div>;
         const price = fmtPrice(l.price), old = fmtPrice(l.old_price);
         return (
           <div className={'l' + (price || old || l.label ? ' cat' : '') + (l.label === 'habis' ? ' soldout' : '')} key={l.id || l._k || i}>

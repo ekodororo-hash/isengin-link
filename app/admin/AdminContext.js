@@ -27,6 +27,11 @@ export function AdminProvider({ children }) {
     await fetch('/api/admin', { method: 'PATCH', headers: J, body: JSON.stringify({ id, active }) });
     load();
   }
+  async function verify(id, verified) {
+    const r = await fetch('/api/admin', { method: 'PATCH', headers: J, body: JSON.stringify({ id, verified }) });
+    if (!r.ok) alert((await r.json().catch(() => ({}))).error || 'Gagal mengubah verifikasi.');
+    load();
+  }
   async function del(id) {
     await fetch('/api/admin', { method: 'DELETE', headers: J, body: JSON.stringify({ id }) });
     load();
@@ -43,7 +48,7 @@ export function AdminProvider({ children }) {
     </main></div>
   );
   return (
-    <Ctx.Provider value={{ d, tog, del }}>
+    <Ctx.Provider value={{ d, tog, verify, del }}>
       <Shell title="Admin" menu={MENU} out={out}>{children}</Shell>
     </Ctx.Provider>
   );

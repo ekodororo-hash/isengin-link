@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/db';
 import { getUserId, clearSession } from '@/lib/auth';
 import { hit, clear, tooMany } from '@/lib/limit';
+import { userBlobs, dropBlobs } from '@/lib/blob';
 const MIN_PASS = 8;
 const needLogin = () => Response.json({ error: 'Belum masuk.' }, { status: 401 });
 const bad = (error, status = 400) => Response.json({ error }, { status });
@@ -61,7 +62,9 @@ export async function DELETE(req) {
   const c = await checkPassword(id, b.password);
   if (c.res) return c.res;
   if (String(b.confirm || '').trim().toLowerCase() !== c.user.username) return bad('Ketik nama pengguna dengan benar untuk konfirmasi.');
+  const files = await userBlobs(id);
   await sql`delete from users where id=${id}`;
+  await dropBlobs(files, id);
   clearSession();
   return Response.json({ ok: true });
 }

@@ -60,3 +60,9 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phone[data-b="pil"] .plink.has-th{padding-left:10px}
 .phone[data-b="pil"] .plink.cat{border-radius:28px}
 .phone[data-f="serif"] .name,.phone[data-f="tebal"] .name{letter-spacing:0}
+
+/* pembatas antar link dan centang verifikasi */
+.phead{display:flex;align-items:center;gap:12px;margin:22px 0 12px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.phead::before,.phead::after{content:"";flex:1;height:2px;background:currentColor;opacity:.25;border-radius:2px}
+.phead span{max-width:80%;text-align:center;overflow-wrap:anywhere}
+.vb{display:inline-block;vertical-align:-.18em;margin-left:.3em;color:var(--accent)}

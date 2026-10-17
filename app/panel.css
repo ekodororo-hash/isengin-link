@@ -309,3 +309,13 @@
 .px-themes .px-bs.timbul{width:22px;height:12px;border-width:2px;border-radius:3px;box-shadow:3px 3px 0 currentColor;margin:0 3px 3px 0}
 .px-themes .px-fs{font-size:1.05rem;line-height:1}
 .px-themes button:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
+
+/* pembatas antar link, pengatur latar, dan pratinjau */
+.px-lk.px-hd{background:var(--cream)}
+.px-hd .px-hd-in{flex:1 1 140px;min-width:0;font-weight:700}
+.px-range{width:100%;accent-color:var(--red);padding:0;border:0;background:none}
+.px-ph .hd{display:flex;align-items:center;gap:8px;margin:12px 0 8px;font-size:.65rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.px-ph .hd::before,.px-ph .hd::after{content:"";flex:1;height:2px;background:currentColor;opacity:.25}
+.px-ph .hd span{max-width:80%;text-align:center;overflow-wrap:anywhere}
+.px-ph .vb{color:var(--pa)}
+td .vb{vertical-align:-.2em;margin-left:6px;color:var(--red)}

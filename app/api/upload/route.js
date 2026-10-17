@@ -5,7 +5,7 @@ export async function POST(req) {
   if (!id) return Response.json({ error: 'Belum masuk.' }, { status: 401 });
   const form = await req.formData();
   const f = form.get('file');
-  const dir = form.get('kind') === 'thumb' ? 'thumbs' : 'avatars';
+  const dir = { thumb: 'thumbs', bg: 'backgrounds' }[form.get('kind')] || 'avatars';
   if (!f || !f.type?.startsWith('image/') || f.size > 2000000)
     return Response.json({ error: 'Pilih gambar, maksimal 2 MB.' }, { status: 400 });
   if (!process.env.BLOB_READ_WRITE_TOKEN) {

@@ -11,10 +11,11 @@ const Check = () => (<svg {...S}><path d="M5 12.5l4.5 4.5L19 7.5" /></svg>);
 const Up = () => (<svg {...S}><path d="M12 19V5M6 11l6-6 6 6" /></svg>);
 const Down = () => (<svg {...S}><path d="M12 5v14M6 13l6 6 6-6" /></svg>);
 const Trash = () => (<svg {...S}><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5" /></svg>);
+const Head = () => (<svg {...S}><path d="M5 7V5h14v2M12 5v14M9 19h6" /></svg>);
 const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" /></svg>);
 
 export default function LinkPage() {
-  const { m, setL, addLink, delLink, move, reorder, upThumb } = useDash();
+  const { m, setL, addLink, addHeader, delLink, move, reorder, upThumb } = useDash();
   const n = m.links.length;
   // Link yang sedang diedit (dikunci lewat id/_k karena urutan bisa berubah). Link baru kosong otomatis terbuka.
   const [open, setOpen] = useState({});
@@ -55,13 +56,33 @@ export default function LinkPage() {
 
   return (<>
     <h1>Link</h1>
-    <p className="px-sub">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Link yang disembunyikan tidak tampil dan kliknya tidak dihitung. Setelah mengubah, klik Simpan.</p>
+    <p className="px-sub">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Pembatas adalah judul seksi tanpa alamat untuk mengelompokkan link (mis. “Produk”, “Sosial media”). Link atau pembatas yang disembunyikan tidak tampil, dan link tersembunyi tidak dihitung kliknya. Setelah mengubah, klik Simpan.</p>
     <div className="px-card">
       {n === 0 && <p className="px-empty">Belum ada link. Klik “Tambah link” untuk mulai.</p>}
       <div ref={listRef}>
         {m.links.map((l, i) => {
-          const ed = isOpen(l, i);
           const k = keyOf(l, i);
+          if (l.kind === 'header') return (
+            <div className={'px-lk px-hd' + (l.hidden ? ' off' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
+              <div className="px-lk-r">
+                <button className="px-grip" aria-label={`Seret untuk memindahkan pembatas ${i + 1}`} title="Seret untuk mengurutkan"
+                  onPointerDown={(e) => down(e, k)} onPointerMove={moveDrag} onPointerUp={up} onPointerCancel={up}><Grip /></button>
+                <span className="px-lk-no">{i + 1}</span>
+                <span className="px-th e" aria-hidden="true"><Head /></span>
+                <input className="px-hd-in" aria-label={`Judul pembatas ${i + 1}`} placeholder="Judul pembatas, mis. Produk" maxLength={60} value={l.title} onChange={(e) => setL(i, 'title', e.target.value)} />
+                <div className="px-lk-b">
+                  <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
+                    <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan pembatas ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
+                    <span className="px-tg" aria-hidden="true" />
+                  </label>
+                  <button className="px-ib" aria-label={`Naikkan pembatas ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
+                  <button className="px-ib" aria-label={`Turunkan pembatas ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
+                  <button className="px-ib d" aria-label={`Hapus pembatas ${i + 1}`} title="Hapus" onClick={() => delLink(i)}><Trash /></button>
+                </div>
+              </div>
+            </div>
+          );
+          const ed = isOpen(l, i);
           const price = fmtPrice(l.price);
           return (
             <div className={'px-lk' + (l.hidden ? ' off' : '') + (ed ? ' ed' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
@@ -115,7 +136,10 @@ export default function LinkPage() {
           );
         })}
       </div>
-      <SaveBar><button className="px-btn g" onClick={addLink}>Tambah link</button></SaveBar>
+      <SaveBar>
+        <button className="px-btn g" onClick={addLink}>Tambah link</button>
+        <button className="px-btn g" onClick={addHeader}>Tambah pembatas</button>
+      </SaveBar>
     </div>
   </>);
 }

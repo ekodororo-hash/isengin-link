@@ -14,9 +14,9 @@ const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashb
 // Bagian yang bisa diubah pengguna, dipisah per halaman dashboard supaya kelihatan halaman mana yang berubah.
 const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];
 const parts = (x) => ({
-  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true, l.price || '', l.old_price || '', l.label || ''])),
+  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true, l.price || '', l.old_price || '', l.label || '', l.kind === 'header' ? 'h' : ''])),
   profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim())]),
-  tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || ''), x.btn_style || 'bulat', x.font_key || 'standar']),
+  tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || ''), x.btn_style || 'bulat', x.font_key || 'standar', x.bg || {}]),
 });
 
 // Perkecil foto di peramban (maks 640px, JPEG) supaya unggahan kecil dan selalu lolos batas ukuran.
@@ -73,6 +73,8 @@ export function DashProvider({ children }) {
   const setTheme = (key) => { setMsg(''); setM({ ...m, theme: key, colors: {} }); };
   const setL = (i, k, v) => set('links', m.links.map((l, j) => (j === i ? { ...l, [k]: v } : l)));
   const addLink = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), title: '', url: '' }]);
+  // Pembatas: judul seksi tanpa alamat, untuk mengelompokkan link.
+  const addHeader = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), kind: 'header', title: '', url: '' }]);
   const delLink = (i) => set('links', m.links.filter((_, j) => j !== i));
   const move = (i, d) => {
     const j = i + d;
@@ -132,12 +134,31 @@ export function DashProvider({ children }) {
       } else setMsg(d.error || 'Gambar gagal diunggah.');
     } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
   }
+  // Unggah gambar latar halaman publik (maks 1280px). Pengaturan lain di bg (pudar) dipertahankan.
+  async function upBg(e) {
+    const input = e.target;
+    const f = input.files[0];
+    input.value = '';
+    if (!f) return;
+    setMsg('Mengunggah gambar latar…');
+    let blob;
+    try { blob = await shrink(f, 1280); } catch { setMsg('Format gambar tidak didukung. Pakai JPG atau PNG.'); return; }
+    const fd = new FormData(); fd.append('file', blob, 'latar.jpg'); fd.append('kind', 'bg');
+    try {
+      const r = await fetch('/api/upload', { method: 'POST', body: fd });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) {
+        setM((x) => ({ ...x, bg: { t: 'image', url: d.url, dim: x.bg?.t === 'image' && Number.isFinite(+x.bg.dim) ? +x.bg.dim : 40 } }));
+        setMsg('Gambar latar terunggah. Klik Simpan agar tersimpan.');
+      } else setMsg(d.error || 'Gambar gagal diunggah.');
+    } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
+  }
   async function out() {
     await fetch('/api/auth', { method: 'POST', body: JSON.stringify({ mode: 'logout' }) });
     location.href = '/';
   }
   return (
-    <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, reorder, save, up, msg, busy, dirty }}>
+    <Ctx.Provider value={{ m, set, setTheme, upThumb, upBg, setL, addLink, addHeader, delLink, move, reorder, save, up, msg, busy, dirty }}>
       <Shell title="isengin.site" menu={MENU} out={out}>
         {children}
       </Shell>
