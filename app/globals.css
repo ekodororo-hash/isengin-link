@@ -27,7 +27,8 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .foot.legal-links{margin-top:10px;display:flex;justify-content:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
 .foot.legal-links::-webkit-scrollbar{display:none}
 .foot.legal-links a{flex:none}
-.rep-open-inline{display:inline;margin:0;padding:0;opacity:1;font-size:inherit;white-space:nowrap;flex:none}
+.foot.legal-links{align-items:baseline}
+.foot.legal-links .rep-open.rep-open-inline{display:inline;margin:0;padding:0;opacity:1;font:inherit;color:inherit;line-height:inherit;text-decoration:underline;white-space:nowrap;flex:none}
 /* ikon sosial media di header profil */
 .socials{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:14px 0 22px}
 .bio+.socials{margin-top:-10px}
