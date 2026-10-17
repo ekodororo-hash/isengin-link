@@ -23,7 +23,7 @@ export default function Report({ username, inline }) {
     setBusy(false);
   }
   if (done) return <p className="rep-ok" role="status">Terima kasih, laporanmu sudah kami terima.</p>;
-  if (!open) return <button type="button" className={'rep-open' + (inline ? ' rep-open-inline' : '')} onClick={() => setOpen(true)}>Laporkan halaman ini</button>;
+  if (!open) return <button type="button" className={'rep-open' + (inline ? ' rep-open-inline' : '')} onClick={() => setOpen(true)}>{inline ? 'Laporkan' : 'Laporkan halaman ini'}</button>;
   return (
     <form className="rep" onSubmit={send}>
       <label htmlFor="rep-r">Alasan</label>

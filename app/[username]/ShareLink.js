@@ -85,7 +85,7 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, on
         <div className="shm-row">
           <button type="button" className="shm-sh" onClick={copy}>
             <span className="shm-ico shm-copy"><ShareIcon name="copy" size={19} /></span>
-            {copied ? 'Tersalin!' : 'Salin tautan'}
+            {copied ? 'Tersalin!' : 'Salin'}
           </button>
           {SHARES.map((s) => (
             <a key={s.key} className="shm-sh" href={s.href(abs, title)} target="_blank" rel="noopener noreferrer">
