@@ -300,3 +300,12 @@
 .px-qr{display:grid;place-items:center;gap:14px;text-align:center}
 .px-qr img{display:block;width:100%;max-width:240px;height:auto;border:3px solid var(--navy);border-radius:16px;background:#fff}
 .px-qr .px-hint{margin:0}
+
+/* Tampilan: tema, gaya tombol, dan font sebagai chip ringkas */
+.px-themes{gap:8px}
+.px-themes .px-bs{width:26px;height:14px;border-radius:5px;flex:none}
+.px-themes .px-bs.pil{border-radius:99px}.px-themes .px-bs.kotak{border-radius:1px}
+.px-themes .px-bs.garis{border-width:2px;border-radius:5px}
+.px-themes .px-bs.timbul{width:22px;height:12px;border-width:2px;border-radius:3px;box-shadow:3px 3px 0 currentColor;margin:0 3px 3px 0}
+.px-themes .px-fs{font-size:1.05rem;line-height:1}
+.px-themes button:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}

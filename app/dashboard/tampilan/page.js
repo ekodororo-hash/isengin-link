@@ -18,10 +18,30 @@ export default function Tampilan() {
       <div className="px-card">
         <section className="px-sec">
           <h2>Tema</h2>
-          <div className="px-themes px-themes-g">
+          <div className="px-themes">
             {THEMES.map((x) => (
               <button key={x.key} aria-pressed={m.theme === x.key} onClick={() => setTheme(x.key)}>
                 <i className="px-sw" style={{ background: x.bg, boxShadow: `inset -7px 0 0 ${x.accent}` }} aria-hidden="true" />{x.label}
+              </button>
+            ))}
+          </div>
+        </section>
+        <section className="px-sec">
+          <h2>Gaya tombol</h2>
+          <div className="px-themes" role="group" aria-label="Gaya tombol">
+            {BUTTON_STYLES.map((x) => (
+              <button key={x.key} aria-pressed={(m.btn_style || 'bulat') === x.key} onClick={() => set('btn_style', x.key)}>
+                <i className={'px-bs ' + x.key} aria-hidden="true" />{x.label}
+              </button>
+            ))}
+          </div>
+        </section>
+        <section className="px-sec">
+          <h2>Font</h2>
+          <div className="px-themes" role="group" aria-label="Font">
+            {FONTS.map((x) => (
+              <button key={x.key} aria-pressed={(m.font_key || 'standar') === x.key} onClick={() => set('font_key', x.key)}>
+                <span className="px-fs" style={{ fontFamily: x.css }} aria-hidden="true">Aa</span>{x.label}
               </button>
             ))}
           </div>
@@ -40,26 +60,6 @@ export default function Tampilan() {
           {warns.map((w) => <p key={w} className="px-warn" role="status">{w}</p>)}
           <div className="px-actions">
             <button className="px-btn g sm" disabled={!Object.keys(custom).length} onClick={() => set('colors', {})}>Kembalikan warna tema</button>
-          </div>
-        </section>
-        <section className="px-sec">
-          <h2>Gaya tombol</h2>
-          <div className="px-opts" role="group" aria-label="Gaya tombol">
-            {BUTTON_STYLES.map((x) => (
-              <button key={x.key} aria-pressed={(m.btn_style || 'bulat') === x.key} onClick={() => set('btn_style', x.key)}>
-                <i className={'px-bs ' + x.key} aria-hidden="true" />{x.label}
-              </button>
-            ))}
-          </div>
-        </section>
-        <section className="px-sec">
-          <h2>Font</h2>
-          <div className="px-opts" role="group" aria-label="Font">
-            {FONTS.map((x) => (
-              <button key={x.key} aria-pressed={(m.font_key || 'standar') === x.key} onClick={() => set('font_key', x.key)}>
-                <span className="px-fs" style={{ fontFamily: x.css }} aria-hidden="true">Aa</span>{x.label}
-              </button>
-            ))}
           </div>
         </section>
         <SaveBar />
