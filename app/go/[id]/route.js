@@ -4,6 +4,7 @@ import { normSrc } from '@/lib/source';
 import { smartTarget, smartHtml } from '@/lib/deeplink';
 import { cleanGuard, checkPass, guardHtml } from '@/lib/linkguard';
 import { hit, clear, ipOf } from '@/lib/limit';
+import { hasCookie, dayCookie } from '@/lib/daily';
 
 const page = (html, status = 200) => new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
 
@@ -22,7 +23,12 @@ async function run(req, { params }, opt = {}) {
     if (guard === 'pass' || askOk) return page(guardHtml({ kind: guard, action, back: `/${g.username}` }));
   }
   let r;
-  if (isBot(req.headers.get('user-agent'))) {
+  // Satu pengunjung dihitung sekali per link per hari (cookie sampai 00.00 WIB); klik berikutnya tetap diteruskan.
+  const ck = `lc_${id}`;
+  const bot = isBot(req.headers.get('user-agent'));
+  const seen = hasCookie(req, ck);
+  const setCk = !bot && !seen ? dayCookie(req, ck) : null;
+  if (bot || seen) {
     r = await sql`select url from links where id=${id} and hidden is not true`.catch(() => sql`select url from links where id=${id}`);
   } else {
     try {
@@ -76,9 +82,10 @@ async function run(req, { params }, opt = {}) {
   if (t) {
     const on = (await sql`select u.smart_links from links l join users u on u.id=l.user_id where l.id=${id}`.catch(() => []))[0]?.smart_links;
     if (on !== false)
-      return new Response(smartHtml({ ...t, web: dest }), { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
+      return new Response(smartHtml({ ...t, web: dest }), { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex', ...(setCk ? { 'Set-Cookie': setCk } : {}) } });
   }
-  return Response.redirect(dest || new URL('/', req.url).toString(), opt.post ? 303 : 302);
+  // Response.redirect() tidak bisa diberi header, jadi dibuat manual supaya cookie ikut terkirim.
+  return new Response(null, { status: opt.post ? 303 : 302, headers: { Location: dest || new URL('/', req.url).toString(), ...(setCk ? { 'Set-Cookie': setCk } : {}) } });
 }
 
 export const GET = (req, ctx) => run(req, ctx);

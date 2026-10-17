@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { sql } from '@/lib/db';
-import { isBot } from '@/lib/bot';
 import { themeStyle, bgStyle } from '@/lib/themes';
 import { socialList } from '@/lib/socials';
 import { detectSource } from '@/lib/source';
@@ -13,6 +12,7 @@ import Report from './Report';
 import { cleanGuard } from '@/lib/linkguard';
 import LinkRow from './LinkRow';
 import HomePromo from './HomePromo';
+import ViewBeacon from './ViewBeacon';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -35,17 +35,7 @@ export async function generateMetadata({ params }) {
 export default async function Profile({ params, searchParams }) {
   const u = await find(params.username);
   if (!u || u.active === false) notFound();
-  if (!isBot(headers().get('user-agent'))) {
-    // Menghitung kunjungan tidak boleh sampai membuat halaman gagal dibuka.
-    try {
-      await sql`with a as (update users set views=views+1 where id=${u.id})
-        insert into daily_stats(user_id, day, views) values (${u.id}, (now() at time zone 'Asia/Jakarta')::date, 1)
-        on conflict (user_id, day) do update set views = daily_stats.views + 1`;
-    } catch (e) {
-      console.error('Gagal mencatat kunjungan (sudah jalankan schema-update.sql?):', e.message);
-      try { await sql`update users set views=views+1 where id=${u.id}`; } catch {}
-    }
-  }
+  // Kunjungan dihitung dari browser lewat <ViewBeacon /> (1 per pengunjung per hari), bukan di sini.
   const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true order by position,id`
     .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`)
@@ -70,6 +60,7 @@ export default async function Profile({ params, searchParams }) {
     <div className="stage" style={themeStyle(eff.theme, eff.colors)}>
     <div className="phone" data-t={eff.theme} data-b={eff.btn_style} data-f={eff.font_key} style={{ ...themeStyle(eff.theme, eff.colors), ...bgStyle(eff.bg, eff.theme, eff.colors), '--pfont': fontCss(eff.font_key) }}>
       <main className="pub">
+        <ViewBeacon username={u.username} />
         <HomePromo pageUsername={u.username} pageName={name} />
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
