@@ -58,6 +58,7 @@ export default function Masuk() {
           <Link className="au-mlogo" href="/">ISENGIN.SITE</Link>
         </div>
         <div className="au-box">
+          <p className="au-kick">Selamat datang kembali</p>
           <h1 className="au-h1">Masuk ke dashboard</h1>
           <p className="au-sub">Atur link dan lihat jumlah kliknya.</p>
           <nav className="au-tabs" aria-label="Masuk atau daftar">
