@@ -151,3 +151,8 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 
 /* Judul benar-benar di tengah kartu: sisi kanan (spacer + titik tiga) lebih lebar 40px dari sisi kiri (ikon/gambar), jadi diimbangi di kiri */
 .plink .pt{padding-left:40px}
+
+/* HP: hilangkan blok biru bawaan browser saat link ditekan */
+.phone a,.phone button{-webkit-tap-highlight-color:transparent}
+.plink-main,.plink-dots{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.plink-main:focus:not(:focus-visible),.plink-dots:focus:not(:focus-visible){outline:none}
