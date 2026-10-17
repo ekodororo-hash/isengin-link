@@ -11,23 +11,30 @@ export default function Shell({ title, menu, out, children }) {
     if (!open) return;
     const k = (e) => e.key === 'Escape' && setOpen(false);
     document.addEventListener('keydown', k);
-    return () => document.removeEventListener('keydown', k);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', k); document.body.style.overflow = prev; };
   }, [open]);
   return (
     <div className="px-app">
-      <aside>
+      <header className="px-top">
         <div className="px-brand">{title}</div>
-        <button className="px-burger" aria-label="Menu" aria-expanded={open} aria-controls="px-menu" onClick={() => setOpen(!open)}>
+        <button className="px-burger" aria-label="Buka menu" aria-expanded={open} aria-controls="px-side" onClick={() => setOpen(true)}>
           <span /><span /><span />
         </button>
-        <div id="px-menu" className="px-menu" data-open={open}>
-          <nav aria-label="Menu">
-            {menu.map(([href, label]) => (
-              <Link key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}</Link>
-            ))}
-          </nav>
-          <button className="px-out" onClick={out}>Keluar</button>
+      </header>
+      <div className="px-scrim" data-open={open} onClick={() => setOpen(false)} aria-hidden="true" />
+      <aside id="px-side" data-open={open}>
+        <div className="px-side-head">
+          <div className="px-brand">{title}</div>
+          <button className="px-close" aria-label="Tutup menu" onClick={() => setOpen(false)}>✕</button>
         </div>
+        <nav aria-label="Menu">
+          {menu.map(([href, label]) => (
+            <Link key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}</Link>
+          ))}
+        </nav>
+        <button className="px-out" onClick={out}>Keluar</button>
       </aside>
       <main className="px-main">{children}</main>
     </div>
