@@ -15,28 +15,32 @@ export default function Tampilan() {
     <h1>Tampilan</h1><p className="px-sub">Pilih tema, atur warna sendiri kalau mau, pratinjau langsung di samping.</p>
     <div className="px-two">
       <div className="px-card">
-        <label>Tema</label>
-        <div className="px-themes">
-          {THEMES.map((x) => (
-            <button key={x.key} aria-pressed={m.theme === x.key} onClick={() => setTheme(x.key)}>
-              <i className="px-sw" style={{ background: x.bg, boxShadow: `inset -7px 0 0 ${x.accent}` }} aria-hidden="true" />{x.label}
-            </button>
-          ))}
-        </div>
-        <label>Warna kustom</label>
-        <p className="px-hint">Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.</p>
-        <div className="px-colors">
-          {COLORS.map(([k, lab]) => (
-            <label key={k} className="px-clr">
-              <input type="color" value={t[k]} onChange={(e) => set('colors', { ...custom, [k]: e.target.value })} />
-              <span>{lab}</span>
-            </label>
-          ))}
-        </div>
-        {warns.map((w) => <p key={w} className="px-warn" role="status">{w}</p>)}
-        <div className="px-actions">
-          <button className="px-btn g sm" disabled={!Object.keys(custom).length} onClick={() => set('colors', {})}>Kembalikan warna tema</button>
-        </div>
+        <section className="px-sec">
+          <h2>Tema</h2>
+          <div className="px-themes px-themes-g">
+            {THEMES.map((x) => (
+              <button key={x.key} aria-pressed={m.theme === x.key} onClick={() => setTheme(x.key)}>
+                <i className="px-sw" style={{ background: x.bg, boxShadow: `inset -7px 0 0 ${x.accent}` }} aria-hidden="true" />{x.label}
+              </button>
+            ))}
+          </div>
+        </section>
+        <section className="px-sec">
+          <h2>Warna kustom</h2>
+          <p className="px-hint">Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.</p>
+          <div className="px-colors">
+            {COLORS.map(([k, lab]) => (
+              <label key={k} className="px-clr">
+                <input type="color" value={t[k]} onChange={(e) => set('colors', { ...custom, [k]: e.target.value })} />
+                <span><b>{lab}</b><small>{String(t[k]).toUpperCase()}</small></span>
+              </label>
+            ))}
+          </div>
+          {warns.map((w) => <p key={w} className="px-warn" role="status">{w}</p>)}
+          <div className="px-actions">
+            <button className="px-btn g sm" disabled={!Object.keys(custom).length} onClick={() => set('colors', {})}>Kembalikan warna tema</button>
+          </div>
+        </section>
         <SaveBar />
       </div>
       <div><Phone /></div>
