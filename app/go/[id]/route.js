@@ -56,7 +56,8 @@ export async function GET(req, { params }) {
       }
     }
   }
-  const dest = r[0]?.url;
+  const dest0 = r[0]?.url;
+  const dest = dest0 && /^(https?:|mailto:)/i.test(dest0.trim()) ? dest0.trim() : '';
   // Link pintar: di HP, link ke aplikasi populer dibuka di aplikasinya. Bot dan desktop tetap dialihkan biasa.
   const ua = req.headers.get('user-agent') || '';
   const t = dest && !isBot(ua) ? smartTarget(dest, ua) : null;

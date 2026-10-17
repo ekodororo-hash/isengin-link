@@ -4,6 +4,7 @@ import { createContext, useContext } from 'react';
 // jadi animasi memuat hanya tampil sekali, tidak lagi diikuti animasi kedua dari halamannya sendiri.
 export const PRE = {
   '/admin/referral': ['/api/admin/referral'],
+  '/admin/laporan': ['/api/admin/laporan'],
   '/dashboard/undang': ['/api/referral'],
   '/dashboard/paket': ['/api/billing'],
   '/dashboard/pengaturan': ['/api/account', '/api/verify'],

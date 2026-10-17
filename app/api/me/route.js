@@ -4,6 +4,7 @@ import { THEME_KEYS, cleanColors, cleanBg } from '@/lib/themes';
 import { cleanSocials, parseSocials } from '@/lib/socials';
 import { cleanPrice, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont } from '@/lib/style';
+import { urlProblem, flaggedUrls } from '@/lib/safe';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
@@ -61,6 +62,18 @@ export async function PUT(req) {
 
   // Pembatas cukup punya judul; link biasa wajib punya judul dan alamat.
   const links = (b.links || []).filter((l) => (l.kind === 'header' ? l.title?.trim() : l.title?.trim() && l.url?.trim())).slice(0, 30);
+  // Keamanan: tolak alamat yang tidak aman, dan (bila SAFE_BROWSING_KEY diisi) alamat baru yang ditandai berbahaya oleh Google.
+  const have = new Set((await sql`select url from links where user_id=${id}`.catch(() => [])).map((r) => r.url));
+  const urls = [];
+  for (const l of links) {
+    if (l.kind === 'header') continue;
+    const u = fix(l.url);
+    const why = urlProblem(u);
+    if (why) return Response.json({ error: `Link “${l.title.trim().slice(0, 40)}” ditolak: ${why}` }, { status: 400 });
+    if (!have.has(u)) urls.push(u);
+  }
+  const bad = await flaggedUrls(urls);
+  if (bad.length) return Response.json({ error: `Alamat ini ditandai berbahaya oleh Google Safe Browsing dan tidak bisa disimpan: ${bad.slice(0, 3).join(', ')}` }, { status: 400 });
   // Dua kelompok kolom paralel: link yang sudah ada (punya id, diubah) dan yang baru (ditambah).
   const cols = () => ({ id: [], title: [], url: [], position: [], thumb: [], hidden: [], price: [], old_price: [], label: [], kind: [] });
   const old = cols(), fresh = cols();

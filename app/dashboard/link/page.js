@@ -2,6 +2,7 @@
 import { useRef, useState } from 'react';
 import { useDash } from '../DashContext';
 import { SaveBar } from '../parts';
+import Importer from '../Importer';
 import { LinkIcon } from '../../icons';
 import { LABELS, fmtPrice, labelText } from '@/lib/catalog';
 
@@ -57,6 +58,7 @@ export default function LinkPage() {
   return (<>
     <h1>Link</h1>
     <p className="px-sub">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Pembatas adalah judul seksi tanpa alamat untuk mengelompokkan link (mis. “Produk”, “Sosial media”). Link atau pembatas yang disembunyikan tidak tampil, dan link tersembunyi tidak dihitung kliknya. Setelah mengubah, klik Simpan.</p>
+    <Importer />
     <div className="px-card">
       {n === 0 && <p className="px-empty">Belum ada link. Klik “Tambah link” untuk mulai.</p>}
       <div ref={listRef}>

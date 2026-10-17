@@ -6,7 +6,7 @@ import Loader from '../Loader';
 import { PreCtx, fetchPre, needsPre } from '../prefetch';
 const Ctx = createContext(null);
 export const useAdmin = () => useContext(Ctx);
-const menu = (n) => [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna'], ['/admin/centang', n ? `Centang (${n})` : 'Centang'], ['/admin/referral', 'Referral']];
+const menu = (n, r) => [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna'], ['/admin/centang', n ? `Centang (${n})` : 'Centang'], ['/admin/referral', 'Referral'], ['/admin/laporan', r ? `Laporan (${r})` : 'Laporan']];
 const J = { 'Content-Type': 'application/json' };
 export function AdminProvider({ children }) {
   const [d, setD] = useState(undefined);
@@ -74,7 +74,7 @@ export function AdminProvider({ children }) {
   return (
     <Ctx.Provider value={{ d, tog, verify, pro, del, decide }}>
       <PreCtx.Provider value={pre}>
-        <Shell title="Admin" menu={menu((d.requests || []).length)} out={out}>{children}</Shell>
+        <Shell title="Admin" menu={menu((d.requests || []).length, d.reports || 0)} out={out}>{children}</Shell>
       </PreCtx.Provider>
     </Ctx.Provider>
   );

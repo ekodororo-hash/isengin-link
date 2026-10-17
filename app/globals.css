@@ -66,3 +66,17 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phead::before,.phead::after{content:"";flex:1;height:2px;background:currentColor;opacity:.25;border-radius:2px}
 .phead span{max-width:80%;text-align:center;overflow-wrap:anywhere}
 .vb{display:inline-block;vertical-align:-.18em;margin-left:.3em;color:var(--accent)}
+/* lapor halaman (halaman publik) */
+.rep-open{display:block;margin:10px auto 0;background:none;border:0;color:inherit;font:inherit;font-size:.75rem;opacity:.6;text-decoration:underline;cursor:pointer;padding:4px}
+.rep-open:hover,.rep-open:focus-visible{opacity:1}
+.rep-ok{text-align:center;font-size:.8rem;opacity:.8;margin:12px 0 0}
+.rep{margin-top:14px;padding:14px;border-radius:16px;background:var(--pbtn);color:var(--ink);font-size:.85rem;text-align:left}
+.rep label{display:block;font-weight:700;margin:8px 0 4px}
+.rep select,.rep textarea{width:100%;font:inherit;color:inherit;background:transparent;border:2px solid currentColor;border-radius:10px;padding:8px 10px;box-sizing:border-box}
+.rep select option{color:#111}
+.rep textarea{resize:vertical}
+.rep-err{margin:8px 0 0;font-weight:700}
+.rep-act{display:flex;gap:8px;margin-top:12px}
+.rep-act button{font:inherit;font-weight:700;border-radius:999px;padding:8px 16px;cursor:pointer;border:2px solid currentColor;background:transparent;color:inherit}
+.rep-act button[type="submit"]{background:var(--accent);border-color:var(--accent);color:var(--pbg)}
+.rep-act button:disabled{opacity:.6;cursor:default}

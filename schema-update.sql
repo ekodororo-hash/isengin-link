@@ -92,3 +92,14 @@ create index if not exists users_referred_by on users(referred_by);
 
 -- Link pintar: buka link YouTube, Instagram, dll langsung di aplikasinya (bisa dimatikan pengguna)
 alter table users add column if not exists smart_links boolean default true;
+
+-- Laporan halaman dari pengunjung (status: open | dismissed | actioned)
+create table if not exists reports(
+  id serial primary key,
+  user_id int references users(id) on delete cascade,
+  reason text not null,
+  detail text default '',
+  status text not null default 'open',
+  created_at timestamptz default now(),
+  handled_at timestamptz);
+create index if not exists reports_open on reports(status, user_id);

@@ -9,6 +9,7 @@ import { fmtPrice, labelText, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont, fontCss } from '@/lib/style';
 import { NamedIcon, LinkIcon } from '../icons';
 import Verified from '../Verified';
+import Report from './Report';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 const find = async (name) =>
@@ -84,7 +85,9 @@ export default async function Profile({ params, searchParams }) {
             </a>
           );
         })}
+        {/* tombol lapor selalu tampil, termasuk di akun Pro */}
         {!pro && <div className="foot">Dibuat di <a href={`${(process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site').replace(/\/$/, '')}/?ref=${u.username}`}>isengin.site</a></div>}
+        <Report username={u.username} />
       </main>
     </div>
   );

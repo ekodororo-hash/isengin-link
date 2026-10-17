@@ -2,6 +2,7 @@
 import { useDash } from './DashContext';
 import { DailyChart, LinkRank } from './parts';
 import { SOURCES } from '@/lib/source';
+import Langkah from './Langkah';
 export default function Ringkasan() {
   const { m } = useDash();
   const tot = m.links.reduce((a, l) => a + (l.clicks || 0), 0);
@@ -10,6 +11,7 @@ export default function Ringkasan() {
   return (<>
     <h1>Ringkasan</h1>
     <p className="px-sub"><a href={`/${m.username}`} target="_blank">isengin.site/{m.username}</a></p>
+    <Langkah />
     <div className="px-grid">
       <div className="px-card px-stat"><b>{tot}</b><span>Total klik</span></div>
       <div className="px-card px-stat"><b>{m.links.filter((l) => !l.hidden && l.kind !== 'header').length}</b><span>Link tampil</span></div>

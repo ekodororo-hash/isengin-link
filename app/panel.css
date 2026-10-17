@@ -353,3 +353,23 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-load.in{min-height:45vh;background:none}
 .px-load.sm{min-height:0;padding:18px 0;gap:12px}
 .px-load.sm p{font-size:.9rem}
+/* langkah awal, impor Linktree */
+.px-ob{margin-bottom:22px}
+.px-ob-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;font-weight:700}
+.px-ob-h b{font-family:Bungee,sans-serif;font-weight:400;text-transform:uppercase;font-size:1rem}
+.px-prog{height:16px;border-radius:99px;border:3px solid var(--navy);background:#fff;overflow:hidden;margin:12px 0 14px}
+.px-prog i{display:block;height:100%;background:var(--red);transition:width .3s}
+.px-st{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.px-st a{display:flex;align-items:center;gap:12px;padding:9px 12px;border:3px solid var(--navy);border-radius:14px;background:#fff;color:var(--navy);text-decoration:none;font-weight:800}
+.px-st a:focus-visible{outline:3px dashed var(--navy);outline-offset:2px}
+.px-st small{display:block;font-weight:600;color:var(--mut);font-size:.8rem}
+.px-st .ck{flex:none;width:26px;height:26px;border-radius:50%;border:3px solid var(--navy);display:grid;place-items:center;font-size:.85rem;background:#fff;color:#fff}
+.px-st .ok .ck{background:var(--red)}
+.px-st .ok .tt{text-decoration:line-through;opacity:.6}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.px-imp{margin-bottom:18px}
+.px-imp .px-hint{margin:6px 0 10px}
+.px-imp-r{display:flex;gap:10px;flex-wrap:wrap}
+.px-imp-r input{flex:1 1 220px;min-width:0;width:auto}
+.px-imp-r .px-btn{margin:0}
+.px-imp .px-err,.px-imp .px-msg{margin:10px 0 0}

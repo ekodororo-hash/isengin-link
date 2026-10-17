@@ -25,7 +25,8 @@ export async function GET() {
       (select count(*)::int from links l where l.user_id=u.id and l.hidden is not true and coalesce(l.kind,'link')='link') as links
     from verify_requests r join users u on u.id=r.user_id where r.status='pending' order by r.created_at`
     .catch((e) => { console.error('Tabel verify_requests belum ada (jalankan schema-update.sql):', e.message); return []; });
-  return Response.json({ users, requests });
+  const reports = (await sql`select count(distinct user_id)::int as n from reports where status='open'`.catch(() => [{ n: 0 }]))[0]?.n || 0;
+  return Response.json({ users, requests, reports });
 }
 export async function PATCH(req) {
   if (!(await isAdmin())) return no();
