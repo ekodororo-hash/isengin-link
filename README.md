@@ -88,3 +88,11 @@ schema.sql, schema-update.sql skema database
 - **Sembunyikan link**: toggle di tiap link. Link tersembunyi tidak tampil di halaman publik, tidak dihitung kliknya, dan alamat `/go/<id>`-nya mengarah ke beranda. Statistik lama link itu tetap tersimpan.
 - Ikon sosial dan warna kustom disimpan di kolom `socials` dan `colors` (JSON teks) pada tabel `users`. Gambar link dan sembunyikan link memakai kolom `thumb` dan `hidden` pada tabel `links`. Jalankan `schema-update.sql` sebelum memakai fitur-fitur ini.
 - **Batas percobaan**: login 8 kali per akun dan 30 kali per alamat IP per 15 menit; daftar 5 kali per IP per jam; login admin 8 kali per IP per 15 menit.
+
+## Fitur tambahan
+
+- **Link katalog produk**: tiap link bisa diberi harga, harga coret, dan label (Promo, Baru, Stok terbatas, Habis). Kolom `price`, `old_price`, `label` pada tabel `links`.
+- **Seret dan lepas** untuk mengurutkan link (ikon titik-titik di tiap baris; tombol panah tetap ada).
+- **Gaya tombol dan font** di Tampilan, disimpan di kolom `btn_style` dan `font_key`; daftar pilihan ada di `lib/style.js`.
+- **Pengaturan** (`/dashboard/pengaturan`, API `/api/account`): email opsional, ganti sandi (sandi baru minimal 8 karakter, ada meter kekuatan), dan hapus akun (konfirmasi nama pengguna dan sandi). Kolom `email` pada tabel `users`.
+- Jalankan `schema-update.sql` lagi sebelum memakai semua fitur di atas.

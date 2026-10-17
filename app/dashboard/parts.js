@@ -4,17 +4,28 @@ import { useDash } from './DashContext';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle } from '@/lib/themes';
 import { socialList } from '@/lib/socials';
+import { fmtPrice, labelText } from '@/lib/catalog';
+import { fontCss } from '@/lib/style';
 
 export function Phone() {
   const { m } = useDash();
   const n = m.display_name || m.username;
   const soc = socialList(m.socials);
   return (
-    <div className="px-ph" data-t={m.theme} style={themeStyle(m.theme, m.colors)}>
+    <div className="px-ph" data-t={m.theme} data-b={m.btn_style || 'bulat'} style={{ ...themeStyle(m.theme, m.colors), '--pfont': fontCss(m.font_key) }}>
       {m.photo_url ? <img className="a" src={m.photo_url} alt="" /> : <div className="a">{n[0].toUpperCase()}</div>}
       <h3>{n}</h3><p>{m.bio}</p>
       {soc.length > 0 && <div className="so">{soc.map((x) => <span className="s" key={x.key}><NamedIcon name={x.key} size={14} /></span>)}</div>}
-      {m.links.filter((l) => !l.hidden).map((l, i) => <div className="l" key={l.id || l._k || i}>{l.thumb ? <img className="t" src={l.thumb} alt="" /> : <LinkIcon url={l.url} size={16} />}<span>{l.title || 'Judul link'}</span></div>)}
+      {m.links.filter((l) => !l.hidden).map((l, i) => {
+        const price = fmtPrice(l.price), old = fmtPrice(l.old_price);
+        return (
+          <div className={'l' + (price || old || l.label ? ' cat' : '') + (l.label === 'habis' ? ' soldout' : '')} key={l.id || l._k || i}>
+            {l.thumb ? <img className="t" src={l.thumb} alt="" /> : <LinkIcon url={l.url} size={16} />}
+            <span>{l.title || 'Judul link'}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}</span>
+            {l.label && <span className={'pbd ' + l.label}>{labelText(l.label)}</span>}
+          </div>
+        );
+      })}
     </div>
   );
 }

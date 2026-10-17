@@ -7,14 +7,14 @@ import { SOCIALS } from '@/lib/socials';
 import { COLOR_KEYS } from '@/lib/themes';
 const Ctx = createContext(null);
 export const useDash = () => useContext(Ctx);
-const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan']];
+const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan'], ['/dashboard/pengaturan', 'Pengaturan']];
 
 // Bagian yang bisa diubah pengguna, dipisah per halaman dashboard supaya kelihatan halaman mana yang berubah.
 const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];
 const parts = (x) => ({
-  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true])),
+  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true, l.price || '', l.old_price || '', l.label || ''])),
   profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim())]),
-  tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || '')]),
+  tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || ''), x.btn_style || 'bulat', x.font_key || 'standar']),
 });
 
 // Perkecil foto di peramban (maks 640px, JPEG) supaya unggahan kecil dan selalu lolos batas ukuran.
@@ -62,6 +62,13 @@ export function DashProvider({ children }) {
     if (j < 0 || j >= m.links.length) return;
     const a = [...m.links];
     [a[i], a[j]] = [a[j], a[i]];
+    set('links', a);
+  };
+  // Pindahkan link dari posisi `from` ke `to` (dipakai seret dan lepas).
+  const reorder = (from, to) => {
+    if (from === to || from < 0 || to < 0 || to >= m.links.length) return;
+    const a = [...m.links];
+    a.splice(to, 0, a.splice(from, 1)[0]);
     set('links', a);
   };
   async function save() {
@@ -113,7 +120,7 @@ export function DashProvider({ children }) {
     location.href = '/';
   }
   return (
-    <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
+    <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, reorder, save, up, msg, busy, dirty }}>
       <Shell title="isengin.site" menu={MENU} out={out} reload>
         {children}
       </Shell>

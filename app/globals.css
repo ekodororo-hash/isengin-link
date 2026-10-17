@@ -14,7 +14,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .themes button{border:2px solid #ccc;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;cursor:pointer}
 .themes button[aria-pressed="true"]{background:#111;color:#fff;border-color:#111}
 .small{font-size:.8rem;color:#666}
-.phone{--pbg:#fff;--ink:#111;--pbtn:#f1f1f6;--accent:#2b3cff;min-height:100vh;background:var(--pbg);color:var(--ink);padding:40px 20px;display:flex;flex-direction:column;align-items:center}
+.phone{font-family:var(--pfont,inherit);--pbg:#fff;--ink:#111;--pbtn:#f1f1f6;--accent:#2b3cff;min-height:100vh;background:var(--pbg);color:var(--ink);padding:40px 20px;display:flex;flex-direction:column;align-items:center}
 .pub{width:100%;max-width:420px}
 .ava{width:96px;height:96px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;background:var(--accent);color:var(--pbg);font-weight:800;font-size:2.2rem;object-fit:cover}
 .name{text-align:center;font-weight:800;font-size:1.4rem;margin:0}
@@ -40,3 +40,23 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phone[data-t="neon"] .plink{border:2px solid var(--accent);box-shadow:0 0 10px var(--accent)}
 .phone[data-t="neon"] .soc{border:2px solid var(--accent);box-shadow:0 0 8px var(--accent)}
 .phone[data-t="neon"] .name{text-shadow:0 0 12px var(--accent)}
+
+/* link katalog produk: harga, harga coret, dan label */
+.plink.cat .pt{text-align:left}
+.plink .pp{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;font-weight:400;margin-top:1px}
+.plink .pp s{opacity:.55;font-size:.78rem}
+.plink .pp b{color:var(--accent);font-weight:800;font-size:.95rem}
+.phone[data-t="kobalt"] .plink .pp b,.phone[data-t="permen"] .plink .pp b{color:var(--accent)}
+.plink .pbd{flex:none;font-size:.66rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;padding:4px 9px;border-radius:99px;background:var(--accent);color:var(--pbg)}
+.plink .pbd.promo{background:#ff5a43;color:#fff}
+.plink .pbd.terbatas{background:#ffd23f;color:#1f2255}
+.plink .pbd.habis{background:#8a8a94;color:#fff}
+.plink.soldout{opacity:.6}.plink.soldout .pp b{color:inherit;text-decoration:line-through}
+/* gaya tombol */
+.phone[data-b="pil"] .plink{border-radius:999px}
+.phone[data-b="kotak"] .plink{border-radius:4px}
+.phone[data-b="garis"] .plink{background:transparent;border:2px solid var(--ink);border-radius:14px}
+.phone[data-b="timbul"] .plink{border:2px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink)}
+.phone[data-b="pil"] .plink.has-th{padding-left:10px}
+.phone[data-b="pil"] .plink.cat{border-radius:28px}
+.phone[data-f="serif"] .name,.phone[data-f="tebal"] .name{letter-spacing:0}

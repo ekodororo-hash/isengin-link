@@ -30,3 +30,13 @@ alter table users add column if not exists colors text default '';
 -- Gambar kecil (thumbnail) di link dan sembunyikan link sementara
 alter table links add column if not exists thumb text default '';
 alter table links add column if not exists hidden boolean default false;
+
+-- Link katalog produk: harga, harga coret, dan label (promo, baru, terbatas, habis)
+alter table links add column if not exists price text default '';
+alter table links add column if not exists old_price text default '';
+alter table links add column if not exists label text default '';
+
+-- Gaya tombol dan font halaman publik; email opsional di pengaturan akun
+alter table users add column if not exists btn_style text default 'bulat';
+alter table users add column if not exists font_key text default 'standar';
+alter table users add column if not exists email text default '';
