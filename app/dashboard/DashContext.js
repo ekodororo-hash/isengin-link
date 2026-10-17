@@ -12,19 +12,26 @@ const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashb
 // Bagian yang bisa diubah pengguna, dipisah per halaman dashboard supaya kelihatan halaman mana yang berubah.
 const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];
 const parts = (x) => ({
-  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url])),
+  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true])),
   profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim())]),
   tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || '')]),
 });
 
 // Perkecil foto di peramban (maks 640px, JPEG) supaya unggahan kecil dan selalu lolos batas ukuran.
-async function shrink(file) {
+async function shrink(file, max = 640, square = false) {
   const bmp = await createImageBitmap(file);
-  const s = Math.min(1, 640 / Math.max(bmp.width, bmp.height));
   const c = document.createElement('canvas');
-  c.width = Math.max(1, Math.round(bmp.width * s));
-  c.height = Math.max(1, Math.round(bmp.height * s));
-  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  if (square) {
+    // potong persegi dari tengah gambar (untuk gambar kecil di link)
+    const side = Math.min(bmp.width, bmp.height);
+    c.width = c.height = Math.max(1, Math.round(side * Math.min(1, max / side)));
+    c.getContext('2d').drawImage(bmp, (bmp.width - side) / 2, (bmp.height - side) / 2, side, side, 0, 0, c.width, c.height);
+  } else {
+    const s = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    c.width = Math.max(1, Math.round(bmp.width * s));
+    c.height = Math.max(1, Math.round(bmp.height * s));
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+  }
   const blob = await new Promise((res) => c.toBlob(res, 'image/jpeg', 0.86));
   if (!blob) throw new Error('toBlob');
   return blob;
@@ -94,12 +101,31 @@ export function DashProvider({ children }) {
       if (r.ok) { setM((x) => ({ ...x, photo_url: d.url })); setMsg('Foto terunggah. Klik Simpan agar tersimpan.'); } else setMsg(d.error || 'Foto gagal diunggah.');
     } catch { setMsg('Foto gagal diunggah. Periksa koneksi.'); }
   }
+  // Unggah gambar kecil untuk satu link; link dicari lewat id/_k karena urutan bisa berubah saat mengunggah.
+  async function upThumb(key, e) {
+    const input = e.target;
+    const f = input.files[0];
+    input.value = '';
+    if (!f) return;
+    setMsg('Mengunggah gambar…');
+    let blob;
+    try { blob = await shrink(f, 320, true); } catch { setMsg('Format gambar tidak didukung. Pakai JPG atau PNG.'); return; }
+    const fd = new FormData(); fd.append('file', blob, 'gambar.jpg'); fd.append('kind', 'thumb');
+    try {
+      const r = await fetch('/api/upload', { method: 'POST', body: fd });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) {
+        setM((x) => ({ ...x, links: x.links.map((l) => ((l.id || l._k) === key ? { ...l, thumb: d.url } : l)) }));
+        setMsg('Gambar terunggah. Klik Simpan agar tersimpan.');
+      } else setMsg(d.error || 'Gambar gagal diunggah.');
+    } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
+  }
   async function out() {
     await fetch('/api/auth', { method: 'POST', body: JSON.stringify({ mode: 'logout' }) });
     location.href = '/';
   }
   return (
-    <Ctx.Provider value={{ m, set, setTheme, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
+    <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
       <Shell title="isengin.site" menu={menu} out={out}>
         {children}
         {dirty && (

@@ -26,3 +26,7 @@ create table if not exists click_sources(
 -- Ikon sosial media di header profil dan warna kustom (keduanya JSON dalam bentuk teks)
 alter table users add column if not exists socials text default '';
 alter table users add column if not exists colors text default '';
+
+-- Gambar kecil (thumbnail) di link dan sembunyikan link sementara
+alter table links add column if not exists thumb text default '';
+alter table links add column if not exists hidden boolean default false;

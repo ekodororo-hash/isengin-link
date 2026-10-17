@@ -38,7 +38,8 @@ export default async function Profile({ params, searchParams }) {
       try { await sql`update users set views=views+1 where id=${u.id}`; } catch {}
     }
   }
-  const links = await sql`select id,title,url from links where user_id=${u.id} order by position,id`;
+  const links = await sql`select id,title,url,thumb from links where user_id=${u.id} and hidden is not true order by position,id`
+    .catch((e) => { console.error('Kolom thumb/hidden belum ada (jalankan schema-update.sql):', e.message); return sql`select id,title,url from links where user_id=${u.id} order by position,id`; });
   // Ikon sosial dan warna kustom dibaca terpisah supaya halaman tetap terbuka walau schema-update.sql belum dijalankan.
   const extra = (await sql`select socials,colors from users where id=${u.id}`.catch((e) => { console.error('Kolom socials/colors belum ada (jalankan schema-update.sql):', e.message); return []; }))[0] || {};
   const socials = socialList(extra.socials);
@@ -60,8 +61,8 @@ export default async function Profile({ params, searchParams }) {
           </div>
         )}
         {links.map((l) => (
-          <a key={l.id} className="plink" href={`/go/${l.id}?s=${src}`}>
-            <LinkIcon url={l.url} /><span className="pt">{l.title}</span><span className="psp" aria-hidden="true" />
+          <a key={l.id} className={'plink' + (l.thumb ? ' has-th' : '')} href={`/go/${l.id}?s=${src}`}>
+            {l.thumb ? <img className="pth" src={l.thumb} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={l.url} />}<span className="pt">{l.title}</span><span className="psp" aria-hidden="true" />
           </a>
         ))}
         <div className="foot">Dibuat di <a href="/">isengin.site</a></div>

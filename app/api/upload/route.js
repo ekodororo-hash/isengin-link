@@ -3,7 +3,9 @@ import { getUserId } from '@/lib/auth';
 export async function POST(req) {
   const id = await getUserId();
   if (!id) return Response.json({ error: 'Belum masuk.' }, { status: 401 });
-  const f = (await req.formData()).get('file');
+  const form = await req.formData();
+  const f = form.get('file');
+  const dir = form.get('kind') === 'thumb' ? 'thumbs' : 'avatars';
   if (!f || !f.type?.startsWith('image/') || f.size > 2000000)
     return Response.json({ error: 'Pilih gambar, maksimal 2 MB.' }, { status: 400 });
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -11,7 +13,7 @@ export async function POST(req) {
     return Response.json({ error: 'Penyimpanan foto belum siap. Hubungi pemilik situs.' }, { status: 503 });
   }
   try {
-    const b = await put(`avatars/${id}-${Date.now()}`, f, { access: 'public', contentType: f.type });
+    const b = await put(`${dir}/${id}-${Date.now()}`, f, { access: 'public', contentType: f.type });
     return Response.json({ url: b.url });
   } catch (e) {
     console.error('Unggah foto gagal:', e.message);

@@ -14,7 +14,7 @@ export function Phone() {
       {m.photo_url ? <img className="a" src={m.photo_url} alt="" /> : <div className="a">{n[0].toUpperCase()}</div>}
       <h3>{n}</h3><p>{m.bio}</p>
       {soc.length > 0 && <div className="so">{soc.map((x) => <span className="s" key={x.key}><NamedIcon name={x.key} size={14} /></span>)}</div>}
-      {m.links.map((l, i) => <div className="l" key={l.id || l._k || i}><LinkIcon url={l.url} size={16} /><span>{l.title || 'Judul link'}</span></div>)}
+      {m.links.filter((l) => !l.hidden).map((l, i) => <div className="l" key={l.id || l._k || i}>{l.thumb ? <img className="t" src={l.thumb} alt="" /> : <LinkIcon url={l.url} size={16} />}<span>{l.title || 'Judul link'}</span></div>)}
     </div>
   );
 }
