@@ -61,7 +61,10 @@ export default function LinkPage() {
 
   return (<>
     <h1>Link</h1>
-    <p className="px-sub">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Pembatas adalah judul seksi tanpa alamat untuk mengelompokkan link (mis. “Produk”, “Sosial media”). Link atau pembatas yang disembunyikan tidak tampil, dan link tersembunyi tidak dihitung kliknya. Setelah mengubah, klik Simpan.</p>
+    <p className="px-sub">
+      <span className="px-dsk">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Pembatas adalah judul seksi tanpa alamat untuk mengelompokkan link (mis. “Produk”, “Sosial media”). Link atau pembatas yang disembunyikan tidak tampil, dan link tersembunyi tidak dihitung kliknya. Setelah mengubah, klik Simpan.</span>
+      <span className="px-mob">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</span>
+    </p>
     <Importer />
     {!m.pro && <p className="px-hint" role="status">Paket gratis: {Math.min(thumbs, FREE_THUMBS)} dari {FREE_THUMBS} gambar link terpakai.{thumbs > FREE_THUMBS && ` Hanya ${FREE_THUMBS} gambar pertama yang tampil di halamanmu.`} <Link href="/dashboard/paket">Pro: tanpa batas</Link></p>}
     <div className="px-card">
@@ -77,11 +80,11 @@ export default function LinkPage() {
                 <span className="px-lk-no">{i + 1}</span>
                 <span className="px-th e" aria-hidden="true"><Head /></span>
                 <input className="px-hd-in" aria-label={`Judul pembatas ${i + 1}`} placeholder="Judul pembatas, mis. Produk" maxLength={60} value={l.title} onChange={(e) => setL(i, 'title', e.target.value)} />
+                <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
+                  <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan pembatas ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
+                  <span className="px-tg" aria-hidden="true" />
+                </label>
                 <div className="px-lk-b">
-                  <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
-                    <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan pembatas ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
-                    <span className="px-tg" aria-hidden="true" />
-                  </label>
                   <button className="px-ib" aria-label={`Naikkan pembatas ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
                   <button className="px-ib" aria-label={`Turunkan pembatas ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
                   <button className="px-ib d" aria-label={`Hapus pembatas ${i + 1}`} title="Hapus" onClick={() => delLink(i)}><Trash /></button>
@@ -102,11 +105,11 @@ export default function LinkPage() {
                   <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}{l.featured && <span className="px-tag sor">Sorotan</span>}{l.guard && <span className="px-tag kunci">{l.guard === 'pass' ? 'Terkunci' : '18+'}</span>}</strong>
                   <span>{price ? <b className="px-pr">{price}</b> : null}{price ? ' · ' : ''}{l.url || 'Belum ada alamat'}</span>
                 </div>
+                <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
+                  <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan link ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
+                  <span className="px-tg" aria-hidden="true" />
+                </label>
                 <div className="px-lk-b">
-                  <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
-                    <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan link ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
-                    <span className="px-tg" aria-hidden="true" />
-                  </label>
                   <button className="px-ib" aria-label={`Naikkan link ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
                   <button className="px-ib" aria-label={`Turunkan link ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
                   <button className={'px-ib' + (ed ? ' on' : '')} aria-label={ed ? `Selesai mengedit link ${i + 1}` : `Edit link ${i + 1}`} aria-expanded={ed} title={ed ? 'Selesai' : 'Edit'} onClick={() => toggle(l, i)}>{ed ? <Check /> : <Pencil />}</button>

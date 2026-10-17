@@ -205,7 +205,7 @@
 .px-lk-i strong em{font-style:normal;color:var(--mut);font-weight:600}
 .px-lk-i span{font-size:.8rem;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .px-lk-b{display:flex;align-items:center;gap:6px;margin-left:auto}
-.px-lk-b .px-sw2{margin:0 4px 0 0}
+.px-lk-r>.px-sw2{margin:0}
 .px-ib{box-sizing:border-box;flex:none;width:36px;height:36px;margin:0;display:grid;place-items:center;padding:0;color:var(--navy);background:#fff;border:3px solid var(--navy);border-radius:12px;box-shadow:2px 2px 0 var(--navy);cursor:pointer;transition:transform .1s,box-shadow .1s}
 .px-ib.on{background:var(--yel)}
 .px-ib.d{background:var(--red);color:#fff}
@@ -213,6 +213,9 @@
 .px-ib:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
 .px-lk-e{display:grid;gap:10px;margin-top:12px;padding-top:12px;border-top:3px dashed var(--navy)}
 @media(max-width:560px){.px-lk-b{width:100%;justify-content:flex-end}}
+/* deskripsi: lengkap di desktop, ringkas di HP */
+.px-sub .px-mob{display:none}
+@media(max-width:560px){.px-sub .px-dsk{display:none}.px-sub .px-mob{display:inline}}
 @media(prefers-reduced-motion:reduce){.px-ib{transition:none}}
 
 /* halaman Tampilan dan Profil: bagian bertajuk */
