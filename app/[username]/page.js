@@ -99,9 +99,8 @@ export default async function Profile({ params, searchParams }) {
         })}
         {/* tombol lapor selalu tampil, termasuk di akun Pro */}
         {!pro && <div className="foot">Dibuat di <a href={`${(process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site').replace(/\/$/, '')}/?ref=${u.username}`}>isengin.site</a></div>}
-        <Report username={u.username} />
         <div className="foot legal-links">
-          <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
+          <Report username={u.username} inline /> · <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
         </div>
       </main>
     </div>

@@ -25,6 +25,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .foot{text-align:center;font-size:.75rem;opacity:.6;margin-top:20px}
 .foot a{color:inherit}
 .foot.legal-links{margin-top:10px}
+.rep-open-inline{display:inline;margin:0;padding:0;opacity:1;font-size:inherit}
 /* ikon sosial media di header profil */
 .socials{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:14px 0 22px}
 .bio+.socials{margin-top:-10px}
@@ -69,8 +70,8 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .plink-dots:focus-visible{opacity:1;outline:2px solid var(--accent);outline-offset:1px}
 
 /* modal bagikan tautan - gaya netral, tidak ikut tema warna profil */
-.shm-ov{position:fixed;inset:0;background:rgba(10,10,20,.55);display:flex;align-items:flex-end;justify-content:center;z-index:200;padding:0}
-.shm{width:100%;max-width:420px;max-height:88vh;overflow-y:auto;background:#fff;color:#111;border-radius:20px 20px 0 0;padding:20px 20px 26px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;box-sizing:border-box}
+.shm-ov{position:fixed;inset:0;background:rgba(15,15,20,.25);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;z-index:200;padding:0}
+.shm{width:100%;max-width:420px;max-height:88vh;overflow-y:auto;background:#fff;color:#111;border-radius:20px 20px 0 0;padding:20px 20px 26px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;box-sizing:border-box;box-shadow:0 10px 40px rgba(0,0,0,.25)}
 @media(min-width:560px){.shm-ov{align-items:center;padding:20px}.shm{border-radius:20px}}
 .shm-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .shm-top h2{font-size:1.1rem;margin:0;font-weight:800}
@@ -79,8 +80,9 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .shm-ic{width:48px;height:48px;border-radius:12px;background:#fff;display:grid;place-items:center;margin:0 auto 12px;box-shadow:0 1px 4px rgba(0,0,0,.12);color:#111}
 .shm-t{font-weight:800;margin:0 0 4px;word-break:break-word}
 .shm-u{font-size:.85rem;color:#777;margin:0;word-break:break-all}
-.shm-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 8px;margin-bottom:20px}
-.shm-sh{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.72rem;color:#333;text-decoration:none;background:none;border:0;cursor:pointer;font-family:inherit;padding:0}
+.shm-row{display:flex;gap:18px;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin:0 -20px 20px;padding:2px 20px 6px}
+.shm-row::-webkit-scrollbar{display:none}
+.shm-sh{flex:0 0 60px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.72rem;color:#333;text-decoration:none;background:none;border:0;cursor:pointer;font-family:inherit;padding:0}
 .shm-ico{width:46px;height:46px;border-radius:50%;background:#f1f1f6;display:grid;place-items:center;color:#111}
 .shm-ico.shm-whatsapp{background:#25d366;color:#fff}
 .shm-ico.shm-facebook{background:#1877f2;color:#fff}
