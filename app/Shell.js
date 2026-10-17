@@ -30,8 +30,8 @@ export default function Shell({ title, menu, out, children }) {
           <button className="px-close" aria-label="Tutup menu" onClick={() => setOpen(false)}>✕</button>
         </div>
         <nav aria-label="Menu">
-          {menu.map(([href, label]) => (
-            <Link key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}</Link>
+          {menu.map(([href, label, mark]) => (
+            <Link key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}{mark && <span className="px-dot" role="img" aria-label="ada perubahan belum disimpan" />}</Link>
           ))}
         </nav>
         <button className="px-out" onClick={out}>Keluar</button>

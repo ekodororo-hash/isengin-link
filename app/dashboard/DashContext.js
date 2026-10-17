@@ -9,12 +9,12 @@ const Ctx = createContext(null);
 export const useDash = () => useContext(Ctx);
 const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan']];
 
-// Hanya bagian yang bisa diubah pengguna; dipakai untuk tahu ada perubahan yang belum disimpan.
-const snap = (x) => JSON.stringify({
-  n: x.display_name || '', b: x.bio || '', t: x.theme, p: x.photo_url || '',
-  l: x.links.map((l) => [l.id || 0, l.title, l.url]),
-  s: SOCIALS.map((k) => (x.socials?.[k.key] || '').trim()),
-  c: COLOR_KEYS.map((k) => x.colors?.[k] || ''),
+// Bagian yang bisa diubah pengguna, dipisah per halaman dashboard supaya kelihatan halaman mana yang berubah.
+const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];
+const parts = (x) => ({
+  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url])),
+  profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim())]),
+  tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || '')]),
 });
 
 // Perkecil foto di peramban (maks 640px, JPEG) supaya unggahan kecil dan selalu lolos batas ukuran.
@@ -32,13 +32,15 @@ async function shrink(file) {
 
 export function DashProvider({ children }) {
   const [m, setM] = useState(null);
-  const [base, setBase] = useState('');
+  const [saved, setSaved] = useState(null);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
   const path = usePathname();
-  const dirty = m ? snap(m) !== base : false;
+  const pm = m ? parts(m) : null, ps = saved ? parts(saved) : null;
+  const changed = pm && ps ? SECTIONS.filter(([k]) => pm[k] !== ps[k]) : [];
+  const dirty = changed.length > 0;
   useEffect(() => {
-    fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setBase(snap(d)); } });
+    fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); } });
   }, []);
   useEffect(() => { setMsg(''); }, [path]);
   useEffect(() => {
@@ -61,13 +63,19 @@ export function DashProvider({ children }) {
     [a[i], a[j]] = [a[j], a[i]];
     set('links', a);
   };
+  const discard = () => {
+    if (!window.confirm('Buang semua perubahan yang belum disimpan?')) return;
+    setM(saved); setMsg('');
+  };
+  // Titik penanda di menu untuk halaman yang punya perubahan belum disimpan.
+  const menu = MENU.map(([h, l]) => [h, l, changed.some(([k]) => h === '/dashboard/' + k)]);
   async function save() {
     if (busy) return;
     setBusy(true); setMsg('');
     try {
       const r = await fetch('/api/me', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) });
       const d = await r.json().catch(() => ({}));
-      if (r.ok) { setM(d); setBase(snap(d)); setMsg('Tersimpan.'); } else setMsg(d.error || 'Gagal menyimpan. Coba lagi.');
+      if (r.ok) { setM(d); setSaved(d); setMsg('Tersimpan.'); } else setMsg(d.error || 'Gagal menyimpan. Coba lagi.');
     } catch { setMsg('Gagal menyimpan. Periksa koneksi, lalu coba lagi.'); }
     setBusy(false);
   }
@@ -92,11 +100,12 @@ export function DashProvider({ children }) {
   }
   return (
     <Ctx.Provider value={{ m, set, setTheme, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
-      <Shell title="isengin.site" menu={MENU} out={out}>
+      <Shell title="isengin.site" menu={menu} out={out}>
         {children}
         {dirty && (
           <div className="px-dirty" role="status">
-            <span>Ada perubahan yang belum disimpan</span>
+            <span>Belum disimpan: {changed.map(([, l]) => l).join(', ')}</span>
+            <button className="px-btn g" onClick={discard} disabled={busy}>Batalkan</button>
             <button className="px-btn" onClick={save} disabled={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
           </div>
         )}
