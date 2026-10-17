@@ -27,7 +27,7 @@ export default function HomePromo({ pageUsername, pageName }) {
   return (
     <>
       <button type="button" className="homebtn" onClick={() => setOpen(true)} aria-label="Buat halamanmu sendiri di isengin.site" aria-haspopup="dialog">
-        <NamedIcon name="home" size={18} />
+        <img src="/icon.svg" alt="" draggable="false" />
       </button>
       {open && (
         <div className="hp-ov" role="dialog" aria-modal="true" aria-labelledby="hp-h" onClick={() => setOpen(false)}>
