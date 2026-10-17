@@ -29,3 +29,11 @@ body:has(.lp-wrap){background:#ffd23f}
 .lp-cnt{font-size:.78rem;font-weight:700;background:var(--accent);color:var(--pbg);border-radius:999px;padding:2px 9px;min-width:30px;text-align:center}
 .lp-foot{text-align:center;font-size:.75rem;opacity:.6;margin-top:14px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+/* responsif */
+.lp-wrap>*{min-width:0}
+@media(max-width:560px){
+.lp-wrap{padding:28px 16px 44px;gap:32px}
+.lp-lead{font-size:1rem;margin-bottom:22px}
+.lp-btn{flex:1 1 100%;padding:8px 14px;font-size:.8rem}
+.lp-phone{padding:24px 16px 18px;box-shadow:6px 6px 0 var(--navy)}
+}

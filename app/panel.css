@@ -58,3 +58,27 @@
 .px-dots i:nth-child(3){animation-delay:.3s}
 @keyframes px-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
 @media(prefers-reduced-motion:reduce){.px-dots i{animation:none}}
+/* responsif */
+.px-app>*{min-width:0}
+@media(max-width:859px){
+.px-app{gap:14px;padding:12px}
+.px-app aside{flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px;padding:12px;box-shadow:4px 4px 0 var(--navy)}
+.px-brand{flex:1;padding:0}
+.px-out{order:2;margin-top:0;padding:6px 12px!important;font-size:.75rem!important}
+.px-app nav{order:3;flex:1 1 100%;padding:2px 6px 6px 2px}
+.px-app nav button{font-size:.78rem;padding:7px 12px}
+.px-main{padding:2px 2px 48px}
+.px-card{padding:14px;box-shadow:4px 4px 0 var(--navy)}
+.px-stat{box-shadow:4px 4px 0 var(--red)}
+}
+@media(max-width:560px){
+.px-grid{gap:12px;grid-template-columns:1fr 1fr}
+.px-grid .px-stat:last-child:nth-child(odd){grid-column:1/-1}
+.px-stat b{font-size:1.7rem}
+.px-bar{grid-template-columns:84px 1fr 32px;gap:8px}
+.px-row input:first-child,.px-row input:nth-child(2){flex:1 1 100%}
+.px-btn{padding:8px 14px;font-size:.8rem}
+.px-main input[type="file"]{font-size:1rem}
+.px-main th,.px-main td{padding:8px 6px;font-size:.82rem}
+.px-login{margin:6vh auto}
+}
