@@ -70,7 +70,7 @@ export default async function Profile({ params, searchParams }) {
         {u.bio && <p className="bio">{u.bio}</p>}
         {socials.length > 0 && (
           <div className="socials">
-            {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer"><NamedIcon name={x.key} /></a>)}
+            {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer" target={/^https?:/i.test(x.href) ? '_blank' : undefined}><NamedIcon name={x.key} /></a>)}
           </div>
         )}
         {links.map((l, i) => {
@@ -79,7 +79,7 @@ export default async function Profile({ params, searchParams }) {
           const th = thumbOk(links, i, pro) ? l.thumb : '';
           const cat = !!(price || old || lab);
           return (
-            <a key={l.id} className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (lab === 'habis' ? ' soldout' : '')} href={`/go/${l.id}?s=${src}`}>
+            <a key={l.id} className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (lab === 'habis' ? ' soldout' : '')} href={`/go/${l.id}?s=${src}`} rel="noopener noreferrer" target={/^mailto:/i.test(l.url || '') ? undefined : '_blank'}>
               {th ? <img className="pth" src={th} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={l.url} />}
               <span className="pt">
                 {l.title}
