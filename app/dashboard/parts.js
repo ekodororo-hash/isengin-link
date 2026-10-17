@@ -25,7 +25,7 @@ export function SaveBar({ children }) {
   return (
     <div className="px-actions">
       {children}
-      <button className="px-btn" onClick={save} disabled={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
+      <button className="px-btn" onClick={save} disabled={busy} aria-busy={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
       {msg && <span role="status" className="px-msg">{msg}</span>}
     </div>
   );

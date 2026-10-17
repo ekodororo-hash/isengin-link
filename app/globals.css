@@ -33,3 +33,10 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .plink .pth{width:48px;height:48px;border-radius:10px;object-fit:cover;flex:none;background:rgba(0,0,0,.06)}
 .plink.has-th{padding:8px}
 .plink.has-th .psp{width:48px}
+/* tema Neo (gaya dashboard: garis tebal dan bayangan) dan Neon (garis menyala) */
+.phone[data-t="neo"] .plink{border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.phone[data-t="neo"] .ava{border:3px solid var(--ink)}
+.phone[data-t="neo"] .soc{border:3px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.phone[data-t="neon"] .plink{border:2px solid var(--accent);box-shadow:0 0 10px var(--accent)}
+.phone[data-t="neon"] .soc{border:2px solid var(--accent);box-shadow:0 0 8px var(--accent)}
+.phone[data-t="neon"] .name{text-shadow:0 0 12px var(--accent)}

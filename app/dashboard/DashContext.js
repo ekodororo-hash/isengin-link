@@ -130,7 +130,7 @@ export function DashProvider({ children }) {
           <div className="px-dirty" role="status">
             <span>Ada perubahan yang belum disimpan</span>
             <button className="px-btn g" onClick={discard} disabled={busy}>Batalkan</button>
-            <button className="px-btn" onClick={save} disabled={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
+            <button className="px-btn" onClick={save} disabled={busy} aria-busy={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
           </div>
         )}
       </Shell>

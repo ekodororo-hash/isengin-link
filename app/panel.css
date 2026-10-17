@@ -144,7 +144,8 @@
 /* penanda perubahan belum disimpan */
 .px-dirty{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100vw - 24px);background:var(--cream);color:var(--navy);border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);padding:8px 8px 8px 18px;font-weight:800;font-size:.85rem;line-height:1.25}
 .px-dirty .px-btn{margin:0;padding:6px 16px;font-size:.8rem;flex:none}
-.px-btn:disabled{opacity:.6;cursor:wait}
+.px-btn:disabled{opacity:.6;cursor:not-allowed}
+.px-btn[aria-busy="true"]:disabled{cursor:wait}
 
 /* asal klik, ikon sosial, warna kustom */
 .px-mt{margin-top:22px}
@@ -180,3 +181,8 @@
 .px-lk.off .px-lk-f input,.px-lk.off .px-th{opacity:.6}
 .px-ph .l .t{width:28px;height:28px;border-radius:8px;object-fit:cover;flex:none}
 @media(prefers-reduced-motion:reduce){.px-tg,.px-tg::after{transition:none}}
+/* pratinjau tema Neo dan Neon */
+.px-ph[data-t="neo"] .l{border:3px solid var(--pi);box-shadow:3px 3px 0 var(--pi)}
+.px-ph[data-t="neo"] .a{border:3px solid var(--pi)}
+.px-ph[data-t="neon"] .l{border:2px solid var(--pa);box-shadow:0 0 8px var(--pa)}
+.px-ph[data-t="neon"] h3{text-shadow:0 0 10px var(--pa)}
