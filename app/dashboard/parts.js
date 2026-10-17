@@ -18,11 +18,11 @@ export function Phone() {
 
 // Tombol Simpan; `children` tampil sejajar di sebelah kirinya (mis. Tambah link).
 export function SaveBar({ children }) {
-  const { save, msg } = useDash();
+  const { save, msg, busy } = useDash();
   return (
     <div className="px-actions">
       {children}
-      <button className="px-btn" onClick={save}>Simpan</button>
+      <button className="px-btn" onClick={save} disabled={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
       {msg && <span role="status" className="px-msg">{msg}</span>}
     </div>
   );
