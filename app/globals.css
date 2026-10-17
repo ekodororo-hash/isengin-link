@@ -134,10 +134,13 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
   .stage .phone{width:100%;max-width:580px;padding-top:56px;padding-bottom:56px;box-shadow:0 0 40px color-mix(in srgb,var(--ink,#000) 14%,transparent)}
 }
 
-/* Link sorotan dan penanda pengaman link: cincin statis (tanpa animasi supaya ringan), penanda di kiri titik tiga */
-.plink.feat{position:relative}
+/* Label (Promo, Stok terbatas, dll) kecil di pojok kanan atas; judul tetap rata tengah */
+.plink{position:relative}
+.plink .pbd{position:absolute;top:-7px;right:14px;z-index:1;font-size:.56rem;padding:2px 7px;line-height:1.4;box-shadow:0 0 0 2px var(--pbg)}
+/* Link sorotan: cincin statis (tanpa animasi supaya ringan). Penanda sorotan/gembok/18+ di kiri titik tiga, tidak menggeser judul */
 .plink.feat::after{content:"";position:absolute;inset:-5px;border:2px solid var(--accent);border-radius:calc(var(--r,16px) + 5px);pointer-events:none}
 .phone[data-b="pil"] .plink.feat{--r:999px}.phone[data-b="kotak"] .plink.feat{--r:4px}.phone[data-b="timbul"] .plink.feat{--r:10px}.phone[data-b="garis"] .plink.feat{--r:14px}
-.plink .pind{flex:none;display:flex;align-items:center;gap:6px;margin-right:-2px}
+.plink .pind{position:absolute;right:46px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px}
+.plink.has-ind .pt{padding:0 40px}
 .plink .pstar{color:var(--accent)}
 .plink .p18{font-size:.62rem;font-weight:800;letter-spacing:.03em;border:1.5px solid currentColor;border-radius:99px;padding:0 6px;line-height:1.5}

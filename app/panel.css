@@ -399,3 +399,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-bn p{margin:0;flex:1;line-height:1.45}
 .px-bn a{color:inherit;text-decoration:underline}
 .px-bn button{flex:none;width:30px;height:30px;border:2px solid var(--navy);border-radius:10px;background:#fff;color:var(--navy);font:inherit;font-weight:800;cursor:pointer;line-height:1}
+
+/* Pratinjau: label kecil di pojok kanan atas, sama seperti halaman publik */
+.px-ph .l{position:relative}
+.px-ph .l .pbd{position:absolute;top:-6px;right:10px;font-size:.5rem;padding:1px 6px;line-height:1.4;box-shadow:0 0 0 2px var(--pbg)}

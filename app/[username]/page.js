@@ -81,7 +81,7 @@ export default async function Profile({ params, searchParams }) {
           if (l.kind === 'header') return <h2 key={l.id} className="phead"><span>{l.title}</span></h2>;
           const price = fmtPrice(l.price), old = fmtPrice(l.old_price), lab = cleanLabel(l.label);
           const th = thumbOk(links, i, pro) ? l.thumb : '';
-          const cat = !!(price || old || lab);
+          const cat = !!(price || old); // rata kiri hanya untuk link berharga; label saja tetap rata tengah
           return (
             <LinkRow
               key={l.id}
