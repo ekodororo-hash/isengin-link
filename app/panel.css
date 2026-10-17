@@ -186,3 +186,12 @@
 .px-ph[data-t="neo"] .a{border:3px solid var(--pi)}
 .px-ph[data-t="neon"] .l{border:2px solid var(--pa);box-shadow:0 0 8px var(--pa)}
 .px-ph[data-t="neon"] h3{text-shadow:0 0 10px var(--pa)}
+
+/* grafik per hari di HP: tombol rapi dan sama lebar */
+@media(max-width:560px){
+.px-ch-head{display:grid;gap:10px}
+.px-ch-head>b{margin:0}
+.px-seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px}
+.px-seg button{padding:7px 4px;text-align:center}
+.px-chart{gap:2px}
+}
