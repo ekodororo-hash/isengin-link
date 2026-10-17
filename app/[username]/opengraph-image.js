@@ -18,9 +18,9 @@ async function photoOk(url) {
 export default async function Image({ params }) {
   const u = (await sql`select username,display_name,bio,theme,photo_url,active from users where username=${String(params.username).toLowerCase()}`)[0];
   const t = getTheme(u?.theme);
-  const name = u && u.active ? u.display_name || u.username : 'isengin.site';
-  const bio = u && u.active && u.bio ? (u.bio.length > 110 ? u.bio.slice(0, 107) + '…' : u.bio) : 'Satu link untuk semua kontenmu.';
-  const showPhoto = u && u.active && (await photoOk(u.photo_url));
+  const name = u && u.active !== false ? u.display_name || u.username : 'isengin.site';
+  const bio = u && u.active !== false && u.bio ? (u.bio.length > 110 ? u.bio.slice(0, 107) + '…' : u.bio) : 'Satu link untuk semua kontenmu.';
+  const showPhoto = u && u.active !== false && (await photoOk(u.photo_url));
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: t.bg, color: t.ink, padding: 60 }}>

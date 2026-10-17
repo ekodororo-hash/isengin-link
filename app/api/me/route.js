@@ -9,7 +9,7 @@ async function load(id) {
     // 30 hari terakhir (zona Jakarta), hari tanpa data diisi 0
     sql`select to_char(d,'YYYY-MM-DD') as day, coalesce(s.views,0)::int as views, coalesce(s.clicks,0)::int as clicks
         from generate_series(((now() at time zone 'Asia/Jakarta')::date - 29)::timestamp, (now() at time zone 'Asia/Jakarta')::date::timestamp, interval '1 day') d
-        left join daily_stats s on s.user_id=${id} and s.day=d::date order by d`,
+        left join daily_stats s on s.user_id=${id} and s.day=d::date order by d`.catch((e) => { console.error('Statistik harian gagal (sudah jalankan schema-update.sql?):', e.message); return []; }),
   ]);
   return { ...u[0], links, daily };
 }

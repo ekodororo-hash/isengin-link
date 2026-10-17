@@ -9,7 +9,7 @@ const find = async (name) =>
   (await sql`select id,username,display_name,bio,theme,photo_url,active from users where username=${String(name).toLowerCase()}`)[0];
 export async function generateMetadata({ params }) {
   const u = await find(params.username);
-  if (!u || !u.active) return { title: 'Halaman tidak ditemukan – isengin.site', robots: { index: false } };
+  if (!u || u.active === false) return { title: 'Halaman tidak ditemukan – isengin.site', robots: { index: false } };
   const name = u.display_name || u.username;
   const desc = u.bio || `Semua link ${name} ada di satu halaman.`;
   const url = `/${u.username}`;
@@ -23,11 +23,17 @@ export async function generateMetadata({ params }) {
 }
 export default async function Profile({ params }) {
   const u = await find(params.username);
-  if (!u || !u.active) notFound();
+  if (!u || u.active === false) notFound();
   if (!isBot(headers().get('user-agent'))) {
-    await sql`with a as (update users set views=views+1 where id=${u.id})
-      insert into daily_stats(user_id, day, views) values (${u.id}, (now() at time zone 'Asia/Jakarta')::date, 1)
-      on conflict (user_id, day) do update set views = daily_stats.views + 1`;
+    // Menghitung kunjungan tidak boleh sampai membuat halaman gagal dibuka.
+    try {
+      await sql`with a as (update users set views=views+1 where id=${u.id})
+        insert into daily_stats(user_id, day, views) values (${u.id}, (now() at time zone 'Asia/Jakarta')::date, 1)
+        on conflict (user_id, day) do update set views = daily_stats.views + 1`;
+    } catch (e) {
+      console.error('Gagal mencatat kunjungan (sudah jalankan schema-update.sql?):', e.message);
+      try { await sql`update users set views=views+1 where id=${u.id}`; } catch {}
+    }
   }
   const links = await sql`select id,title,url from links where user_id=${u.id} order by position,id`;
   const name = u.display_name || u.username;
