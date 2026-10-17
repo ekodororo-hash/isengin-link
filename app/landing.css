@@ -52,3 +52,10 @@ body:has(.legal-wrap){background:#ffd23f}
 .legal-foot{font-size:.8rem;margin-top:26px;font-weight:600;text-align:center}
 .legal-foot a{color:var(--navy)}
 @media(max-width:560px){.legal-wrap{padding:32px 16px 48px}.legal-box{margin-right:6px;padding:20px 16px;box-shadow:6px 6px 0 var(--navy)}}
+
+/* halaman 404 - pakai kotak legal tapi rata tengah dan satu kolom sempit */
+.nf-wrap{max-width:460px;text-align:center}
+.nf-wrap .legal-date{font-family:Bungee,sans-serif;font-size:1.1rem;opacity:.5;letter-spacing:.08em}
+.nf-wrap .legal-box{text-align:center;justify-items:center}
+.nf-btn{text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.nf-small{margin:0;font-size:.8rem;opacity:.6}
