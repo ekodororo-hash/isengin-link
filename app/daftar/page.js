@@ -21,6 +21,8 @@ export default function Daftar() {
     try {
       const q = (new URLSearchParams(location.search).get('ref') || '').toLowerCase();
       if (/^[a-z0-9_]{3,20}$/.test(q)) localStorage.setItem('ref', q);
+      const pu = (new URLSearchParams(location.search).get('u') || '').toLowerCase();
+      if (/^[a-z0-9_]{3,20}$/.test(pu)) setU(pu);
       const v = localStorage.getItem('ref') || '';
       if (/^[a-z0-9_]{3,20}$/.test(v)) setRef(v);
     } catch {}

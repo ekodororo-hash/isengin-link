@@ -12,6 +12,7 @@ import Verified from '../Verified';
 import Report from './Report';
 import { cleanGuard } from '@/lib/linkguard';
 import LinkRow from './LinkRow';
+import HomePromo from './HomePromo';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -69,6 +70,7 @@ export default async function Profile({ params, searchParams }) {
     <div className="stage" style={themeStyle(eff.theme, eff.colors)}>
     <div className="phone" data-t={eff.theme} data-b={eff.btn_style} data-f={eff.font_key} style={{ ...themeStyle(eff.theme, eff.colors), ...bgStyle(eff.bg, eff.theme, eff.colors), '--pfont': fontCss(eff.font_key) }}>
       <main className="pub">
+        <HomePromo pageUsername={u.username} pageName={name} />
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
         {u.bio && <p className="bio">{u.bio}</p>}

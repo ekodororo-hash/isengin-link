@@ -2,14 +2,14 @@
 // Ikon dipilih otomatis dari alamat link.
 import {
   FaWhatsapp, FaInstagram, FaYoutube, FaTiktok, FaFacebook, FaXTwitter, FaGithub, FaLinkedin,
-  FaTelegram, FaSpotify, FaEnvelope, FaBagShopping, FaLink, FaEllipsisVertical, FaRegCopy, FaXmark,
+  FaTelegram, FaSpotify, FaEnvelope, FaBagShopping, FaLink, FaEllipsisVertical, FaRegCopy, FaXmark, FaHouse,
 } from 'react-icons/fa6';
 const ICONS = {
   whatsapp: FaWhatsapp, instagram: FaInstagram, youtube: FaYoutube, tiktok: FaTiktok, facebook: FaFacebook,
   x: FaXTwitter, github: FaGithub, linkedin: FaLinkedin, telegram: FaTelegram, spotify: FaSpotify,
   email: FaEnvelope, toko: FaBagShopping, link: FaLink,
   // Tiga titik vertikal (menu opsi per-tautan), ikon salin, dan tanda tutup (X biasa, bukan logo X).
-  dots: FaEllipsisVertical, copy: FaRegCopy, close: FaXmark,
+  dots: FaEllipsisVertical, copy: FaRegCopy, close: FaXmark, home: FaHouse,
 };
 const RULES = [
   ['whatsapp', ['wa.me', 'whatsapp.com', 'api.whatsapp.com']],
