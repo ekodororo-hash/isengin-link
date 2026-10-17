@@ -37,3 +37,5 @@ body:has(.lp-wrap){background:#ffd23f}
 }
 
 .lp-note{margin:0 0 12px;font-size:.9rem;font-weight:600}
+.lp-legal{text-align:center;font-size:.78rem;margin-top:14px;opacity:.75}
+.lp-legal a{color:inherit}

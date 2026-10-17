@@ -70,6 +70,9 @@ export default function Home() {
           ))}
           <div className="lp-foot">Dibuat di isengin.site</div>
         </div>
+        <p className="lp-legal">
+          <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
+        </p>
       </section>
     </main>
   );

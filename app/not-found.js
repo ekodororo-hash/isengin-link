@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { sql } from '@/lib/db';
 export const metadata = { title: 'Halaman tidak ditemukan – isengin.site', robots: { index: false } };
 
-const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', 'domain'];
+const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', 'domain', 'privasi', 'syarat'];
 
 export default async function NotFound() {
   // Kalau alamatnya berbentuk nama pengguna (isengin.site/rani), cek apakah namanya masih bebas.
