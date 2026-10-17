@@ -165,8 +165,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phone{position:relative}
 .homebtn{position:absolute;top:16px;left:16px;width:46px;height:46px;padding:0;border:0;background:none;cursor:pointer;z-index:5;-webkit-tap-highlight-color:transparent;transition:transform .1s}
 .homebtn:active{transform:translate(2px,2px)}
-.homebtn svg,.hp-logo{display:block;width:100%;height:100%;overflow:visible}
-.homebtn:focus-visible{border-radius:12px;outline:3px solid var(--accent);outline-offset:2px}
+.homebtn svg,.homebtn:focus-visible{border-radius:12px;outline:3px solid var(--accent);outline-offset:2px}
 /* foto profil: tidak ikut ter-blok biru, tidak bisa di-drag, dan tanpa menu tahan-lama saat diketuk */
 .phone .ava{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;-webkit-tap-highlight-color:transparent;pointer-events:none}
 .phone .ava::selection,.phone .ava::-moz-selection{background:transparent}
@@ -177,8 +176,6 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .hp{--navy:#1f2255;--yel:#ffd23f;--red:#ff5a43;--cream:#fffbe8;--mut:#4a4d7a;position:relative;width:100%;max-width:520px;background:var(--yel);color:var(--navy);border:3px solid var(--navy);border-radius:26px;box-shadow:8px 8px 0 var(--navy);padding:28px 24px 26px;font-family:"Plus Jakarta Sans",system-ui,sans-serif;overflow:hidden}
 .hp *{box-sizing:border-box}
 .hp-x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:3px solid var(--navy);background:var(--red);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:3px 3px 0 var(--navy)}
-.hp-brand{display:flex;align-items:center;gap:10px;font-family:Bungee,sans-serif;font-size:1.05rem;margin:0 0 14px}
-.hp-logo{width:44px;height:44px;flex:none}
 .hp-h{font-family:Bungee,sans-serif;font-weight:400;font-size:clamp(1.55rem,6.5vw,2.1rem);line-height:1.08;text-transform:uppercase;margin:0 0 12px;max-width:340px}
 .hp-h span{color:var(--red);-webkit-text-stroke:0}
 .hp-p{font-weight:600;font-size:.95rem;margin:0 0 18px;max-width:330px}

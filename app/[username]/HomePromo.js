@@ -46,7 +46,6 @@ export default function HomePromo({ pageUsername, pageName }) {
         <div className="hp-ov" role="dialog" aria-modal="true" aria-labelledby="hp-h" onClick={() => setOpen(false)}>
           <div className="hp" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="hp-x" onClick={() => setOpen(false)} aria-label="Tutup"><NamedIcon name="close" size={16} /></button>
-            <div className="hp-brand"><Logo className="hp-logo" />ISENGIN.SITE</div>
             <h2 id="hp-h" className="hp-h">Satu link untuk <span>semua kontenmu.</span></h2>
             <p className="hp-p">Gabung dengan {pageName || pageUsername}. Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman.</p>
 
