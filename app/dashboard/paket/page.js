@@ -12,7 +12,7 @@ const ROWS = [
   ['Tanpa tulisan “Dibuat di isengin.site”', 'Tidak', 'Ya'],
   ['Latar belakang gambar', 'Tidak', 'Ya'],
   ['Warna kustom', 'Tidak', 'Ya'],
-  ['Tema Neo dan Neon', 'Tidak', 'Ya'],
+  ['Tema selain Kobalt, Permen, Hutan', 'Tidak', 'Ya'],
   ['Pilihan font', '2 font', '5 font'],
   ['Pilihan gaya tombol', '2 gaya', '5 gaya'],
   ['Gambar di link', '3 gambar', 'Tanpa batas'],
