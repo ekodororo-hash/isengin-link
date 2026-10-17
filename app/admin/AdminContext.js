@@ -4,7 +4,7 @@ import Shell from '../Shell';
 import Loader from '../Loader';
 const Ctx = createContext(null);
 export const useAdmin = () => useContext(Ctx);
-const MENU = [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna']];
+const menu = (n) => [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna'], ['/admin/centang', n ? `Centang (${n})` : 'Centang'], ['/admin/referral', 'Referral']];
 const J = { 'Content-Type': 'application/json' };
 export function AdminProvider({ children }) {
   const [d, setD] = useState(undefined);
@@ -59,7 +59,7 @@ export function AdminProvider({ children }) {
   );
   return (
     <Ctx.Provider value={{ d, tog, verify, pro, del, decide }}>
-      <Shell title="Admin" menu={MENU} out={out}>{children}</Shell>
+      <Shell title="Admin" menu={menu((d.requests || []).length)} out={out}>{children}</Shell>
     </Ctx.Provider>
   );
 }

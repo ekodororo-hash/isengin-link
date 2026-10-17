@@ -330,3 +330,21 @@ td .vb{vertical-align:-.2em;margin-left:6px;color:var(--red)}
 .px-chk{list-style:none;margin:8px 0;padding:0}
 .px-chk li{font-weight:700;font-size:.9rem;margin:4px 0}
 .px-chk li.no{color:var(--mut)}
+
+/* admin */
+.adm-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.adm-bar input{flex:1 1 220px;min-width:0;width:auto}
+.adm-chips{display:flex;gap:8px;flex-wrap:wrap}
+.adm-chip{font:inherit;font-weight:800;font-size:.82rem;border:2px solid var(--navy);border-radius:999px;padding:5px 13px;background:#fff;color:var(--navy);cursor:pointer}
+.adm-chip[aria-pressed="true"]{background:var(--navy);color:#fff}
+.adm-chip:focus-visible{outline:3px dashed var(--navy);outline-offset:2px}
+.adm-sm{display:block;font-size:.8rem;font-weight:600;color:var(--mut)}
+.adm-grp .adm-sm{display:inline}
+.adm-sub-row td{background:#fff}
+.adm-grp{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:6px 0}
+.adm-grp>b{min-width:84px;font-size:.85rem}
+.adm-h2{font-family:Bungee,sans-serif;font-weight:400;font-size:1.05rem;text-transform:uppercase;margin:26px 0 12px}
+.adm-req{margin-bottom:16px}
+.adm-note{margin:10px 0 14px;padding:10px 12px;border-left:4px solid var(--navy);background:#fff;font-weight:600;white-space:pre-wrap;word-break:break-word}
+.adm-empty{margin:0;font-weight:600;color:var(--mut)}
+a.px-stat{display:block;text-decoration:none;color:inherit}

@@ -19,8 +19,8 @@ export async function POST(req) {
 }
 export async function GET() {
   if (!(await isAdmin())) return no();
-  const users = await sql`select u.id,u.username,u.active,u.verified,(u.plan_until > now()) as pro,u.plan_until,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`
-    .catch((e) => { console.error('Kolom verified belum ada (jalankan schema-update.sql):', e.message); return sql`select u.id,u.username,u.active,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`; });
+  const users = await sql`select u.id,u.username,u.display_name,u.created_at,u.active,u.verified,(u.plan_until > now()) as pro,u.plan_until,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`
+    .catch((e) => { console.error('Kolom verified belum ada (jalankan schema-update.sql):', e.message); return sql`select u.id,u.username,u.display_name,u.created_at,u.active,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`; });
   const requests = await sql`select r.user_id as id, u.username, u.display_name, r.note, r.created_at, u.views,
       (select count(*)::int from links l where l.user_id=u.id and l.hidden is not true and coalesce(l.kind,'link')='link') as links
     from verify_requests r join users u on u.id=r.user_id where r.status='pending' order by r.created_at`
