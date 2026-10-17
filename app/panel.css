@@ -403,3 +403,8 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 /* Pratinjau: label kecil di pojok kanan atas, sama seperti halaman publik */
 .px-ph .l{position:relative}
 .px-ph .l .pbd{position:absolute;top:-6px;right:10px;font-size:.5rem;padding:1px 6px;line-height:1.4;box-shadow:0 0 0 2px var(--pbg)}
+
+/* Pratinjau: link berharga juga rata tengah */
+.px-ph .l.cat{justify-content:center}
+.px-ph .l.cat>span:first-of-type{text-align:center;flex:1}
+.px-ph .pp{justify-content:center}

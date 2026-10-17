@@ -144,3 +144,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .plink.has-ind .pt{padding:0 40px}
 .plink .pstar{color:var(--accent)}
 .plink .p18{font-size:.62rem;font-weight:800;letter-spacing:.03em;border:1.5px solid currentColor;border-radius:99px;padding:0 6px;line-height:1.5}
+
+/* Link berharga juga rata tengah, sama seperti link biasa */
+.plink.cat .pt{text-align:center}
+.plink .pp{justify-content:center}
