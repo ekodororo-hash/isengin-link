@@ -70,10 +70,6 @@ export function DashProvider({ children }) {
     [a[i], a[j]] = [a[j], a[i]];
     set('links', a);
   };
-  const discard = () => {
-    if (!window.confirm('Buang semua perubahan yang belum disimpan?')) return;
-    setM(saved); setMsg('');
-  };
   async function save() {
     if (busy) return;
     setBusy(true); setMsg('');
@@ -126,13 +122,6 @@ export function DashProvider({ children }) {
     <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
       <Shell title="isengin.site" menu={MENU} out={out} reload>
         {children}
-        {dirty && (
-          <div className="px-dirty" role="status">
-            <span>Ada perubahan yang belum disimpan</span>
-            <button className="px-btn g" onClick={discard} disabled={busy}>Batalkan</button>
-            <button className="px-btn" onClick={save} disabled={busy} aria-busy={busy}>{busy ? 'Menyimpan…' : 'Simpan'}</button>
-          </div>
-        )}
       </Shell>
     </Ctx.Provider>
   );
