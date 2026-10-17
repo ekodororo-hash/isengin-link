@@ -1,8 +1,12 @@
 'use client';
+import '../landing.css';
 import '../auth.css';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { LinkIcon } from '../icons';
+import { LinkIcon, NamedIcon } from '../icons';
+import { themeStyle } from '@/lib/themes';
+
+const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/rani'], ['Video terbaru di YouTube', 'https://youtube.com/@rani'], ['Kirim email', 'mailto:rani@email.com']];
 
 export default function Daftar() {
   const [username, setU] = useState('');
@@ -11,6 +15,7 @@ export default function Daftar() {
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState('');
+  const nm = username || 'rani';
   // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
   useEffect(() => {
     try {
@@ -37,12 +42,23 @@ export default function Daftar() {
     <div className="au-wrap">
       <aside className="au-side">
         <Link className="au-logo" href="/">ISENGIN.SITE</Link>
-        <div className="au-hero">
-          <h2 className="au-hl">Satu link untuk semua kontenmu.</h2>
-          <div className="au-cards" aria-hidden="true">
-            <div className="au-bub"><LinkIcon url="https://wa.me/6281234567890" size={20} />Pesan lewat WhatsApp</div>
-            <div className="au-bub"><LinkIcon url="https://tokopedia.com/rani" size={20} />Preset Lightroom (toko)</div>
-            <div className="au-bub"><LinkIcon url="https://youtube.com/@rani" size={20} />Video terbaru di YouTube</div>
+        <div className="au-demo" aria-hidden="true">
+          <div className="lp-iph">
+            <div className="lp-phone" data-t="neo" style={themeStyle('neo')}>
+              <div className="lp-isl" />
+              <div className="lp-url">isengin.site/{nm}</div>
+              <div className="lp-ava">{nm[0].toUpperCase()}</div>
+              <h2 className="lp-name">{nm}</h2>
+              <p className="lp-bio">Fotografer lepas. Pesan sesi foto atau lihat karya terbaru di bawah.</p>
+              {LINKS.map(([l, u]) => (
+                <div key={l} className="lp-link">
+                  <LinkIcon url={u} />
+                  <span className="lp-lt">{l}</span>
+                  <span className="lp-dots"><NamedIcon name="dots" size={18} /></span>
+                </div>
+              ))}
+              <div className="lp-foot">Dibuat di isengin.site</div>
+            </div>
           </div>
         </div>
         <p className="au-tag">Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
