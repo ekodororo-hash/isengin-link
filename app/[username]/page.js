@@ -64,6 +64,7 @@ export default async function Profile({ params, searchParams }) {
   // Fitur Pro (tema Neo/Neon, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
   const eff = effectiveLook({ theme: u.theme, font_key: cleanFont(look.font_key), btn_style: cleanBtn(look.btn_style), colors: extra.colors, bg: more.bg }, pro);
   return (
+    <div className="stage">
     <div className="phone" data-t={eff.theme} data-b={eff.btn_style} data-f={eff.font_key} style={{ ...themeStyle(eff.theme, eff.colors), ...bgStyle(eff.bg, eff.theme, eff.colors), '--pfont': fontCss(eff.font_key) }}>
       <main className="pub">
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
@@ -103,6 +104,7 @@ export default async function Profile({ params, searchParams }) {
           <Report username={u.username} inline /> · <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
         </div>
       </main>
+    </div>
     </div>
   );
 }

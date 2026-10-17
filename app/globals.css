@@ -126,3 +126,10 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .rep-act button{font:inherit;font-weight:700;border-radius:999px;padding:8px 16px;cursor:pointer;border:2px solid currentColor;background:transparent;color:inherit}
 .rep-act button[type="submit"]{background:var(--accent);border-color:var(--accent);color:var(--pbg)}
 .rep-act button:disabled{opacity:.6;cursor:default}
+
+/* Desktop: halaman publik tampil sebagai kolom di tengah ala Linktree, bukan selebar layar */
+.stage{min-height:100vh;background:#0d0f0e}
+@media (min-width:768px){
+  .stage{display:flex;justify-content:center;background:#0d0f0e}
+  .stage .phone{width:100%;max-width:580px;padding-top:56px;padding-bottom:56px;box-shadow:0 0 0 1px rgba(255,255,255,.06),0 20px 60px rgba(0,0,0,.5)}
+}
