@@ -5,8 +5,9 @@ export async function generateMetadata({ params }) {
   return { title: `${params.username} – isengin.site` };
 }
 export default async function Profile({ params }) {
-  const u = (await sql`select id,username,display_name,bio,theme,photo_url from users where username=${params.username.toLowerCase()}`)[0];
-  if (!u) notFound();
+  const u = (await sql`select id,username,display_name,bio,theme,photo_url,active from users where username=${params.username.toLowerCase()}`)[0];
+  if (!u || !u.active) notFound();
+  await sql`update users set views=views+1 where id=${u.id}`;
   const links = await sql`select id,title from links where user_id=${u.id} order by position,id`;
   const name = u.display_name || u.username;
   return (

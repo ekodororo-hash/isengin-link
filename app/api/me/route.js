@@ -3,7 +3,7 @@ import { getUserId } from '@/lib/auth';
 const THEMES = ['kobalt', 'permen', 'hutan'];
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
-  const u = (await sql`select username,display_name,bio,theme,photo_url from users where id=${id}`)[0];
+  const u = (await sql`select username,display_name,bio,theme,photo_url,views from users where id=${id}`)[0];
   const links = await sql`select id,title,url,clicks from links where user_id=${id} order by position,id`;
   return { ...u, links };
 }
