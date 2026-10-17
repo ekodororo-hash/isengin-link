@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
 import Loader from '../Loader';
@@ -50,6 +50,18 @@ export function DashProvider({ children }) {
     fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); } });
   }, []);
   useEffect(() => { setMsg(''); }, [path]);
+  // Pindah halaman tanpa memuat ulang tab: data dipakai bersama, jadi perubahan yang belum disimpan ikut terbawa.
+  // Saat kembali ke Ringkasan, hanya angka statistik yang disegarkan; isian yang sedang diubah tidak ditimpa.
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    if (path !== '/dashboard') return;
+    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (!d) return;
+      const fresh = (x) => ({ ...x, views: d.views, daily: d.daily, sources: d.sources, links: x.links.map((l) => { const f = d.links.find((z) => l.id && z.id === l.id); return f ? { ...l, clicks: f.clicks } : l; }) });
+      setM((x) => (x ? fresh(x) : x)); setSaved((x) => (x ? fresh(x) : x));
+    }).catch(() => {});
+  }, [path]);
   if (!m) return <Loader />;
   const set = (k, v) => { setMsg(''); setM({ ...m, [k]: v }); };
   // Memilih tema berarti mulai dari warna tema itu, jadi warna kustom dikosongkan.
@@ -121,7 +133,7 @@ export function DashProvider({ children }) {
   }
   return (
     <Ctx.Provider value={{ m, set, setTheme, upThumb, setL, addLink, delLink, move, reorder, save, up, msg, busy, dirty }}>
-      <Shell title="isengin.site" menu={MENU} out={out} reload>
+      <Shell title="isengin.site" menu={MENU} out={out}>
         {children}
       </Shell>
     </Ctx.Provider>

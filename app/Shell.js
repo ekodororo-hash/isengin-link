@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 export default function Shell({ title, menu, out, reload = false, children }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
-  // reload: menu berupa tautan biasa, jadi tiap pindah menu memuat ulang halaman (keadaan halaman lama tidak terbawa).
+  // reload: menu berupa tautan biasa yang memuat ulang halaman (dipakai admin); tanpa itu, pindah menu tidak memuat ulang tab.
   const Item = reload ? 'a' : Link;
   useEffect(() => { setOpen(false); }, [path]);
   useEffect(() => {
