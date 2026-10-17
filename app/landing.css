@@ -39,3 +39,16 @@ body:has(.lp-wrap){background:#ffd23f}
 .lp-note{margin:0 0 12px;font-size:.9rem;font-weight:600}
 .lp-legal{text-align:center;font-size:.78rem;margin-top:14px;opacity:.75}
 .lp-legal a{color:inherit}
+
+/* halaman legal (privasi & syarat) - pakai palet yang sama dengan landing */
+body:has(.legal-wrap){background:#ffd23f}
+.legal-wrap{--navy:#1f2255;--red:#ff5a43;--cream:#fffbe8;max-width:720px;margin:0 auto;padding:48px 20px 64px;color:var(--navy);font-family:"Plus Jakarta Sans",system-ui,sans-serif}
+.legal-date{font-weight:700;font-size:.85rem;opacity:.65;margin:0 0 8px}
+.legal-wrap h1{font-family:Bungee,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(1.8rem,6vw,2.6rem);line-height:1.1;margin:0 0 16px}
+.legal-lead{font-weight:600;max-width:60ch;margin:0 0 28px}
+.legal-box{background:#fff;border:3px solid var(--navy);border-radius:18px;box-shadow:8px 8px 0 var(--navy);padding:26px 24px;display:grid;gap:22px}
+.legal-box h2{font-size:1.05rem;margin:0 0 8px;font-weight:800}
+.legal-box p{margin:0 0 8px;color:#333;line-height:1.55}
+.legal-foot{font-size:.8rem;margin-top:22px;font-weight:600}
+.legal-foot a{color:var(--navy)}
+@media(max-width:560px){.legal-wrap{padding:32px 16px 48px}.legal-box{padding:20px 16px;box-shadow:6px 6px 0 var(--navy)}}

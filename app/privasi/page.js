@@ -1,3 +1,5 @@
+import '../landing.css';
+
 export const metadata = {
   title: 'Kebijakan Privasi – isengin.site',
   description: 'Bagaimana isengin.site mengumpulkan, memakai, dan melindungi data pengguna.',
@@ -69,24 +71,24 @@ const SECTIONS = [
 
 export default function Privasi() {
   return (
-    <main className="page">
-      <p className="small" style={{ margin: '0 0 8px' }}>Berlaku mulai Oktober 2026</p>
-      <h1 style={{ fontSize: 'clamp(1.8rem,6vw,2.6rem)' }}>Kebijakan Privasi</h1>
-      <p className="lead">
+    <main className="legal-wrap">
+      <p className="legal-date">Berlaku mulai Oktober 2026</p>
+      <h1>Kebijakan Privasi</h1>
+      <p className="legal-lead">
         Privasimu penting bagi kami. Halaman ini menjelaskan data apa saja yang isengin.site kumpulkan, untuk apa data itu dipakai, dan hak yang kamu miliki atas datamu.
       </p>
-      <div className="box" style={{ gap: 22 }}>
+      <div className="legal-box">
         {SECTIONS.map((s) => (
           <section key={s.h}>
-            <h2 style={{ fontSize: '1.05rem', margin: '0 0 8px' }}>{s.h}</h2>
+            <h2>{s.h}</h2>
             {s.p.map((line, i) => (
-              <p key={i} style={{ margin: '0 0 8px', color: '#333' }}>{line}</p>
+              <p key={i}>{line}</p>
             ))}
           </section>
         ))}
       </div>
-      <p className="small" style={{ marginTop: 20 }}>
-        Lihat juga <a href="/syarat" style={{ color: 'inherit' }}>Syarat Layanan</a> kami. · <a href="/" style={{ color: 'inherit' }}>Kembali ke beranda</a>
+      <p className="legal-foot">
+        Lihat juga <a href="/syarat">Syarat Layanan</a> kami. · <a href="/">Kembali ke beranda</a>
       </p>
     </main>
   );

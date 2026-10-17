@@ -1,3 +1,5 @@
+import '../landing.css';
+
 export const metadata = {
   title: 'Syarat Layanan – isengin.site',
   description: 'Syarat dan ketentuan penggunaan layanan isengin.site.',
@@ -85,24 +87,24 @@ const SECTIONS = [
 
 export default function Syarat() {
   return (
-    <main className="page">
-      <p className="small" style={{ margin: '0 0 8px' }}>Berlaku mulai Oktober 2026</p>
-      <h1 style={{ fontSize: 'clamp(1.8rem,6vw,2.6rem)' }}>Syarat Layanan</h1>
-      <p className="lead">
+    <main className="legal-wrap">
+      <p className="legal-date">Berlaku mulai Oktober 2026</p>
+      <h1>Syarat Layanan</h1>
+      <p className="legal-lead">
         Dengan menggunakan isengin.site, kamu menyetujui syarat dan ketentuan berikut. Mohon dibaca dengan saksama.
       </p>
-      <div className="box" style={{ gap: 22 }}>
+      <div className="legal-box">
         {SECTIONS.map((s) => (
           <section key={s.h}>
-            <h2 style={{ fontSize: '1.05rem', margin: '0 0 8px' }}>{s.h}</h2>
+            <h2>{s.h}</h2>
             {s.p.map((line, i) => (
-              <p key={i} style={{ margin: '0 0 8px', color: '#333' }}>{line}</p>
+              <p key={i}>{line}</p>
             ))}
           </section>
         ))}
       </div>
-      <p className="small" style={{ marginTop: 20 }}>
-        Lihat juga <a href="/privasi" style={{ color: 'inherit' }}>Kebijakan Privasi</a> kami. · <a href="/" style={{ color: 'inherit' }}>Kembali ke beranda</a>
+      <p className="legal-foot">
+        Lihat juga <a href="/privasi">Kebijakan Privasi</a> kami. · <a href="/">Kembali ke beranda</a>
       </p>
     </main>
   );
