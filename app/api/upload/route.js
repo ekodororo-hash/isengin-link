@@ -1,10 +1,15 @@
 import { put } from '@vercel/blob';
 import { getUserId } from '@/lib/auth';
+import { sql } from '@/lib/db';
 export async function POST(req) {
   const id = await getUserId();
   if (!id) return Response.json({ error: 'Belum masuk.' }, { status: 401 });
   const form = await req.formData();
   const f = form.get('file');
+  if (form.get('kind') === 'bg') {
+    const p = (await sql`select (plan_until > now()) as pro from users where id=${id}`.catch(() => []))[0];
+    if (p?.pro !== true) return Response.json({ error: 'Latar gambar khusus paket Pro. Lihat halaman Paket.' }, { status: 403 });
+  }
   const dir = { thumb: 'thumbs', bg: 'backgrounds' }[form.get('kind')] || 'avatars';
   if (!f || !f.type?.startsWith('image/') || f.size > 2000000)
     return Response.json({ error: 'Pilih gambar, maksimal 2 MB.' }, { status: 400 });

@@ -10,6 +10,7 @@ import { cleanBtn, cleanFont, fontCss } from '@/lib/style';
 import { NamedIcon, LinkIcon } from '../icons';
 import Verified from '../Verified';
 import Report from './Report';
+import { effectiveLook, thumbOk } from '@/lib/pro';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 const find = async (name) =>
@@ -59,8 +60,10 @@ export default async function Profile({ params, searchParams }) {
   const pro = (await sql`select (plan_until > now()) as pro from users where id=${u.id}`.catch(() => []))[0]?.pro === true;
   const look = (await sql`select btn_style,font_key from users where id=${u.id}`.catch(() => []))[0] || {};
   const name = u.display_name || u.username;
+  // Fitur Pro (tema Neo/Neon, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
+  const eff = effectiveLook({ theme: u.theme, font_key: cleanFont(look.font_key), btn_style: cleanBtn(look.btn_style), colors: extra.colors, bg: more.bg }, pro);
   return (
-    <div className="phone" data-t={u.theme} data-b={cleanBtn(look.btn_style)} data-f={cleanFont(look.font_key)} style={{ ...themeStyle(u.theme, extra.colors), ...bgStyle(more.bg, u.theme, extra.colors), '--pfont': fontCss(cleanFont(look.font_key)) }}>
+    <div className="phone" data-t={eff.theme} data-b={eff.btn_style} data-f={eff.font_key} style={{ ...themeStyle(eff.theme, eff.colors), ...bgStyle(eff.bg, eff.theme, eff.colors), '--pfont': fontCss(eff.font_key) }}>
       <main className="pub">
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
@@ -70,13 +73,14 @@ export default async function Profile({ params, searchParams }) {
             {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer"><NamedIcon name={x.key} /></a>)}
           </div>
         )}
-        {links.map((l) => {
+        {links.map((l, i) => {
           if (l.kind === 'header') return <h2 key={l.id} className="phead"><span>{l.title}</span></h2>;
           const price = fmtPrice(l.price), old = fmtPrice(l.old_price), lab = cleanLabel(l.label);
+          const th = thumbOk(links, i, pro) ? l.thumb : '';
           const cat = !!(price || old || lab);
           return (
-            <a key={l.id} className={'plink' + (l.thumb ? ' has-th' : '') + (cat ? ' cat' : '') + (lab === 'habis' ? ' soldout' : '')} href={`/go/${l.id}?s=${src}`}>
-              {l.thumb ? <img className="pth" src={l.thumb} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={l.url} />}
+            <a key={l.id} className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (lab === 'habis' ? ' soldout' : '')} href={`/go/${l.id}?s=${src}`}>
+              {th ? <img className="pth" src={th} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={l.url} />}
               <span className="pt">
                 {l.title}
                 {(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}

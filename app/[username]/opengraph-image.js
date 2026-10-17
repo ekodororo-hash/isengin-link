@@ -1,6 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { sql } from '@/lib/db';
 import { themeWith, bgStyle } from '@/lib/themes';
+import { effectiveLook } from '@/lib/pro';
 export const alt = 'Halaman link isengin.site';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -19,10 +20,13 @@ async function photoOk(url) {
 export default async function Image({ params }) {
   const u = (await sql`select id,username,display_name,bio,theme,photo_url,active from users where username=${String(params.username).toLowerCase()}`)[0];
   const extra = u ? (await sql`select colors from users where id=${u.id}`.catch(() => []))[0] : null;
-  const t = themeWith(u?.theme, extra?.colors);
   const more = u ? (await sql`select bg from users where id=${u.id}`.catch(() => []))[0] : null;
+  const pro = u ? (await sql`select (plan_until > now()) as pro from users where id=${u.id}`.catch(() => []))[0]?.pro === true : false;
+  // Tema/warna/latar khusus Pro hanya dipakai bila paketnya aktif, sama seperti halaman publiknya.
+  const eff = effectiveLook({ theme: u?.theme, colors: extra?.colors, bg: more?.bg }, pro);
+  const t = themeWith(eff.theme, eff.colors);
   // Gradasi ikut tampil di preview; gambar latar tidak (cukup warna tema).
-  const pageBg = (u && u.active !== false && bgStyle(more?.bg, u.theme, extra?.colors).background) || t.bg;
+  const pageBg = (u && u.active !== false && bgStyle(eff.bg, eff.theme, eff.colors).background) || t.bg;
   const name = u && u.active !== false ? u.display_name || u.username : 'isengin.site';
   const bio = u && u.active !== false && u.bio ? (u.bio.length > 110 ? u.bio.slice(0, 107) + '…' : u.bio) : 'Satu link untuk semua kontenmu.';
   const showPhoto = u && u.active !== false && (await photoOk(u.photo_url));

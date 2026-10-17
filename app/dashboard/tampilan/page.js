@@ -1,11 +1,19 @@
 'use client';
+import { useState } from 'react';
+import Link from 'next/link';
 import { useDash } from '../DashContext';
 import { Phone, SaveBar } from '../parts';
 import { BUTTON_STYLES, FONTS } from '@/lib/style';
+import { PRO_THEMES, PRO_FONTS, PRO_BTNS, proUses } from '@/lib/pro';
 import { THEMES, ANGLES, themeWith, cleanColors, contrast } from '@/lib/themes';
 const COLORS = [['bg', 'Latar'], ['ink', 'Teks'], ['btn', 'Tombol link'], ['accent', 'Aksen']];
 export default function Tampilan() {
   const { m, set, setTheme, upBg } = useDash();
+  const pro = m.pro === true;
+  // Pilihan Pro yang diklik pengguna gratis: tampilkan penjelasan, jangan diterapkan.
+  const [ask, setAsk] = useState('');
+  const pick = (locked, what, fn) => () => { if (locked) setAsk(what); else { setAsk(''); fn(); } };
+  const used = pro ? [] : proUses(m);
   const t = themeWith(m.theme, m.colors);
   const custom = cleanColors(m.colors);
   const bg = m.bg || {};
@@ -25,21 +33,26 @@ export default function Tampilan() {
     <h1>Tampilan</h1><p className="px-sub">Pilih tema, atur warna sendiri kalau mau, pratinjau langsung di samping.</p>
     <div className="px-two">
       <div className="px-card">
+        {ask && <p className="px-warn" role="status">{ask} khusus paket Pro. <Link href="/dashboard/paket">Lihat paket Pro</Link></p>}
+        {used.length > 0 && <p className="px-warn" role="status">Khusus Pro dan tidak tampil di halamanmu sekarang: {used.join(', ')}. <Link href="/dashboard/paket">Aktifkan Pro</Link> untuk menampilkannya lagi.</p>}
         <section className="px-sec">
           <h2>Tema</h2>
           <div className="px-themes">
-            {THEMES.map((x) => (
-              <button key={x.key} aria-pressed={m.theme === x.key} onClick={() => setTheme(x.key)}>
-                <i className="px-sw" style={{ background: x.bg, boxShadow: `inset -7px 0 0 ${x.accent}` }} aria-hidden="true" />{x.label}
-              </button>
-            ))}
+            {THEMES.map((x) => {
+              const L = !pro && PRO_THEMES.includes(x.key);
+              return (
+                <button key={x.key} aria-pressed={m.theme === x.key} aria-disabled={L || undefined} onClick={pick(L, `Tema ${x.label}`, () => setTheme(x.key))}>
+                  <i className="px-sw" style={{ background: x.bg, boxShadow: `inset -7px 0 0 ${x.accent}` }} aria-hidden="true" />{x.label}{L && <em className="px-pro">Pro</em>}
+                </button>
+              );
+            })}
           </div>
         </section>
         <section className="px-sec">
           <h2>Latar belakang</h2>
           <div className="px-themes" role="group" aria-label="Jenis latar belakang">
             {[['solid', 'Warna tema'], ['gradient', 'Gradasi'], ['image', 'Gambar']].map(([k, lab]) => (
-              <button key={k} aria-pressed={mode === k} onClick={() => setMode(k)}>{lab}</button>
+              <button key={k} aria-pressed={mode === k} aria-disabled={(k === 'image' && !pro) || undefined} onClick={pick(k === 'image' && !pro, 'Latar gambar', () => setMode(k))}>{lab}{k === 'image' && !pro && <em className="px-pro">Pro</em>}</button>
             ))}
           </div>
           {mode === 'gradient' && (<>
@@ -72,30 +85,36 @@ export default function Tampilan() {
         <section className="px-sec">
           <h2>Gaya tombol</h2>
           <div className="px-themes" role="group" aria-label="Gaya tombol">
-            {BUTTON_STYLES.map((x) => (
-              <button key={x.key} aria-pressed={(m.btn_style || 'bulat') === x.key} onClick={() => set('btn_style', x.key)}>
-                <i className={'px-bs ' + x.key} aria-hidden="true" />{x.label}
-              </button>
-            ))}
+            {BUTTON_STYLES.map((x) => {
+              const L = !pro && PRO_BTNS.includes(x.key);
+              return (
+                <button key={x.key} aria-pressed={(m.btn_style || 'bulat') === x.key} aria-disabled={L || undefined} onClick={pick(L, `Gaya tombol ${x.label}`, () => set('btn_style', x.key))}>
+                  <i className={'px-bs ' + x.key} aria-hidden="true" />{x.label}{L && <em className="px-pro">Pro</em>}
+                </button>
+              );
+            })}
           </div>
         </section>
         <section className="px-sec">
           <h2>Font</h2>
           <div className="px-themes" role="group" aria-label="Font">
-            {FONTS.map((x) => (
-              <button key={x.key} aria-pressed={(m.font_key || 'standar') === x.key} onClick={() => set('font_key', x.key)}>
-                <span className="px-fs" style={{ fontFamily: x.css }} aria-hidden="true">Aa</span>{x.label}
-              </button>
-            ))}
+            {FONTS.map((x) => {
+              const L = !pro && PRO_FONTS.includes(x.key);
+              return (
+                <button key={x.key} aria-pressed={(m.font_key || 'standar') === x.key} aria-disabled={L || undefined} onClick={pick(L, `Font ${x.label}`, () => set('font_key', x.key))}>
+                  <span className="px-fs" style={{ fontFamily: x.css }} aria-hidden="true">Aa</span>{x.label}{L && <em className="px-pro">Pro</em>}
+                </button>
+              );
+            })}
           </div>
         </section>
         <section className="px-sec">
-          <h2>Warna kustom</h2>
-          <p className="px-hint">Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.</p>
+          <h2>Warna kustom{!pro && <em className="px-pro">Pro</em>}</h2>
+          <p className="px-hint">{pro ? 'Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.' : <>Warna kustom khusus paket Pro. <Link href="/dashboard/paket">Lihat paket Pro</Link></>}</p>
           <div className="px-colors">
             {COLORS.map(([k, lab]) => (
               <label key={k} className="px-clr">
-                <input type="color" value={t[k]} onChange={(e) => set('colors', { ...custom, [k]: e.target.value })} />
+                <input type="color" value={t[k]} disabled={!pro} onChange={(e) => set('colors', { ...custom, [k]: e.target.value })} />
                 <span><b>{lab}</b><small>{String(t[k]).toUpperCase()}</small></span>
               </label>
             ))}

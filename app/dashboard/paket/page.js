@@ -10,6 +10,10 @@ const ROWS = [
   ['Statistik harian per link', '7 hari', '30 hari'],
   ['Domain kustom (mis. link.tokokamu.com)', 'Tidak', 'Ya'],
   ['Tanpa tulisan “Dibuat di isengin.site”', 'Tidak', 'Ya'],
+  ['Latar belakang gambar dan warna kustom', 'Tidak', 'Ya'],
+  ['Tema Neo dan Neon', 'Tidak', 'Ya'],
+  ['Font dan gaya tombol lengkap', 'Standar, Jakarta; Bulat, Pil', 'Semua'],
+  ['Gambar di link', '3 gambar', 'Tanpa batas'],
 ];
 
 export default function Paket() {

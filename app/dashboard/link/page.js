@@ -1,8 +1,10 @@
 'use client';
 import { useRef, useState } from 'react';
+import Link from 'next/link';
 import { useDash } from '../DashContext';
 import { SaveBar } from '../parts';
 import Importer from '../Importer';
+import { FREE_THUMBS } from '@/lib/pro';
 import { LinkIcon } from '../../icons';
 import { LABELS, fmtPrice, labelText } from '@/lib/catalog';
 
@@ -18,6 +20,7 @@ const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 1
 export default function LinkPage() {
   const { m, setL, addLink, addHeader, delLink, move, reorder, upThumb } = useDash();
   const n = m.links.length;
+  const thumbs = m.links.filter((l) => l.kind !== 'header' && l.thumb).length;
   // Link yang sedang diedit (dikunci lewat id/_k karena urutan bisa berubah). Link baru kosong otomatis terbuka.
   const [open, setOpen] = useState({});
   const keyOf = (l, i) => l.id || l._k || 'n' + i;
@@ -59,6 +62,7 @@ export default function LinkPage() {
     <h1>Link</h1>
     <p className="px-sub">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Pembatas adalah judul seksi tanpa alamat untuk mengelompokkan link (mis. “Produk”, “Sosial media”). Link atau pembatas yang disembunyikan tidak tampil, dan link tersembunyi tidak dihitung kliknya. Setelah mengubah, klik Simpan.</p>
     <Importer />
+    {!m.pro && <p className="px-hint" role="status">Paket gratis: {Math.min(thumbs, FREE_THUMBS)} dari {FREE_THUMBS} gambar link terpakai.{thumbs > FREE_THUMBS && ` Hanya ${FREE_THUMBS} gambar pertama yang tampil di halamanmu.`} <Link href="/dashboard/paket">Pro: tanpa batas</Link></p>}
     <div className="px-card">
       {n === 0 && <p className="px-empty">Belum ada link. Klik “Tambah link” untuk mulai.</p>}
       <div ref={listRef}>
@@ -127,9 +131,13 @@ export default function LinkPage() {
                     </div>
                   </fieldset>
                   <div className="px-lk-t">
-                    <label className="px-btn g sm px-fl">{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
-                      <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />
-                    </label>
+                    {!m.pro && !l.thumb && thumbs >= FREE_THUMBS
+                      ? <Link className="px-btn g sm" href="/dashboard/paket">Tambah gambar · Pro</Link>
+                      : (
+                        <label className="px-btn g sm px-fl">{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
+                          <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />
+                        </label>
+                      )}
                     {l.thumb && <button className="px-btn g sm" onClick={() => setL(i, 'thumb', '')}>Hapus gambar</button>}
                   </div>
                 </div>

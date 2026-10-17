@@ -373,3 +373,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-imp-r input{flex:1 1 220px;min-width:0;width:auto}
 .px-imp-r .px-btn{margin:0}
 .px-imp .px-err,.px-imp .px-msg{margin:10px 0 0}
+/* penanda fitur Pro */
+.px-pro{font-style:normal;font-family:Bungee,sans-serif;font-size:.62rem;line-height:1;background:var(--yel);color:var(--navy);border:2px solid var(--navy);border-radius:99px;padding:3px 7px;margin-left:6px;vertical-align:middle}
+.px-themes button[aria-disabled="true"]{opacity:.75}
+.px-sec h2 .px-pro{margin-left:10px}

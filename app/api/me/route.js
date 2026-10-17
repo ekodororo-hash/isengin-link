@@ -5,6 +5,7 @@ import { cleanSocials, parseSocials } from '@/lib/socials';
 import { cleanPrice, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont } from '@/lib/style';
 import { urlProblem, flaggedUrls } from '@/lib/safe';
+import { PRO_THEMES, PRO_FONTS, PRO_BTNS, FREE_THUMBS } from '@/lib/pro';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
@@ -90,6 +91,22 @@ export async function PUT(req) {
     c.label.push(head ? '' : cleanLabel(l.label));
     c.kind.push(head ? 'header' : 'link');
   });
+
+  // Fitur Pro: pengguna gratis tidak bisa memilih atau mengubah ke pilihan Pro. Nilai lama yang sudah tersimpan boleh tetap
+  // (tidak dihapus, hanya tidak tampil di halaman publik), jadi menyimpan halaman lain tidak gagal gara-gara itu.
+  const st = (await sql`select (plan_until > now()) as pro, theme, btn_style, font_key, colors, bg from users where id=${id}`.catch(() => []))[0];
+  if (st && st.pro !== true) {
+    const needPro = (what) => Response.json({ error: `${what} khusus paket Pro. Lihat halaman Paket.` }, { status: 403 });
+    const font = cleanFont(b.font_key), btn = cleanBtn(b.btn_style), col = cleanColors(b.colors);
+    if (PRO_THEMES.includes(theme) && theme !== st.theme) return needPro('Tema ini');
+    if (PRO_FONTS.includes(font) && font !== st.font_key) return needPro('Font ini');
+    if (PRO_BTNS.includes(btn) && btn !== st.btn_style) return needPro('Gaya tombol ini');
+    if (Object.keys(col).length && JSON.stringify(col) !== JSON.stringify(cleanColors(st.colors))) return needPro('Warna kustom');
+    if (bg.t === 'image' && bg.url !== cleanBg(st.bg).url) return needPro('Latar gambar');
+    const had = new Set((await sql`select thumb from links where user_id=${id}`.catch(() => [])).map((r) => r.thumb).filter(Boolean));
+    const all = [...old.thumb, ...fresh.thumb].filter(Boolean);
+    if (all.length > FREE_THUMBS && all.some((u) => !had.has(u))) return needPro(`Gambar link lebih dari ${FREE_THUMBS}`);
+  }
 
   // Semua perubahan dalam satu transaksi: kalau satu langkah gagal, tidak ada yang berubah (tidak ada simpan setengah jalan).
   // Urutannya penting: hapus dulu link yang dibuang, baru ubah yang lama, terakhir tambah yang baru.
