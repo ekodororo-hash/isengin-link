@@ -50,12 +50,6 @@ export function DashProvider({ children }) {
     fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); } });
   }, []);
   useEffect(() => { setMsg(''); }, [path]);
-  useEffect(() => {
-    if (!dirty) return;
-    const h = (e) => { e.preventDefault(); e.returnValue = ''; };
-    window.addEventListener('beforeunload', h);
-    return () => window.removeEventListener('beforeunload', h);
-  }, [dirty]);
   if (!m) return <Loader />;
   const set = (k, v) => { setMsg(''); setM({ ...m, [k]: v }); };
   // Memilih tema berarti mulai dari warna tema itu, jadi warna kustom dikosongkan.
