@@ -411,3 +411,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-ph .l.cat{justify-content:center}
 .px-ph .l.cat>span:first-of-type{text-align:center;flex:1}
 .px-ph .pp{justify-content:center}
+
+/* HP: hilangkan highlight biru saat tombol/toggle disentuh */
+.px-main button,.px-main a,.px-main label,.px-main summary{-webkit-tap-highlight-color:transparent}
+.px-grip,.px-ib,.px-sw2,.px-lk-r .px-th,.px-lk-no{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
