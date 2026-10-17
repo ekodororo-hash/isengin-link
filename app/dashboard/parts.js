@@ -28,9 +28,9 @@ export function Phone({ trial }) {
         const price = fmtPrice(l.price), old = fmtPrice(l.old_price);
         const th = thumbOk(vis, i, m.pro) ? l.thumb : '';
         return (
-          <div className={'l' + (price || old || l.label ? ' cat' : '') + (l.label === 'habis' ? ' soldout' : '')} key={l.id || l._k || i}>
+          <div className={'l' + (price || old || l.label ? ' cat' : '') + (l.label === 'habis' ? ' soldout' : '') + (l.featured ? ' feat' : '')} key={l.id || l._k || i}>
             {th ? <img className="t" src={th} alt="" /> : <LinkIcon url={l.url} size={16} />}
-            <span>{l.title || 'Judul link'}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}</span>
+            <span>{l.title || 'Judul link'}{l.guard && <span className="pgd">{l.guard === 'pass' ? 'Kunci' : '18+'}</span>}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}</span>
             {l.label && <span className={'pbd ' + l.label}>{labelText(l.label)}</span>}
           </div>
         );

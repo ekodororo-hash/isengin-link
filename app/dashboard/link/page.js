@@ -21,6 +21,7 @@ export default function LinkPage() {
   const { m, setL, addLink, addHeader, delLink, move, reorder, upThumb } = useDash();
   const n = m.links.length;
   const thumbs = m.links.filter((l) => l.kind !== 'header' && l.thumb).length;
+  const feats = m.links.filter((l) => l.kind !== 'header' && l.featured).length; // maksimal 2 link sorotan
   // Link yang sedang diedit (dikunci lewat id/_k karena urutan bisa berubah). Link baru kosong otomatis terbuka.
   const [open, setOpen] = useState({});
   const keyOf = (l, i) => l.id || l._k || 'n' + i;
@@ -98,7 +99,7 @@ export default function LinkPage() {
                 <span className="px-lk-no">{i + 1}</span>
                 {l.thumb ? <img className="px-th" src={l.thumb} alt="" /> : <span className="px-th e" aria-hidden="true"><LinkIcon url={l.url} size={20} /></span>}
                 <div className="px-lk-i">
-                  <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}</strong>
+                  <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}{l.featured && <span className="px-tag sor">Sorotan</span>}{l.guard && <span className="px-tag kunci">{l.guard === 'pass' ? 'Terkunci' : '18+'}</span>}</strong>
                   <span>{price ? <b className="px-pr">{price}</b> : null}{price ? ' · ' : ''}{l.url || 'Belum ada alamat'}</span>
                 </div>
                 <div className="px-lk-b">
@@ -129,6 +130,23 @@ export default function LinkPage() {
                         <button key={v || 'x'} type="button" aria-pressed={(l.label || '') === v} onClick={() => setL(i, 'label', v)}>{t}</button>
                       ))}
                     </div>
+                  </fieldset>
+                  <fieldset className="px-cat px-grd">
+                    <legend>Sorotan dan pengaman <span className="px-hint-i">opsional</span></legend>
+                    <label className="px-ck">
+                      <input type="checkbox" checked={l.featured === true} disabled={!l.featured && feats >= 2} onChange={(e) => setL(i, 'featured', e.target.checked)} />
+                      Sorot link ini (bingkai dan bintang di halamanmu){!l.featured && feats >= 2 ? ' · maksimal 2 link' : ''}
+                    </label>
+                    <div className="px-chips" role="group" aria-label={`Pengaman link ${i + 1}`}>
+                      {[['', 'Tanpa pengaman'], ['adult', 'Peringatan 18+'], ['pass', 'Sandi']].map(([v, t]) => (
+                        <button key={v || 'x'} type="button" aria-pressed={(l.guard || '') === v} onClick={() => setL(i, 'guard', v)}>{t}</button>
+                      ))}
+                    </div>
+                    {l.guard === 'pass' && (<>
+                      <input type="password" autoComplete="new-password" aria-label={`Sandi link ${i + 1}`} maxLength={64} placeholder={l.has_pass ? 'Sandi baru (kosongkan untuk tetap memakai yang lama)' : 'Sandi, 4 sampai 64 karakter'} value={l.pass || ''} onChange={(e) => setL(i, 'pass', e.target.value)} />
+                      <p className="px-hint">Alamat link tidak tampil di halaman publik. Pengunjung harus memasukkan sandi dulu. Bagikan sandinya sendiri ke orang yang boleh membuka.</p>
+                    </>)}
+                    {l.guard === 'adult' && <p className="px-hint">Pengunjung melihat peringatan konten dewasa dulu dan harus memilih “Saya 18+” untuk lanjut.</p>}
                   </fieldset>
                   <div className="px-lk-t">
                     {!m.pro && !l.thumb && thumbs >= FREE_THUMBS

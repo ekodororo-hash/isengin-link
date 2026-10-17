@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
+import Banners from './Banners';
 import Loader from '../Loader';
 import { PreCtx, fetchPre, needsPre } from '../prefetch';
 import { SOCIALS } from '@/lib/socials';
@@ -164,6 +165,7 @@ export function DashProvider({ children }) {
     <Ctx.Provider value={{ m, set, setTheme, upThumb, upBg, setL, addLink, addHeader, delLink, move, reorder, save, up, msg, busy, dirty }}>
       <PreCtx.Provider value={pre}>
         <Shell title="isengin.site" menu={MENU} out={out}>
+          <Banners />
           {children}
         </Shell>
       </PreCtx.Provider>

@@ -10,6 +10,7 @@ import { cleanBtn, cleanFont, fontCss } from '@/lib/style';
 import { NamedIcon } from '../icons';
 import Verified from '../Verified';
 import Report from './Report';
+import { cleanGuard } from '@/lib/linkguard';
 import LinkRow from './LinkRow';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 export const dynamic = 'force-dynamic';
@@ -44,7 +45,8 @@ export default async function Profile({ params, searchParams }) {
       try { await sql`update users set views=views+1 where id=${u.id}`; } catch {}
     }
   }
-  const links = await sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`
+  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true order by position,id`
+    .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch((e) => { console.error('Kolom thumb/hidden belum ada (jalankan schema-update.sql):', e.message); return sql`select id,title,url from links where user_id=${u.id} order by position,id`; });
@@ -84,7 +86,9 @@ export default async function Profile({ params, searchParams }) {
             <LinkRow
               key={l.id}
               title={l.title}
-              url={l.url}
+              url={cleanGuard(l.guard) === 'pass' ? '' : l.url}
+              feat={l.featured === true}
+              guard={cleanGuard(l.guard)}
               th={th}
               cat={cat}
               soldout={lab === 'habis'}

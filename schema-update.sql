@@ -103,3 +103,14 @@ create table if not exists reports(
   created_at timestamptz default now(),
   handled_at timestamptz);
 create index if not exists reports_open on reports(status, user_id);
+
+-- Link sorotan, pengaman link (peringatan 18+ atau sandi), pengumuman dari admin
+alter table links add column if not exists featured boolean default false;
+alter table links add column if not exists guard text default '';
+alter table links add column if not exists pass_hash text default '';
+create table if not exists announcements(
+  id serial primary key,
+  text text not null,
+  level text not null default 'info',
+  active boolean not null default true,
+  created_at timestamptz default now());

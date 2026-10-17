@@ -133,3 +133,10 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
   .stage{display:flex;justify-content:center;background:color-mix(in srgb,var(--pbg,#0d0f0e) 86%,var(--ink,#fff))}
   .stage .phone{width:100%;max-width:580px;padding-top:56px;padding-bottom:56px;box-shadow:0 0 40px color-mix(in srgb,var(--ink,#000) 14%,transparent)}
 }
+
+/* Link sorotan dan penanda pengaman link */
+.plink.feat{outline:2px solid var(--accent);outline-offset:3px;animation:feat-pulse 2.4s ease-in-out infinite}
+.plink.feat .pt::before{content:"\2605\00a0";color:var(--accent)}
+@keyframes feat-pulse{0%,100%{outline-offset:3px}50%{outline-offset:6px}}
+@media (prefers-reduced-motion:reduce){.plink.feat{animation:none}}
+.plink .pgd{display:inline-flex;align-items:center;gap:3px;margin-left:8px;padding:1px 7px;border-radius:99px;border:1.5px solid currentColor;font-size:.62rem;font-weight:800;letter-spacing:.03em;vertical-align:middle;opacity:.85}

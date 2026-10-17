@@ -6,12 +6,14 @@ import { cleanPrice, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont } from '@/lib/style';
 import { urlProblem, flaggedUrls } from '@/lib/safe';
 import { PRO_THEMES, PRO_FONTS, PRO_BTNS, FREE_THUMBS } from '@/lib/pro';
+import { cleanGuard, hashPass, PASS_MIN, PASS_MAX } from '@/lib/linkguard';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
   const [u, links, daily, sources, extra, look, more, plan] = await Promise.all([
     sql`select username,display_name,bio,theme,photo_url,views from users where id=${id}`,
-    sql`select id,title,url,clicks,thumb,hidden,price,old_price,label,kind from links where user_id=${id} order by position,id`
+    sql`select id,title,url,clicks,thumb,hidden,price,old_price,label,kind,featured,guard,(coalesce(pass_hash,'') <> '') as has_pass from links where user_id=${id} order by position,id`
+      .catch(() => sql`select id,title,url,clicks,thumb,hidden,price,old_price,label,kind from links where user_id=${id} order by position,id`)
       .catch(() => sql`select id,title,url,clicks,thumb,hidden,price,old_price,label from links where user_id=${id} order by position,id`)
       .catch(() => sql`select id,title,url,clicks,thumb,hidden from links where user_id=${id} order by position,id`)
       .catch((e) => { console.error('Kolom thumb/hidden belum ada (jalankan schema-update.sql):', e.message); return sql`select id,title,url,clicks from links where user_id=${id} order by position,id`; }),
@@ -34,7 +36,7 @@ async function load(id) {
       from link_stats ls join links l on l.id=ls.link_id
       where l.user_id=${id} and ls.day >= ((now() at time zone 'Asia/Jakarta')::date - ${pro ? 29 : 6}::int)
       order by ls.day`.catch((e) => { console.error('Statistik per link gagal (sudah jalankan schema-update.sql?):', e.message); return []; });
-  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: l.kind === 'header' ? 'header' : 'link' })), bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, stat_days: pro ? 30 : 7, link_days: linkDays, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
+  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: l.kind === 'header' ? 'header' : 'link', featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, stat_days: pro ? 30 : 7, link_days: linkDays, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
 }
 export async function GET() {
   const id = await getUserId();
@@ -73,11 +75,21 @@ export async function PUT(req) {
     if (why) return Response.json({ error: `Link “${l.title.trim().slice(0, 40)}” ditolak: ${why}` }, { status: 400 });
     if (!have.has(u)) urls.push(u);
   }
+  // Link bersandi: sandi baru minimal PASS_MIN karakter; kalau dikosongkan, sandi lama dipertahankan (harus sudah ada).
+  const oldHash = new Map((await sql`select id, pass_hash from links where user_id=${id}`.catch(() => [])).map((r) => [Number(r.id), r.pass_hash || '']));
+  for (const l of links) {
+    if (l.kind === 'header' || cleanGuard(l.guard) !== 'pass') continue;
+    const np = typeof l.pass === 'string' ? l.pass : '';
+    const label = `Link “${l.title.trim().slice(0, 40)}”`;
+    if (np && (np.length < PASS_MIN || np.length > PASS_MAX)) return Response.json({ error: `${label}: sandi harus ${PASS_MIN}-${PASS_MAX} karakter.` }, { status: 400 });
+    if (!np && !(l.id && oldHash.get(Number(l.id)))) return Response.json({ error: `${label}: isi sandi untuk mengunci link ini.` }, { status: 400 });
+  }
   const bad = await flaggedUrls(urls);
   if (bad.length) return Response.json({ error: `Alamat ini ditandai berbahaya oleh Google Safe Browsing dan tidak bisa disimpan: ${bad.slice(0, 3).join(', ')}` }, { status: 400 });
   // Dua kelompok kolom paralel: link yang sudah ada (punya id, diubah) dan yang baru (ditambah).
-  const cols = () => ({ id: [], title: [], url: [], position: [], thumb: [], hidden: [], price: [], old_price: [], label: [], kind: [] });
+  const cols = () => ({ id: [], title: [], url: [], position: [], thumb: [], hidden: [], price: [], old_price: [], label: [], kind: [], featured: [], guard: [], pass_hash: [] });
   const old = cols(), fresh = cols();
+  let feat = 0; // paling banyak 2 link sorotan
   links.forEach((l, i) => {
     const head = l.kind === 'header', c = l.id ? old : fresh;
     if (l.id) c.id.push(Number(l.id));
@@ -90,6 +102,10 @@ export async function PUT(req) {
     c.old_price.push(head ? '' : cleanPrice(l.old_price));
     c.label.push(head ? '' : cleanLabel(l.label));
     c.kind.push(head ? 'header' : 'link');
+    const g = head ? '' : cleanGuard(l.guard);
+    c.featured.push(!head && l.featured === true && !l.hidden && ++feat <= 2);
+    c.guard.push(g);
+    c.pass_hash.push(g !== 'pass' ? '' : (typeof l.pass === 'string' && l.pass ? hashPass(l.pass) : (l.id ? oldHash.get(Number(l.id)) || '' : '')));
   });
 
   // Fitur Pro: pengguna gratis tidak bisa memilih atau mengubah ke pilihan Pro. Nilai lama yang sudah tersimpan boleh tetap
@@ -118,16 +134,19 @@ export async function PUT(req) {
           where id=${id}`,
       sql`delete from links where user_id=${id} and id <> all(${old.id}::int[])`,
       sql`update links set title=v.title, url=v.url, position=v.position, thumb=v.thumb, hidden=v.hidden,
-          price=v.price, old_price=v.old_price, label=v.label, kind=v.kind
+          price=v.price, old_price=v.old_price, label=v.label, kind=v.kind,
+          featured=v.featured, guard=v.guard, pass_hash=v.pass_hash
           from unnest(${old.id}::int[], ${old.title}::text[], ${old.url}::text[], ${old.position}::int[], ${old.thumb}::text[], ${old.hidden}::boolean[],
-                      ${old.price}::text[], ${old.old_price}::text[], ${old.label}::text[], ${old.kind}::text[])
-            as v(id,title,url,position,thumb,hidden,price,old_price,label,kind)
+                      ${old.price}::text[], ${old.old_price}::text[], ${old.label}::text[], ${old.kind}::text[],
+                      ${old.featured}::boolean[], ${old.guard}::text[], ${old.pass_hash}::text[])
+            as v(id,title,url,position,thumb,hidden,price,old_price,label,kind,featured,guard,pass_hash)
           where links.id=v.id and links.user_id=${id}`,
-      sql`insert into links(user_id,title,url,position,thumb,hidden,price,old_price,label,kind)
-          select ${id}::int, v.title, v.url, v.position, v.thumb, v.hidden, v.price, v.old_price, v.label, v.kind
+      sql`insert into links(user_id,title,url,position,thumb,hidden,price,old_price,label,kind,featured,guard,pass_hash)
+          select ${id}::int, v.title, v.url, v.position, v.thumb, v.hidden, v.price, v.old_price, v.label, v.kind, v.featured, v.guard, v.pass_hash
           from unnest(${fresh.title}::text[], ${fresh.url}::text[], ${fresh.position}::int[], ${fresh.thumb}::text[], ${fresh.hidden}::boolean[],
-                      ${fresh.price}::text[], ${fresh.old_price}::text[], ${fresh.label}::text[], ${fresh.kind}::text[])
-            as v(title,url,position,thumb,hidden,price,old_price,label,kind)`,
+                      ${fresh.price}::text[], ${fresh.old_price}::text[], ${fresh.label}::text[], ${fresh.kind}::text[],
+                      ${fresh.featured}::boolean[], ${fresh.guard}::text[], ${fresh.pass_hash}::text[])
+            as v(title,url,position,thumb,hidden,price,old_price,label,kind,featured,guard,pass_hash)`,
     ]);
   } catch (e) {
     console.error('Gagal menyimpan (sudah jalankan schema-update.sql?):', e.message);
