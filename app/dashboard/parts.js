@@ -30,8 +30,9 @@ export function Phone({ trial }) {
         return (
           <div className={'l' + (price || old || l.label ? ' cat' : '') + (l.label === 'habis' ? ' soldout' : '') + (l.featured ? ' feat' : '')} key={l.id || l._k || i}>
             {th ? <img className="t" src={th} alt="" /> : <LinkIcon url={l.url} size={16} />}
-            <span>{l.title || 'Judul link'}{l.guard && <span className="pgd">{l.guard === 'pass' ? 'Kunci' : '18+'}</span>}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}</span>
+            <span>{l.title || 'Judul link'}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}</span>
             {l.label && <span className={'pbd ' + l.label}>{labelText(l.label)}</span>}
+            {(l.featured || l.guard) && <span className="pind">{l.featured && <svg className="pstar" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-label="Sorotan"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" /></svg>}{l.guard === 'pass' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-label="Terkunci"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>}{l.guard === 'adult' && <span className="p18">18+</span>}</span>}
           </div>
         );
       })}

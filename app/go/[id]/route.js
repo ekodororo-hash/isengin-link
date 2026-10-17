@@ -4,6 +4,21 @@ import { normSrc } from '@/lib/source';
 import { smartTarget, smartHtml } from '@/lib/deeplink';
 import { cleanGuard, checkPass, guardHtml } from '@/lib/linkguard';
 import { hit, clear, ipOf } from '@/lib/limit';
+import { effectiveLook } from '@/lib/pro';
+import { themeWith } from '@/lib/themes';
+import { cleanBtn, cleanFont, fontCss } from '@/lib/style';
+
+// Warna, font, dan bentuk tombol halaman pemilik, supaya halaman perantara terlihat sama dengan halamannya.
+async function lookOf(uid) {
+  const [a, b, c] = await Promise.all([
+    sql`select theme,colors from users where id=${uid}`.catch(() => []),
+    sql`select btn_style,font_key from users where id=${uid}`.catch(() => []),
+    sql`select (plan_until > now()) as pro from users where id=${uid}`.catch(() => []),
+  ]);
+  const eff = effectiveLook({ theme: a[0]?.theme, colors: a[0]?.colors, btn_style: cleanBtn(b[0]?.btn_style), font_key: cleanFont(b[0]?.font_key), bg: '' }, c[0]?.pro === true);
+  const t = themeWith(eff.theme, eff.colors);
+  return { bg: t.bg, ink: t.ink, btn: t.btn, accent: t.accent, style: eff.btn_style, font: fontCss(eff.font_key) };
+}
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 const page = (html, status = 200) => new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
@@ -16,11 +31,11 @@ async function run(req, { params }, opt = {}) {
   const src = normSrc(new URL(req.url).searchParams.get('s')) || 'langsung';
   // Link berpengaman: peringatan 18+ (lanjut lewat ?ok=1) atau sandi (diperiksa di POST). Klik baru dihitung setelah lolos.
   if (!opt.skip) {
-    const g = (await sql`select l.guard, u.username from links l join users u on u.id=l.user_id where l.id=${id} and l.hidden is not true`.catch(() => []))[0];
+    const g = (await sql`select l.guard, u.username, u.id as uid from links l join users u on u.id=l.user_id where l.id=${id} and l.hidden is not true`.catch(() => []))[0];
     const guard = cleanGuard(g?.guard);
     const action = `/go/${id}?s=${encodeURIComponent(src)}`;
-    if (guard === 'pass') return page(guardHtml({ kind: 'pass', action, back: `/${g.username}` }));
-    if (guard === 'adult' && new URL(req.url).searchParams.get('ok') !== '1') return page(guardHtml({ kind: 'adult', action, back: `/${g.username}` }));
+    const askOk = guard === 'adult' && new URL(req.url).searchParams.get('ok') !== '1';
+    if (guard === 'pass' || askOk) return page(guardHtml({ kind: guard, action, back: `/${g.username}`, look: await lookOf(g.uid) }));
   }
   let r;
   if (isBot(req.headers.get('user-agent'))) {
@@ -87,15 +102,16 @@ export const GET = (req, ctx) => run(req, ctx);
 // Kirim sandi untuk link terkunci. Salah sandi dibatasi 8 kali per link per alamat IP per 15 menit.
 export async function POST(req, ctx) {
   const id = Number(ctx.params.id) || 0;
-  const row = (await sql`select l.guard, l.pass_hash, u.username from links l join users u on u.id=l.user_id where l.id=${id} and l.hidden is not true`.catch(() => []))[0];
+  const row = (await sql`select l.guard, l.pass_hash, u.username, u.id as uid from links l join users u on u.id=l.user_id where l.id=${id} and l.hidden is not true`.catch(() => []))[0];
   if (!row || cleanGuard(row.guard) !== 'pass') return Response.redirect(new URL(`/go/${id}`, req.url).toString(), 303);
   const src = normSrc(new URL(req.url).searchParams.get('s')) || 'langsung';
   const action = `/go/${id}?s=${encodeURIComponent(src)}`;
   const key = `lp:${id}:${ipOf(req)}`;
+  const look = await lookOf(row.uid);
   const t = await hit(key, 8, 900);
-  if (t.over) return page(guardHtml({ kind: 'pass', action, back: `/${row.username}`, error: `Terlalu banyak percobaan. Coba lagi sekitar ${Math.max(1, Math.ceil(t.wait / 60))} menit lagi.` }), 429);
+  if (t.over) return page(guardHtml({ kind: 'pass', action, back: `/${row.username}`, look, error: `Terlalu banyak percobaan. Coba lagi sekitar ${Math.max(1, Math.ceil(t.wait / 60))} menit lagi.` }), 429);
   const form = await req.formData().catch(() => null);
-  if (!checkPass(String(form?.get('pass') || ''), row.pass_hash)) return page(guardHtml({ kind: 'pass', action, back: `/${row.username}`, error: 'Sandi salah.' }), 401);
+  if (!checkPass(String(form?.get('pass') || ''), row.pass_hash)) return page(guardHtml({ kind: 'pass', action, back: `/${row.username}`, look, error: 'Sandi salah.' }), 401);
   await clear(key);
   return run(req, ctx, { skip: true, post: true });
 }

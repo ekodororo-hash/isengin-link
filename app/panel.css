@@ -384,7 +384,9 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 
 /* Link sorotan dan pengaman link: pratinjau dan editor */
 .px-ph .l.feat{outline:2px solid var(--pa);outline-offset:2px}
-.px-ph .l .pgd{font-size:.6rem;font-weight:800;border:1.5px solid currentColor;border-radius:99px;padding:0 6px;opacity:.85}
+.px-ph .l .pind{flex:none;display:flex;align-items:center;gap:4px;margin-left:auto}
+.px-ph .l .pind .pstar{color:var(--pa)}
+.px-ph .l .p18{font-size:.58rem;font-weight:800;border:1.5px solid currentColor;border-radius:99px;padding:0 5px}
 .px-tag.sor{background:var(--yel);color:var(--navy)}.px-tag.kunci{background:var(--navy);color:#fff}
 .px-grd{margin-top:10px}.px-grd label.px-ck{display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer}
 .px-grd input[type=checkbox]{width:18px;height:18px;accent-color:var(--navy)}
