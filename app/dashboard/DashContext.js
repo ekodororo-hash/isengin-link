@@ -2,9 +2,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
-import Loader from '../Loader';
 import { SOCIALS } from '@/lib/socials';
 import { COLOR_KEYS } from '@/lib/themes';
+// Salinan data tersimpan terakhir. Kalau provider sempat dibuat ulang (mis. Next memuat halaman penuh), isi halaman langsung tampil.
+let CACHE = null;
 const Ctx = createContext(null);
 export const useDash = () => useContext(Ctx);
 const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan'], ['/dashboard/pengaturan', 'Pengaturan']];
@@ -38,8 +39,8 @@ async function shrink(file, max = 640, square = false) {
 }
 
 export function DashProvider({ children }) {
-  const [m, setM] = useState(null);
-  const [saved, setSaved] = useState(null);
+  const [m, setM] = useState(CACHE);
+  const [saved, setSaved] = useState(CACHE);
   const [msg, setMsg] = useState('');
   const [busy, setBusy] = useState(false);
   const path = usePathname();
@@ -54,13 +55,15 @@ export function DashProvider({ children }) {
   // tapi berjalan diam-diam di dalam tab: tidak ada animasi loading di tab dan tidak ada kedip putih.
   const savedRef = useRef(null);
   savedRef.current = saved;
+  if (saved) CACHE = saved;
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     if (savedRef.current) setM(savedRef.current);
     fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {});
   }, [path]);
-  if (!m) return <Loader />;
+  // Sebelum data siap, kerangka (menu samping) tetap tampil dan isinya kosong: tanpa animasi loading.
+  if (!m) return <Shell title="isengin.site" menu={MENU} out={out}><div aria-busy="true" /></Shell>;
   const set = (k, v) => { setMsg(''); setM({ ...m, [k]: v }); };
   // Memilih tema berarti mulai dari warna tema itu, jadi warna kustom dikosongkan.
   const setTheme = (key) => { setMsg(''); setM({ ...m, theme: key, colors: {} }); };
