@@ -2,16 +2,16 @@
 import './landing.css';
 import { useEffect, useState } from 'react';
 import { themeStyle } from '@/lib/themes';
+import { LinkIcon, NamedIcon } from './icons';
 
-const LINKS = ['Pesan lewat WhatsApp', 'Portofolio di Instagram', 'Preset Lightroom (toko)', 'Video terbaru di YouTube', 'Kirim email'];
+const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Portofolio di Instagram', 'https://instagram.com/rani'], ['Preset Lightroom (toko)', 'https://tokopedia.com/rani'], ['Video terbaru di YouTube', 'https://youtube.com/@rani'], ['Kirim email', 'mailto:rani@email.com']];
 
 export default function Home() {
   const [mode, setMode] = useState('register');
   const [username, setU] = useState('');
   const [password, setP] = useState('');
   const [err, setErr] = useState('');
-  const t = 'kobalt';
-  const [c, setC] = useState(LINKS.map(() => 0));
+  const t = 'neo';
   const nm = username || 'rani';
   const [ref, setRef] = useState('');
   // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
@@ -58,17 +58,22 @@ export default function Home() {
       </section>
 
       <section aria-label="Contoh halaman">
+        <div className="lp-iph">
         <div className="lp-phone" data-t={t} style={themeStyle(t)}>
+          <div className="lp-isl" aria-hidden="true" />
           <div className="lp-url">isengin.site/{nm}</div>
           <div className="lp-ava" aria-hidden="true">{nm[0].toUpperCase()}</div>
           <h2 className="lp-name">{nm}</h2>
           <p className="lp-bio">Fotografer lepas. Pesan sesi foto atau lihat karya terbaru di bawah.</p>
-          {LINKS.map((l, i) => (
-            <button key={l} className="lp-link" onClick={() => setC(c.map((x, j) => (j === i ? x + 1 : x)))}>
-              <span>{l}</span><span className="lp-cnt">{c[i]}</span>
-            </button>
+          {LINKS.map(([l, u]) => (
+            <div key={l} className="lp-link">
+              <LinkIcon url={u} />
+              <span className="lp-lt">{l}</span>
+              <span className="lp-dots" aria-hidden="true"><NamedIcon name="dots" size={18} /></span>
+            </div>
           ))}
           <div className="lp-foot">Dibuat di isengin.site</div>
+        </div>
         </div>
         <p className="lp-legal">
           <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
