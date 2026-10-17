@@ -1,7 +1,7 @@
 'use client';
 import './landing.css';
 import { useState } from 'react';
-import { THEMES, themeStyle } from '@/lib/themes';
+import { themeStyle } from '@/lib/themes';
 
 const LINKS = ['Pesan lewat WhatsApp', 'Portofolio di Instagram', 'Preset Lightroom (toko)', 'Video terbaru di YouTube', 'Kirim email'];
 
@@ -10,7 +10,7 @@ export default function Home() {
   const [username, setU] = useState('');
   const [password, setP] = useState('');
   const [err, setErr] = useState('');
-  const [t, setT] = useState('kobalt');
+  const t = 'kobalt';
   const [c, setC] = useState(LINKS.map(() => 0));
   const nm = username || 'rani';
 
@@ -44,11 +44,6 @@ export default function Home() {
             {mode === 'register' ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar'}
           </button>
         </div>
-        <div className="lp-theme" role="group" aria-label="Tema contoh">
-          <b>Tema</b>
-          {THEMES.map((x) => <button key={x.key} aria-pressed={t === x.key} onClick={() => setT(x.key)}>{x.label}</button>)}
-        </div>
-        <p className="lp-note">Klik link di ponsel untuk mencoba penghitung klik. Tema asli kamu pilih nanti di dashboard.</p>
       </section>
 
       <section aria-label="Contoh halaman">
