@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Verified from '../Verified';
+import Loader from '../Loader';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 
 export default function VerifyBox() {
@@ -24,7 +25,7 @@ export default function VerifyBox() {
     await load(); setBusy(false);
   }
 
-  if (!d) return null;
+  if (!d) return (<section className="px-sec"><h2>Centang verifikasi</h2><Loader inline small /></section>);
   const req = d.request;
   const waitRetry = req?.status === 'rejected' && d.retryAt && Date.now() < new Date(d.retryAt).getTime();
   return (

@@ -348,3 +348,8 @@ td .vb{vertical-align:-.2em;margin-left:6px;color:var(--red)}
 .adm-note{margin:10px 0 14px;padding:10px 12px;border-left:4px solid var(--navy);background:#fff;font-weight:600;white-space:pre-wrap;word-break:break-word}
 .adm-empty{margin:0;font-weight:600;color:var(--mut)}
 a.px-stat{display:block;text-decoration:none;color:inherit}
+
+/* animasi memuat di dalam halaman */
+.px-load.in{min-height:45vh;background:none}
+.px-load.sm{min-height:0;padding:18px 0;gap:12px}
+.px-load.sm p{font-size:.9rem}

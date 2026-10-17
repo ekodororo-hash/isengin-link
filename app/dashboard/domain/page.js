@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Loader from '../../Loader';
 import Link from 'next/link';
 // Domain dua tingkat seperti toko.co.id tetap dianggap domain utama (butuh record A, bukan CNAME).
 const SLD = ['co.id', 'or.id', 'web.id', 'my.id', 'sch.id', 'ac.id', 'go.id', 'biz.id', 'net.id', 'com.au', 'co.uk'];
@@ -35,7 +36,7 @@ export default function Domain() {
     await fetch('/api/domain', { method: 'DELETE' });
     await load(); setBusy('');
   }
-  if (!d) return (<><h1>Domain</h1><p className="px-sub">Memuat…</p></>);
+  if (!d) return (<><h1>Domain</h1><Loader inline /></>);
   const apex = d.domain ? isApex(d.domain) : false;
   const sub = d.domain ? d.domain.split('.')[0] : '';
   return (<>

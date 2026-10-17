@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Loader from '../../Loader';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '–');
 
 export default function Referral() {
@@ -9,7 +10,7 @@ export default function Referral() {
     fetch('/api/admin/referral').then(async (res) => { const x = await res.json().catch(() => ({})); if (res.ok) setR(x); else setErr(x.error || 'Gagal memuat.'); });
   }, []);
   if (err) return (<><h1>Referral</h1><p className="px-err" role="alert">{err}</p></>);
-  if (!r) return (<><h1>Referral</h1><p className="px-sub">Memuat…</p></>);
+  if (!r) return (<><h1>Referral</h1><Loader inline /></>);
   return (<>
     <h1>Referral</h1>
     <p className="px-sub">Pantau siapa mengundang siapa. Pengundang dengan banyak teman tapi sedikit yang berhadiah bisa jadi tanda akun palsu.</p>

@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Loader from '../../Loader';
 const rp = (n) => 'Rp ' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 const STATUS = { paid: 'Lunas', pending: 'Menunggu pembayaran', expire: 'Kedaluwarsa', cancel: 'Dibatalkan', deny: 'Ditolak', failure: 'Gagal', failed: 'Gagal' };
@@ -32,7 +33,7 @@ export default function Paket() {
     if (r.ok && x.url) { location.href = x.url; return; }
     setErr(x.error || 'Gagal membuat pesanan.'); setBusy('');
   }
-  if (!d) return (<><h1>Paket</h1><p className="px-sub">Memuat…</p></>);
+  if (!d) return (<><h1>Paket</h1><Loader inline /></>);
   return (<>
     <h1>Paket</h1>
     <p className="px-sub">{d.pro ? <>Paket <b>Pro</b> aktif sampai {tgl(d.until)}.</> : 'Kamu memakai paket Gratis.'}</p>

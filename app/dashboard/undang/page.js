@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import Loader from '../../Loader';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 
 export default function Undang() {
@@ -13,7 +14,7 @@ export default function Undang() {
     try { await navigator.clipboard.writeText(d.url); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
   }
   if (err) return (<><h1>Undang teman</h1><p className="px-err" role="alert">{err}</p></>);
-  if (!d) return (<><h1>Undang teman</h1><p className="px-sub">Memuat…</p></>);
+  if (!d) return (<><h1>Undang teman</h1><Loader inline /></>);
   const { rules: r } = d;
   const wa = `https://wa.me/?text=${encodeURIComponent('Bikin halaman link-in-bio gratis di isengin.site, daftar lewat link ini ya: ' + d.url)}`;
   return (<>

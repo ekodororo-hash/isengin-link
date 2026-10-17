@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import VerifyBox from '../VerifyBox';
+import Loader from '../../Loader';
 
 // Kekuatan sandi: 0 sampai 4. Panjang paling berpengaruh, lalu ragam jenis karakter.
 function strength(p) {
@@ -78,7 +79,7 @@ export default function Pengaturan() {
     setBusy('');
   }
 
-  if (!acc) return (<><h1>Pengaturan</h1><p className="px-sub">Memuat…</p></>);
+  if (!acc) return (<><h1>Pengaturan</h1><Loader inline /></>);
   const type = show ? 'text' : 'password';
   return (<>
     <h1>Pengaturan</h1>
