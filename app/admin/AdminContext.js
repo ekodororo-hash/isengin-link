@@ -1,5 +1,6 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
 import Loader from '../Loader';
 const Ctx = createContext(null);
@@ -13,7 +14,18 @@ export function AdminProvider({ children }) {
   const [err, setErr] = useState('');
   const load = () => fetch('/api/admin').then((r) => (r.ok ? r.json() : null)).then(setD);
   useEffect(() => { load(); }, []);
-  if (d === undefined) return <Loader />;
+  // Sama seperti dashboard: pindah menu menampilkan animasi memuat (minimal 0,45 detik) dan mengambil data ulang.
+  const [nav, setNav] = useState(false);
+  const path = usePathname();
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) { first.current = false; return; }
+    setNav(true);
+    const t0 = Date.now();
+    fetch('/api/admin').then((r) => (r.ok ? r.json() : null)).then(setD).catch(() => {})
+      .then(() => setTimeout(() => setNav(false), Math.max(0, 450 - (Date.now() - t0))));
+  }, [path]);
+  if (d === undefined || nav) return <Loader />;
   async function login() {
     setErr('');
     const r = await fetch('/api/admin', { method: 'POST', headers: J, body: JSON.stringify({ mode: 'login', username: u, password: pw }) });
