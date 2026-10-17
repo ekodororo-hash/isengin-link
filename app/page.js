@@ -1,5 +1,6 @@
 'use client';
 import './landing.css';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { themeStyle } from '@/lib/themes';
 import { LinkIcon, NamedIcon } from './icons';
@@ -31,7 +32,14 @@ export default function Home() {
     if (r.ok) location.href = '/dashboard'; else setErr(d.error || 'Gagal.');
   }
 
-  return (
+  return (<>
+    <header className="lp-nav">
+      <Link className="lp-brand" href="/">ISENGIN.SITE</Link>
+      <nav className="lp-nbtn" aria-label="Akun">
+        <Link className="lp-nb" href="/masuk">Masuk</Link>
+        <Link className="lp-nb r" href="/daftar">Daftar</Link>
+      </nav>
+    </header>
     <main className="lp-wrap">
       <section>
         <h1 className="lp-h1">Satu link untuk semua kontenmu.</h1>
@@ -80,5 +88,5 @@ export default function Home() {
         </p>
       </section>
     </main>
-  );
+  </>);
 }

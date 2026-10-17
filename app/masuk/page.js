@@ -2,10 +2,12 @@
 import '../auth.css';
 import Link from 'next/link';
 import { useState } from 'react';
+import { LinkIcon } from '../icons';
 
 export default function Masuk() {
   const [username, setU] = useState('');
   const [password, setP] = useState('');
+  const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -22,27 +24,48 @@ export default function Masuk() {
   }
 
   return (
-    <main className="au-wrap">
-      <div className="au-card">
+    <div className="au-wrap">
+      <aside className="au-side">
         <Link className="au-logo" href="/">ISENGIN.SITE</Link>
-        <h1 className="au-h1">Masuk</h1>
-        <p className="au-sub">Masuk untuk mengatur link dan melihat jumlah kliknya.</p>
-        <form className="au-form" onSubmit={submit}>
-          <label htmlFor="u">Nama pengguna atau email</label>
-          <div className="au-field">
-            <input id="u" placeholder="rani atau nama@email.com" value={username} maxLength={120} autoComplete="username" spellCheck={false}
-              onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
+        <div className="au-hero">
+          <h2 className="au-hl">Selamat datang kembali.</h2>
+          <div className="au-cards" aria-hidden="true">
+            <div className="au-bub"><LinkIcon url="https://wa.me/6281234567890" size={20} />Pesan lewat WhatsApp</div>
+            <div className="au-bub"><LinkIcon url="https://tokopedia.com/rani" size={20} />Preset Lightroom (toko)</div>
+            <div className="au-bub"><LinkIcon url="https://youtube.com/@rani" size={20} />Video terbaru di YouTube</div>
           </div>
-          <label htmlFor="p">Sandi</label>
-          <div className="au-field">
-            <input id="p" type="password" value={password} autoComplete="current-password" onChange={(e) => setP(e.target.value)} />
-          </div>
-          {err && <p className="au-err" role="alert">{err}</p>}
-          <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Masuk'}</button>
-        </form>
-        <p className="au-alt">Belum punya akun? <Link href="/daftar">Daftar</Link></p>
-      </div>
-      <p className="au-legal"><Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
-    </main>
+        </div>
+        <p className="au-tag">Atur link dan lihat jumlah kliknya dari dashboard.</p>
+      </aside>
+      <main className="au-main">
+        <div className="au-top">
+          <Link className="au-back" href="/">&larr; Kembali</Link>
+          <Link className="au-mlogo" href="/">ISENGIN.SITE</Link>
+        </div>
+        <div className="au-box">
+          <h1 className="au-h1">Masuk ke dashboard</h1>
+          <p className="au-sub">Atur link dan lihat jumlah kliknya.</p>
+          <nav className="au-tabs" aria-label="Masuk atau daftar">
+            <Link href="/masuk" aria-current="page">Masuk</Link>
+            <Link href="/daftar">Daftar</Link>
+          </nav>
+          <form className="au-form" onSubmit={submit}>
+            <label htmlFor="u">Nama pengguna atau email</label>
+            <div className="au-field">
+              <input id="u" placeholder="rani atau nama@email.com" value={username} maxLength={120} autoComplete="username" spellCheck={false}
+                onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
+            </div>
+            <label htmlFor="p">Sandi</label>
+            <div className="au-field">
+              <input id="p" type={show ? 'text' : 'password'} value={password} autoComplete="current-password" onChange={(e) => setP(e.target.value)} />
+              <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
+            </div>
+            {err && <p className="au-err" role="alert">{err}</p>}
+            <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Masuk'}</button>
+          </form>
+          <p className="au-legal"><Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
+        </div>
+      </main>
+    </div>
   );
 }

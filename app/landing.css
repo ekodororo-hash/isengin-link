@@ -79,3 +79,15 @@ body:has(.legal-wrap){background:#ffd23f}
 .lp-link{display:flex;align-items:center;gap:10px;text-align:center;cursor:default;padding:15px 18px}
 .lp-lt{flex:1;min-width:0;padding-left:8px}
 .lp-dots{flex:none;width:34px;height:34px;margin:-8px -6px -8px 0;display:grid;place-items:center;opacity:.5}
+
+/* bar atas: tombol masuk dan daftar */
+.lp-nav{max-width:1040px;margin:0 auto;padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
+.lp-brand{font-family:Bungee,sans-serif;font-size:1rem;color:#1f2255;text-decoration:none}
+.lp-nbtn{display:flex;gap:10px}
+.lp-nb{display:inline-flex;align-items:center;min-height:42px;padding:0 20px;border:3px solid #1f2255;border-radius:999px;box-shadow:3px 3px 0 #1f2255;background:#fff;color:#1f2255;font-family:Bungee,sans-serif;font-size:.8rem;text-decoration:none;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.lp-nb.r{background:#ff5a43;color:#fff}
+.lp-nb:active{transform:translate(3px,3px);box-shadow:0 0 0 #1f2255}
+.lp-nb:focus-visible{outline:3px dashed #1f2255;outline-offset:3px}
+@media(min-width:860px){.lp-nav+.lp-wrap{padding-top:36px}}
+@media(max-width:560px){.lp-nav{padding:16px 16px 0}.lp-nb{min-height:38px;padding:0 14px;font-size:.72rem}}
+@media(prefers-reduced-motion:reduce){.lp-nb{transition:none}}

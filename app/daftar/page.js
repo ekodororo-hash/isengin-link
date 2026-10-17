@@ -2,10 +2,12 @@
 import '../auth.css';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { LinkIcon } from '../icons';
 
 export default function Daftar() {
   const [username, setU] = useState('');
   const [password, setP] = useState('');
+  const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState('');
@@ -32,29 +34,50 @@ export default function Daftar() {
   }
 
   return (
-    <main className="au-wrap">
-      <div className="au-card">
+    <div className="au-wrap">
+      <aside className="au-side">
         <Link className="au-logo" href="/">ISENGIN.SITE</Link>
-        <h1 className="au-h1">Daftar</h1>
-        <p className="au-sub">Pilih alamat halamanmu dan mulai kumpulkan semua link di satu tempat.</p>
-        <form className="au-form" onSubmit={submit}>
-          {ref && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
-          <label htmlFor="u">Alamat halamanmu</label>
-          <div className="au-field">
-            <span>isengin.site/</span>
-            <input id="u" placeholder="rani" value={username} maxLength={20} autoComplete="username" spellCheck={false}
-              onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
+        <div className="au-hero">
+          <h2 className="au-hl">Satu link untuk semua kontenmu.</h2>
+          <div className="au-cards" aria-hidden="true">
+            <div className="au-bub"><LinkIcon url="https://wa.me/6281234567890" size={20} />Pesan lewat WhatsApp</div>
+            <div className="au-bub"><LinkIcon url="https://tokopedia.com/rani" size={20} />Preset Lightroom (toko)</div>
+            <div className="au-bub"><LinkIcon url="https://youtube.com/@rani" size={20} />Video terbaru di YouTube</div>
           </div>
-          <label htmlFor="p">Sandi</label>
-          <div className="au-field">
-            <input id="p" type="password" value={password} autoComplete="new-password" onChange={(e) => setP(e.target.value)} />
-          </div>
-          {err && <p className="au-err" role="alert">{err}</p>}
-          <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Klaim nama'}</button>
-        </form>
-        <p className="au-alt">Sudah punya akun? <Link href="/masuk">Masuk</Link></p>
-      </div>
-      <p className="au-legal"><Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
-    </main>
+        </div>
+        <p className="au-tag">Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
+      </aside>
+      <main className="au-main">
+        <div className="au-top">
+          <Link className="au-back" href="/">&larr; Kembali</Link>
+          <Link className="au-mlogo" href="/">ISENGIN.SITE</Link>
+        </div>
+        <div className="au-box">
+          <h1 className="au-h1">Buat halamanmu</h1>
+          <p className="au-sub">Pilih alamat dan mulai kumpulkan semua link di satu tempat.</p>
+          <nav className="au-tabs" aria-label="Masuk atau daftar">
+            <Link href="/masuk">Masuk</Link>
+            <Link href="/daftar" aria-current="page">Daftar</Link>
+          </nav>
+          <form className="au-form" onSubmit={submit}>
+            {ref && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
+            <label htmlFor="u">Alamat halamanmu</label>
+            <div className="au-field">
+              <span>isengin.site/</span>
+              <input id="u" placeholder="rani" value={username} maxLength={20} autoComplete="username" spellCheck={false}
+                onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
+            </div>
+            <label htmlFor="p">Sandi</label>
+            <div className="au-field">
+              <input id="p" type={show ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={password} autoComplete="new-password" onChange={(e) => setP(e.target.value)} />
+              <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
+            </div>
+            {err && <p className="au-err" role="alert">{err}</p>}
+            <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Klaim nama'}</button>
+          </form>
+          <p className="au-legal"><Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
+        </div>
+      </main>
+    </div>
   );
 }
