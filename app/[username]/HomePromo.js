@@ -2,6 +2,19 @@
 import { useEffect, useState } from 'react';
 import { NamedIcon } from '../icons';
 
+// Logo isengin (sama dengan app/icon.svg), digambar langsung supaya tidak terpotong dan warnanya tetap Neo.
+function Logo({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 62 62" aria-hidden="true" focusable="false">
+      <rect x="7" y="7" width="54" height="54" rx="12" fill="#1f2255" />
+      <rect x="3" y="3" width="54" height="54" rx="12" fill="#ffd23f" stroke="#1f2255" strokeWidth="4" />
+      <rect x="13" y="14" width="34" height="9" rx="4.5" fill="#1f2255" />
+      <rect x="13" y="25" width="34" height="9" rx="4.5" fill="#ff5a43" />
+      <rect x="13" y="36" width="34" height="9" rx="4.5" fill="#1f2255" />
+    </svg>
+  );
+}
+
 // Tombol rumah di kiri atas halaman publik. Diketuk membuka kartu ajakan daftar (bukan pindah halaman).
 // Hanya dirender di peramban setelah diklik, jadi aman memakai window/document.
 export default function HomePromo({ pageUsername, pageName }) {
@@ -27,13 +40,13 @@ export default function HomePromo({ pageUsername, pageName }) {
   return (
     <>
       <button type="button" className="homebtn" onClick={() => setOpen(true)} aria-label="Buat halamanmu sendiri di isengin.site" aria-haspopup="dialog">
-        <img src="/icon.svg" alt="" draggable="false" />
+        <Logo />
       </button>
       {open && (
         <div className="hp-ov" role="dialog" aria-modal="true" aria-labelledby="hp-h" onClick={() => setOpen(false)}>
           <div className="hp" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="hp-x" onClick={() => setOpen(false)} aria-label="Tutup"><NamedIcon name="close" size={16} /></button>
-            <div className="hp-brand"><img src="/icon.svg" width="40" height="40" alt="" />ISENGIN.SITE</div>
+            <div className="hp-brand"><Logo className="hp-logo" />ISENGIN.SITE</div>
             <h2 id="hp-h" className="hp-h">Satu link untuk <span>semua kontenmu.</span></h2>
             <p className="hp-p">Gabung dengan {pageName || pageUsername}. Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman.</p>
 
