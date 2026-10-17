@@ -22,10 +22,12 @@ export default function Report({ username, inline }) {
     } catch { setMsg('Gagal mengirim laporan. Periksa koneksi, lalu coba lagi.'); }
     setBusy(false);
   }
-  if (done) return <p className="rep-ok" role="status">Terima kasih, laporanmu sudah kami terima.</p>;
-  if (!open) return <button type="button" className={'rep-open' + (inline ? ' rep-open-inline' : '')} onClick={() => setOpen(true)}>{inline ? 'Laporkan' : 'Laporkan halaman ini'}</button>;
+  const btn = <button type="button" className={'rep-open' + (inline ? ' rep-open-inline' : '')} onClick={() => setOpen((o) => !o)} aria-expanded={open}>{inline ? 'Laporkan' : 'Laporkan halaman ini'}</button>;
+  if (done) return <>{btn}<p className="rep-ok" role="status">Terima kasih, laporanmu sudah kami terima.</p></>;
   return (
-    <form className="rep" onSubmit={send}>
+    <>
+    {btn}
+    {open && <form className="rep" onSubmit={send}>
       <label htmlFor="rep-r">Alasan</label>
       <select id="rep-r" value={reason} onChange={(e) => setReason(e.target.value)}>
         {REASONS.map(([k, t]) => <option key={k} value={k}>{t}</option>)}
@@ -37,6 +39,7 @@ export default function Report({ username, inline }) {
         <button type="submit" disabled={busy}>{busy ? 'Mengirim…' : 'Kirim laporan'}</button>
         <button type="button" onClick={() => setOpen(false)}>Batal</button>
       </div>
-    </form>
+    </form>}
+    </>
   );
 }
