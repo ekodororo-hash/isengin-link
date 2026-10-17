@@ -10,10 +10,11 @@ import { fmtPrice, labelText } from '@/lib/catalog';
 import { fontCss } from '@/lib/style';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 
-export function Phone() {
+// trial: pilihan Pro yang dicoba pengguna gratis. Hanya tampil di pratinjau, tidak disimpan dan tidak tampil di halaman publik.
+export function Phone({ trial }) {
   const { m } = useDash();
   // Pratinjau sama persis dengan halaman publik: pilihan Pro tidak tampil kalau paketnya tidak aktif.
-  const eff = effectiveLook({ theme: m.theme, font_key: m.font_key || 'standar', btn_style: m.btn_style || 'bulat', colors: m.colors, bg: m.bg }, m.pro);
+  const eff = { ...effectiveLook({ theme: m.theme, font_key: m.font_key || 'standar', btn_style: m.btn_style || 'bulat', colors: m.colors, bg: m.bg }, m.pro), ...(m.pro ? {} : trial || {}) };
   const vis = m.links.filter((l) => !l.hidden);
   const n = m.display_name || m.username;
   const soc = socialList(m.socials);

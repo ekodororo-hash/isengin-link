@@ -10,19 +10,29 @@ const COLORS = [['bg', 'Latar'], ['ink', 'Teks'], ['btn', 'Tombol link'], ['acce
 export default function Tampilan() {
   const { m, set, setTheme, upBg } = useDash();
   const pro = m.pro === true;
-  // Pilihan Pro yang diklik pengguna gratis: tampilkan penjelasan, jangan diterapkan.
-  const [ask, setAsk] = useState('');
-  const pick = (locked, what, fn) => () => { if (locked) setAsk(what); else { setAsk(''); fn(); } };
+  // Pengguna gratis boleh mencoba pilihan Pro: tampil di pratinjau saja, tidak disimpan dan tidak tampil di halaman publik.
+  const [tr, setTr] = useState({});
+  const trKeys = pro ? [] : Object.keys(tr);
+  const trying = trKeys.length > 0;
+  const clr = (...ks) => setTr((o) => { const n = { ...o }; ks.forEach((k) => delete n[k]); return n; });
+  const pick = (locked, what, key, val, fn) => () => {
+    if (locked) setTr((o) => { const n = { ...o, [key]: val }; if (key === 'theme') delete n.colors; return n; });
+    else { clr(key, ...(key === 'theme' ? ['colors'] : [])); fn(); }
+  };
   const used = pro ? [] : proUses(m);
-  const t = themeWith(m.theme, m.colors);
-  const custom = cleanColors(m.colors);
-  const bg = m.bg || {};
+  const theme = (!pro && tr.theme) || m.theme;
+  const colors = (!pro && tr.colors) || m.colors;
+  const t = themeWith(theme, colors);
+  const custom = cleanColors(colors);
+  const bg = (!pro && tr.bg) || m.bg || {};
+  const setBg = (v) => { if (!pro && v.t === 'image') setTr((o) => ({ ...o, bg: v })); else { clr('bg'); set('bg', v); } };
+  const upTrialBg = (e) => { const f = e.target.files && e.target.files[0]; if (f) setTr((o) => ({ ...o, bg: { t: 'image', url: URL.createObjectURL(f), dim: o.bg?.dim ?? 40 } })); };
   const mode = bg.t === 'gradient' || bg.t === 'image' ? bg.t : 'solid';
   const dim = Number.isFinite(+bg.dim) ? +bg.dim : 40;
   const setMode = (md) => {
-    if (md === 'solid') set('bg', {});
-    else if (md === 'gradient') set('bg', { t: 'gradient', c1: bg.c1 || t.bg, c2: bg.c2 || t.accent, angle: bg.angle || 180 });
-    else set('bg', { t: 'image', url: bg.url || '', dim });
+    if (md === 'solid') setBg({});
+    else if (md === 'gradient') setBg({ t: 'gradient', c1: bg.c1 || t.bg, c2: bg.c2 || t.accent, angle: bg.angle || 180 });
+    else setBg({ t: 'image', url: bg.url || '', dim });
   };
   const warns = [];
   if (mode === 'solid' && contrast(t.ink, t.bg) < 4.5) warns.push('Teks sulit dibaca di atas warna latar. Coba warna yang lebih kontras.');
@@ -33,7 +43,7 @@ export default function Tampilan() {
     <h1>Tampilan</h1><p className="px-sub">Pilih tema, atur warna sendiri kalau mau, pratinjau langsung di samping.</p>
     <div className="px-two">
       <div className="px-card">
-        {ask && <p className="px-warn" role="status">{ask} khusus paket Pro. <Link href="/dashboard/paket">Lihat paket Pro</Link></p>}
+        {trying && <p className="px-warn" role="status">Pratinjau Pro, belum diterapkan ke halamanmu dan tidak ikut tersimpan. <Link href="/dashboard/paket">Aktifkan Pro</Link> untuk memakainya. <button type="button" className="px-btn g sm" onClick={() => setTr({})}>Batalkan pratinjau</button></p>}
         {used.length > 0 && <p className="px-warn" role="status">Khusus Pro dan tidak tampil di halamanmu sekarang: {used.join(', ')}. <Link href="/dashboard/paket">Aktifkan Pro</Link> untuk menampilkannya lagi.</p>}
         <section className="px-sec">
           <h2>Tema</h2>
@@ -41,7 +51,7 @@ export default function Tampilan() {
             {THEMES.map((x) => {
               const L = !pro && PRO_THEMES.includes(x.key);
               return (
-                <button key={x.key} aria-pressed={m.theme === x.key} aria-disabled={L || undefined} onClick={pick(L, `Tema ${x.label}`, () => setTheme(x.key))}>
+                <button key={x.key} aria-pressed={theme === x.key} onClick={pick(L, `Tema ${x.label}`, 'theme', x.key, () => setTheme(x.key))}>
                   <i className="px-sw" style={{ background: x.bg, boxShadow: `inset -7px 0 0 ${x.accent}` }} aria-hidden="true" />{x.label}{L && <em className="px-pro">Pro</em>}
                 </button>
               );
@@ -52,21 +62,21 @@ export default function Tampilan() {
           <h2>Latar belakang</h2>
           <div className="px-themes" role="group" aria-label="Jenis latar belakang">
             {[['solid', 'Warna tema'], ['gradient', 'Gradasi'], ['image', 'Gambar']].map(([k, lab]) => (
-              <button key={k} aria-pressed={mode === k} aria-disabled={(k === 'image' && !pro) || undefined} onClick={pick(k === 'image' && !pro, 'Latar gambar', () => setMode(k))}>{lab}{k === 'image' && !pro && <em className="px-pro">Pro</em>}</button>
+              <button key={k} aria-pressed={mode === k} onClick={() => setMode(k)}>{lab}{k === 'image' && !pro && <em className="px-pro">Pro</em>}</button>
             ))}
           </div>
           {mode === 'gradient' && (<>
             <div className="px-colors">
               {[['c1', 'Warna awal'], ['c2', 'Warna akhir']].map(([k, lab]) => (
                 <label key={k} className="px-clr">
-                  <input type="color" value={bg[k] || '#ffffff'} onChange={(e) => set('bg', { ...bg, [k]: e.target.value })} />
+                  <input type="color" value={bg[k] || '#ffffff'} onChange={(e) => setBg({ ...bg, [k]: e.target.value })} />
                   <span><b>{lab}</b><small>{String(bg[k] || '').toUpperCase()}</small></span>
                 </label>
               ))}
             </div>
             <div className="px-chips" role="group" aria-label="Arah gradasi">
               {ANGLES.map(([a, lab]) => (
-                <button key={a} type="button" aria-pressed={(bg.angle || 180) === a} onClick={() => set('bg', { ...bg, angle: a })}>{lab}</button>
+                <button key={a} type="button" aria-pressed={(bg.angle || 180) === a} onClick={() => setBg({ ...bg, angle: a })}>{lab}</button>
               ))}
             </div>
           </>)}
@@ -74,12 +84,12 @@ export default function Tampilan() {
             <p className="px-hint">Gambar dipudarkan ke warna latar tema supaya teks tetap terbaca. Ukurannya diperkecil otomatis di peramban.</p>
             <div className="px-actions">
               <label className="px-btn g sm px-fl">{bg.url ? 'Ganti gambar' : 'Unggah gambar'}
-                <input type="file" accept="image/*" className="px-sr" onChange={upBg} />
+                <input type="file" accept="image/*" className="px-sr" onChange={pro ? upBg : upTrialBg} />
               </label>
-              {bg.url && <button className="px-btn g sm" onClick={() => set('bg', { t: 'image', url: '', dim })}>Hapus gambar</button>}
+              {bg.url && <button className="px-btn g sm" onClick={() => setBg({ t: 'image', url: '', dim })}>Hapus gambar</button>}
             </div>
             <label htmlFor="bgdim">Pudarkan gambar: {dim}%</label>
-            <input id="bgdim" type="range" className="px-range" min={0} max={90} step={5} value={dim} onChange={(e) => set('bg', { ...bg, t: 'image', dim: Number(e.target.value) })} />
+            <input id="bgdim" type="range" className="px-range" min={0} max={90} step={5} value={dim} onChange={(e) => setBg({ ...bg, t: 'image', dim: Number(e.target.value) })} />
           </>)}
         </section>
         <section className="px-sec">
@@ -88,7 +98,7 @@ export default function Tampilan() {
             {BUTTON_STYLES.map((x) => {
               const L = !pro && PRO_BTNS.includes(x.key);
               return (
-                <button key={x.key} aria-pressed={(m.btn_style || 'bulat') === x.key} aria-disabled={L || undefined} onClick={pick(L, `Gaya tombol ${x.label}`, () => set('btn_style', x.key))}>
+                <button key={x.key} aria-pressed={((!pro && tr.btn_style) || m.btn_style || 'bulat') === x.key} onClick={pick(L, `Gaya tombol ${x.label}`, 'btn_style', x.key, () => set('btn_style', x.key))}>
                   <i className={'px-bs ' + x.key} aria-hidden="true" />{x.label}{L && <em className="px-pro">Pro</em>}
                 </button>
               );
@@ -101,7 +111,7 @@ export default function Tampilan() {
             {FONTS.map((x) => {
               const L = !pro && PRO_FONTS.includes(x.key);
               return (
-                <button key={x.key} aria-pressed={(m.font_key || 'standar') === x.key} aria-disabled={L || undefined} onClick={pick(L, `Font ${x.label}`, () => set('font_key', x.key))}>
+                <button key={x.key} aria-pressed={((!pro && tr.font_key) || m.font_key || 'standar') === x.key} onClick={pick(L, `Font ${x.label}`, 'font_key', x.key, () => set('font_key', x.key))}>
                   <span className="px-fs" style={{ fontFamily: x.css }} aria-hidden="true">Aa</span>{x.label}{L && <em className="px-pro">Pro</em>}
                 </button>
               );
@@ -110,23 +120,23 @@ export default function Tampilan() {
         </section>
         <section className="px-sec">
           <h2>Warna kustom{!pro && <em className="px-pro">Pro</em>}</h2>
-          <p className="px-hint">{pro ? 'Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.' : <>Warna kustom khusus paket Pro. <Link href="/dashboard/paket">Lihat paket Pro</Link></>}</p>
+          <p className="px-hint">{pro ? 'Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.' : <>Coba dulu di pratinjau. Warna kustom baru tampil di halamanmu setelah <Link href="/dashboard/paket">Pro aktif</Link>.</>}</p>
           <div className="px-colors">
             {COLORS.map(([k, lab]) => (
               <label key={k} className="px-clr">
-                <input type="color" value={t[k]} disabled={!pro} onChange={(e) => set('colors', { ...custom, [k]: e.target.value })} />
+                <input type="color" value={t[k]} onChange={(e) => (pro ? set('colors', { ...custom, [k]: e.target.value }) : setTr((o) => ({ ...o, colors: { ...custom, [k]: e.target.value } })))} />
                 <span><b>{lab}</b><small>{String(t[k]).toUpperCase()}</small></span>
               </label>
             ))}
           </div>
           {warns.map((w) => <p key={w} className="px-warn" role="status">{w}</p>)}
           <div className="px-actions">
-            <button className="px-btn g sm" disabled={!Object.keys(custom).length} onClick={() => set('colors', {})}>Kembalikan warna tema</button>
+            <button className="px-btn g sm" disabled={!Object.keys(custom).length} onClick={() => { clr('colors'); set('colors', {}); }}>Kembalikan warna tema</button>
           </div>
         </section>
         <SaveBar />
       </div>
-      <div><Phone /></div>
+      <div><Phone trial={tr} /></div>
     </div>
   </>);
 }
