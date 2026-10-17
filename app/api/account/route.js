@@ -43,6 +43,8 @@ export async function PUT(req) {
   const email = String(b.email || '').trim().toLowerCase().slice(0, 120);
   if (email && !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email)) return bad('Format email belum benar.');
   try {
+    // Email dipakai untuk masuk, jadi tidak boleh sama dengan akun lain.
+    if (email && (await sql`select 1 from users where email=${email} and id<>${id}`).length) return bad('Email ini sudah dipakai akun lain.', 409);
     await sql`update users set email=${email} where id=${id}`;
   } catch (e) {
     console.error('Kolom email belum ada (jalankan schema-update.sql):', e.message);

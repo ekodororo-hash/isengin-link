@@ -81,9 +81,10 @@ export default function Pengaturan() {
         <form onSubmit={saveEmail}>
           <label htmlFor="u">Nama pengguna</label>
           <input id="u" value={acc.username} readOnly />
-          <p className="px-hint">Dipakai untuk masuk dan alamat halamanmu: isengin.site/{acc.username}. Tidak bisa diubah.</p>
+          <p className="px-hint">Alamat halamanmu: isengin.site/{acc.username}. Tidak bisa diubah.</p>
           <label htmlFor="e">Email <span className="px-hint-i">opsional</span></label>
           <input id="e" type="email" autoComplete="email" placeholder="nama@email.com" value={email} maxLength={120} onChange={(e) => setEmail(e.target.value)} />
+          <p className="px-hint">Setelah disimpan, kamu bisa masuk memakai email ini atau nama pengguna, dengan sandi yang sama.</p>
           <div className="px-actions">
             <button className="px-btn" disabled={busy === 'email' || email.trim().toLowerCase() === (acc.email || '')}>{busy === 'email' ? 'Menyimpan…' : 'Simpan email'}</button>
             <Msg m={em} />

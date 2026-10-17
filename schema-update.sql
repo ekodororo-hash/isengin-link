@@ -40,3 +40,6 @@ alter table links add column if not exists label text default '';
 alter table users add column if not exists btn_style text default 'bulat';
 alter table users add column if not exists font_key text default 'standar';
 alter table users add column if not exists email text default '';
+
+-- Email dipakai untuk masuk, jadi harus unik (kolom kosong tidak dihitung)
+create unique index if not exists users_email_uniq on users (email) where email <> '';

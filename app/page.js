@@ -27,11 +27,11 @@ export default function Home() {
         <h1 className="lp-h1">Satu link untuk semua kontenmu.</h1>
         <p className="lp-lead">Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman. Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
         <div className="lp-claim">
-          <label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama halamanmu'}</label>
+          <label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>
           <div className="lp-field">
-            <span>isengin.site/</span>
-            <input id="u" placeholder="rani" value={username} maxLength={20} autoComplete="username" spellCheck={false}
-              onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
+            {mode === 'register' && <span>isengin.site/</span>}
+            <input id="u" placeholder={mode === 'register' ? 'rani' : 'rani atau nama@email.com'} value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete="username" spellCheck={false}
+              onChange={(e) => setU(e.target.value.toLowerCase().replace(mode === 'register' ? /[^a-z0-9_]/g : /[^a-z0-9_@.+-]/g, ''))} />
           </div>
           <label htmlFor="p">Sandi</label>
           <div className="lp-field">

@@ -6,8 +6,10 @@ const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', '_next'];
 export async function POST(req) {
   const { mode, username = '', password = '' } = await req.json();
   if (mode === 'logout') { clearSession(); return Response.json({ ok: true }); }
-  const u = String(username).toLowerCase();
-  if (!/^[a-z0-9_]{3,20}$/.test(u) || RESERVED.includes(u) || String(password).length < 6)
+  const u = String(username).trim().toLowerCase();
+  // Saat masuk, kolom nama boleh berisi email yang sudah disimpan di Pengaturan.
+  const byEmail = mode !== 'register' && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(u) && u.length <= 120;
+  if (!byEmail && (!/^[a-z0-9_]{3,20}$/.test(u) || RESERVED.includes(u)) || String(password).length < 6)
     return Response.json({ error: 'Nama 3-20 huruf/angka/_ (bukan kata terlarang), sandi minimal 6 karakter.' }, { status: 400 });
   const ip = ipOf(req);
   if (mode === 'register') {
@@ -25,9 +27,9 @@ export async function POST(req) {
   if (byIp.over) return tooMany(byIp);
   const byUser = await hit(`login:u:${u}`, 8, 900);
   if (byUser.over) return tooMany(byUser);
-  const r = await sql`select id,password_hash from users where username=${u}`;
+  const r = byEmail ? await sql`select id,password_hash from users where email=${u}`.catch(() => []) : await sql`select id,password_hash from users where username=${u}`;
   if (!r.length || !(await bcrypt.compare(password, r[0].password_hash)))
-    return Response.json({ error: 'Nama atau sandi salah.' }, { status: 401 });
+    return Response.json({ error: 'Nama/email atau sandi salah.' }, { status: 401 });
   await clear(`login:u:${u}`);
   await setSession(r[0].id);
   return Response.json({ ok: true });
