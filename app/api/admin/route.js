@@ -1,5 +1,6 @@
 import { sql } from '@/lib/db';
 import { userBlobs, dropBlobs } from '@/lib/blob';
+import { removeDomain } from '@/lib/vercel';
 import { setAdmin, clearAdmin, isAdmin } from '@/lib/auth';
 import { hit, clear, ipOf, tooMany } from '@/lib/limit';
 const no = () => Response.json({ error: 'Belum masuk.' }, { status: 401 });
@@ -18,19 +19,29 @@ export async function POST(req) {
 }
 export async function GET() {
   if (!(await isAdmin())) return no();
-  const users = await sql`select u.id,u.username,u.active,u.verified,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`
+  const users = await sql`select u.id,u.username,u.active,u.verified,(u.plan_until > now()) as pro,u.plan_until,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`
     .catch((e) => { console.error('Kolom verified belum ada (jalankan schema-update.sql):', e.message); return sql`select u.id,u.username,u.active,u.views,count(l.id)::int as links,coalesce(sum(l.clicks),0)::int as clicks from users u left join links l on l.user_id=u.id group by u.id order by u.id desc`; });
   return Response.json({ users });
 }
 export async function PATCH(req) {
   if (!(await isAdmin())) return no();
-  const { id, active, verified } = await req.json();
+  const { id, active, verified, proDays } = await req.json();
   // Centang verifikasi hanya bisa diubah dari sini (pengguna tidak punya akses lewat /api/me).
   if (typeof verified === 'boolean') {
     try { await sql`update users set verified=${verified} where id=${Number(id)}`; }
     catch (e) {
       console.error('Gagal mengubah verifikasi (sudah jalankan schema-update.sql?):', e.message);
       return Response.json({ error: 'Kolom verified belum ada. Jalankan schema-update.sql di database.' }, { status: 500 });
+    }
+  }
+  // Beri Pro N hari (diperpanjang dari tanggal berakhir bila masih aktif), atau 0 untuk mencabut.
+  if (Number.isInteger(proDays) && proDays >= 0 && proDays <= 3650) {
+    try {
+      await sql`update users set plan_until = case when ${proDays}::int = 0 then null
+        else greatest(coalesce(plan_until, now()), now()) + make_interval(days => ${proDays}::int) end where id=${Number(id)}`;
+    } catch (e) {
+      console.error('Gagal mengubah paket (sudah jalankan schema-update.sql?):', e.message);
+      return Response.json({ error: 'Kolom plan_until belum ada. Jalankan schema-update.sql di database.' }, { status: 500 });
     }
   }
   if (typeof active === 'boolean') await sql`update users set active=${active} where id=${Number(id)}`;
@@ -42,7 +53,9 @@ export async function DELETE(req) {
   const { id } = await req.json();
   const uid = Number(id);
   const files = await userBlobs(uid);
+  const dom = (await sql`select custom_domain from users where id=${uid}`.catch(() => []))[0]?.custom_domain;
   const r = await sql`delete from users where id=${uid} returning id`;
   await dropBlobs(files, uid);
+  await removeDomain(dom);
   return Response.json({ ok: true, deleted: r.length });
 }

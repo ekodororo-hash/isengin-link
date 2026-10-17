@@ -48,3 +48,29 @@ create unique index if not exists users_email_uniq on users (email) where email 
 alter table links add column if not exists kind text default 'link';
 alter table users add column if not exists bg text default '';
 alter table users add column if not exists verified boolean default false;
+
+-- Statistik per link (klik per hari)
+create table if not exists link_stats(
+  link_id int references links(id) on delete cascade,
+  day date not null,
+  clicks int not null default 0,
+  primary key(link_id, day));
+
+-- Paket Pro: plan_until kosong atau sudah lewat = gratis
+alter table users add column if not exists plan_until timestamptz;
+
+-- Domain kustom (hanya Pro). domain_status: '' | 'pending' | 'active'
+alter table users add column if not exists custom_domain text;
+alter table users add column if not exists domain_status text default '';
+create unique index if not exists users_domain_uniq on users (custom_domain) where custom_domain is not null;
+
+-- Riwayat pembayaran (catatan tetap ada walau akun dihapus)
+create table if not exists payments(
+  order_id text primary key,
+  user_id int references users(id) on delete set null,
+  plan text not null,
+  amount int not null,
+  status text not null default 'pending',
+  created_at timestamptz default now(),
+  paid_at timestamptz);
+create index if not exists payments_user on payments(user_id);

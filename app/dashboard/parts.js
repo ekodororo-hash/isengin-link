@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useDash } from './DashContext';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle, bgStyle } from '@/lib/themes';
@@ -73,6 +74,64 @@ export function DailyChart({ daily = [] }) {
         ))}
       </div>
       <div className="px-ch-axis"><span>{lab(rows[0].day)}</span><span>{lab(rows[rows.length - 1].day)}</span></div>
+    </div>
+  );
+}
+
+// Tanggal hari ini di zona Jakarta (YYYY-MM-DD) dan mundur k hari, sama dengan zona yang dipakai server.
+const TODAY = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
+const dayAt = (k) => { const d = new Date(TODAY() + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - k); return d.toISOString().slice(0, 10); };
+const lastDays = (n) => Array.from({ length: n }, (_, i) => dayAt(n - 1 - i));
+
+// Peringkat link terlaris. Pilihan "Semua" memakai total seumur hidup; 7 dan 30 hari memakai statistik harian per link.
+// Gratis dibatasi 7 hari; tombol 30 hari mengarah ke halaman Paket. Klik nama link untuk melihat grafik hariannya.
+export function LinkRank() {
+  const { m } = useDash();
+  const router = useRouter();
+  const [range, setRange] = useState('all');
+  const [open, setOpen] = useState(null);
+  const links = m.links.filter((l) => l.kind !== 'header');
+  const n = range === 'all' ? 0 : range;
+  const chartDays = lastDays(n || m.stat_days || 7);
+  const byLink = {};
+  for (const r of m.link_days || []) (byLink[r.link_id] ||= {})[r.day] = r.clicks;
+  const sumDays = (id, days) => days.reduce((a, d) => a + (byLink[id]?.[d] || 0), 0);
+  const rows = links.map((l) => ({ l, v: n ? sumDays(l.id, lastDays(n)) : l.clicks || 0 })).sort((a, b) => b.v - a.v);
+  const mx = Math.max(1, ...rows.map((r) => r.v));
+  const opts = [['all', 'Semua'], [7, '7 hari'], [30, m.pro ? '30 hari' : '30 hari · Pro']];
+  const pick = (v) => { if (v === 30 && !m.pro) { router.push('/dashboard/paket'); return; } setRange(v); };
+  return (
+    <div className="px-card">
+      <div className="px-ch-head">
+        <b>Peringkat link</b>
+        <div className="px-seg" role="group" aria-label="Rentang waktu">
+          {opts.map(([v, t]) => <button key={v} aria-pressed={range === v} onClick={() => pick(v)}>{t}</button>)}
+        </div>
+      </div>
+      <p className="px-ch-sum">{range === 'all' ? 'Total klik sejak link dibuat.' : `Klik dalam ${range} hari terakhir.`} Klik nama link untuk melihat grafik hariannya.{!m.pro && ' Paket gratis menampilkan statistik harian 7 hari.'}</p>
+      {rows.length === 0 && <p className="px-empty">Belum ada link.</p>}
+      {rows.map(({ l, v }, i) => {
+        const key = l.id || l._k || i, on = open === key;
+        const vals = chartDays.map((d) => byLink[l.id]?.[d] || 0), cm = Math.max(1, ...vals);
+        return (
+          <div key={key}>
+            <div className="px-bar">
+              <button className="px-rk-n" aria-expanded={on} onClick={() => setOpen(on ? null : key)}>{i + 1}. {l.title}{l.hidden ? ' (tersembunyi)' : ''}</button>
+              <i style={{ width: Math.max(4, (v / mx) * 100) + '%' }} /><b>{v}</b>
+            </div>
+            {on && (l.id ? (
+              <div className="px-mini-w">
+                <div className="px-chart px-mini" role="img" aria-label={`Klik per hari untuk ${l.title}, ${vals.reduce((a, b) => a + b, 0)} dalam ${chartDays.length} hari`}>
+                  {chartDays.map((d, j) => (
+                    <div key={d} className="px-col" title={`${lab(d)}: ${vals[j]} klik`}><i style={{ height: `calc(100% * ${vals[j] / cm})` }} /></div>
+                  ))}
+                </div>
+                <div className="px-ch-axis"><span>{lab(chartDays[0])}</span><span>{vals.reduce((a, b) => a + b, 0)} klik dalam {chartDays.length} hari</span><span>{lab(chartDays[chartDays.length - 1])}</span></div>
+              </div>
+            ) : <p className="px-hint">Simpan dulu supaya statistiknya mulai tercatat.</p>)}
+          </div>
+        );
+      })}
     </div>
   );
 }

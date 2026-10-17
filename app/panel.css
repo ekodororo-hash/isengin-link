@@ -319,3 +319,9 @@
 .px-ph .hd span{max-width:80%;text-align:center;overflow-wrap:anywhere}
 .px-ph .vb{color:var(--pa)}
 td .vb{vertical-align:-.2em;margin-left:6px;color:var(--red)}
+/* peringkat link, paket, domain */
+.px-rk-n{font:inherit;font-weight:700;text-align:left;background:none;border:0;padding:0;color:inherit;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:underline dotted}
+.px-rk-n:focus-visible{outline:3px dashed var(--navy);outline-offset:2px}
+.px-mini-w{margin:2px 0 14px}.px-chart.px-mini{height:90px}
+.px-tag.pro{background:var(--yel);color:var(--navy)}
+.px-main code{background:#fff;border:2px solid var(--navy);border-radius:8px;padding:0 6px;font-weight:700}

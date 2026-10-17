@@ -27,6 +27,10 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | `ADMIN_PASS` | Sandi login untuk `/admin`. Pakai yang kuat |
 | `BLOB_READ_WRITE_TOKEN` | Terisi otomatis saat Vercel Blob disambungkan ke project |
 | `CRON_SECRET` | Teks acak panjang. Dipakai Vercel Cron untuk memanggil `/api/cron/blob` (pembersih file Blob yatim). Tanpa ini endpoint menolak semua permintaan |
+| `MIDTRANS_SERVER_KEY` | Server key Midtrans (Settings > Access Keys). Tanpa ini tombol bayar menolak |
+| `MIDTRANS_IS_PRODUCTION` | `true` untuk produksi; selain itu memakai sandbox |
+| `PRO_PRICE_MONTH`, `PRO_PRICE_YEAR` | Harga Pro dalam rupiah (bawaan 29000 dan 290000) |
+| `VERCEL_API_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID` | Untuk mendaftarkan domain kustom ke project lewat API Vercel. Team ID hanya bila project ada di Team |
 | `NEXT_PUBLIC_SITE_URL` | Alamat situs, mis. `https://isengin.site`. Dipakai untuk kode QR dan gambar preview saat link dibagikan |
 
 Setelah mengubah environment variable di Vercel, lakukan **Redeploy**.
@@ -105,3 +109,13 @@ schema.sql, schema-update.sql skema database
 - **Latar belakang**: di Tampilan, pilih warna tema, gradasi dua warna (3 arah), atau gambar (dipudarkan ke warna latar tema, 0–90%). Disimpan sebagai JSON di kolom `users.bg`; gambar diunggah dengan `kind=bg` ke folder `backgrounds/`. Gradasi ikut tampil di gambar preview saat link dibagikan; gambar latar tidak.
 - **Verified badge**: admin memberi atau mencabut centang di `/admin/pengguna` (kolom `users.verified`). Pengguna tidak bisa mengubahnya sendiri. Centang tampil di samping nama di halaman publik dan pratinjau dashboard.
 - Jalankan `schema-update.sql` lagi (menambah `links.kind`, `users.bg`, `users.verified`) sebelum deploy.
+
+## Paket Pro, domain kustom, statistik per link, 404, transaksi
+
+- **Paket Gratis dan Pro** (`/dashboard/paket`): Pro membuka statistik harian per link 30 hari (gratis 7 hari), domain kustom, dan menghilangkan tulisan “Dibuat di isengin.site”. Batas link tidak dibedakan, jadi tidak ada data pengguna lama yang terpotong. Harga di env `PRO_PRICE_*`; paket 30 dan 365 hari, tanpa perpanjangan otomatis, dan perpanjangan ditambahkan setelah masa aktif yang tersisa. Aturan paket ada di `lib/plan.js`.
+- **Pembayaran Midtrans** (Snap, tanpa SDK, `lib/midtrans.js`): `POST /api/billing` membuat pesanan (tabel `payments`) lalu mengarahkan ke halaman bayar Midtrans. Paket aktif hanya setelah webhook `POST /api/billing/webhook` lolos tiga pemeriksaan: tanda tangan SHA-512, status dicek ulang langsung ke API Midtrans, dan nominal sama dengan pesanan. Webhook aman dipanggil berulang (pesanan lunas tidak memperpanjang dua kali). **Atur di dashboard Midtrans: Settings, Configuration, Payment Notification URL = `https://isengin.site/api/billing/webhook`.** Admin bisa memberi atau mencabut Pro manual di `/admin/pengguna` (berguna untuk uji coba).
+- **Domain kustom** (`/dashboard/domain`, khusus Pro): pengguna mengetik domain, server mendaftarkannya ke project Vercel lewat API (`lib/vercel.js`), pengguna mengatur DNS (CNAME `cname.vercel-dns.com` untuk subdomain, A `76.76.21.21` untuk domain utama), lalu klik Cek status. `middleware.js` mengalihkan beranda (`/`) di domain selain domain utama ke `app/domain/[host]`, yang hanya melayani domain berstatus `active` milik akun yang masih Pro. Path lain (`/go/...`) berjalan normal. Domain dilepas dari Vercel saat pengguna melepasnya atau akunnya dihapus. Kolom: `users.custom_domain`, `users.domain_status`.
+- **Statistik per link**: klik dicatat per hari di tabel `link_stats` (ikut perintah SQL `/go/<id>` yang sama). Ringkasan punya kartu “Peringkat link” (Semua, 7 hari, 30 hari) dengan grafik harian per link. Klik sebelum fitur ini dipasang hanya ada di total.
+- **Halaman 404** (`app/not-found.js`): menawarkan “ambil nama ini” bila alamatnya berbentuk nama pengguna yang masih kosong, atau pesan lain bila akunnya ada tapi nonaktif.
+- **Simpan jadi satu transaksi** (`PUT /api/me`): profil, tampilan, dan semua link disimpan lewat `sql.transaction` (4 perintah, tanpa query per link). Gagal berarti tidak ada yang berubah. Konsekuensinya fallback “kolom belum ada” saat menyimpan dihapus: **`schema-update.sql` wajib sudah dijalankan**, kalau belum simpan gagal dengan pesan yang jelas. Membaca data tetap tahan terhadap kolom yang belum ada.
+- Jalankan `schema-update.sql` lagi (menambah `link_stats`, `users.plan_until`, `users.custom_domain`, `users.domain_status`, `payments`).

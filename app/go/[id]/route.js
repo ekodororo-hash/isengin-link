@@ -13,7 +13,24 @@ export async function GET(req, { params }) {
     r = await sql`select url from links where id=${id} and hidden is not true`.catch(() => sql`select url from links where id=${id}`);
   } else {
     try {
-      // naikkan total klik, hitungan harian, dan asal klik dalam satu perintah
+      // naikkan total klik, hitungan harian, asal klik, dan hitungan harian per link dalam satu perintah
+      r = await sql`
+        with l as (update links set clicks=clicks+1 where id=${id} and hidden is not true returning id, url, user_id),
+        s as (insert into daily_stats(user_id, day, clicks)
+              select user_id, (now() at time zone 'Asia/Jakarta')::date, 1 from l
+              on conflict (user_id, day) do update set clicks = daily_stats.clicks + 1),
+        c as (insert into click_sources(user_id, day, src, clicks)
+              select user_id, (now() at time zone 'Asia/Jakarta')::date, ${src}::text, 1 from l
+              on conflict (user_id, day, src) do update set clicks = click_sources.clicks + 1),
+        k as (insert into link_stats(link_id, day, clicks)
+              select id, (now() at time zone 'Asia/Jakarta')::date, 1 from l
+              on conflict (link_id, day) do update set clicks = link_stats.clicks + 1)
+        select url from l`;
+    } catch (e0) {
+      console.error('Gagal mencatat statistik per link (sudah jalankan schema-update.sql?):', e0.message);
+      r = null;
+    }
+    if (!r) try {
       r = await sql`
         with l as (update links set clicks=clicks+1 where id=${id} and hidden is not true returning url, user_id),
         s as (insert into daily_stats(user_id, day, clicks)

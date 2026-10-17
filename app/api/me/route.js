@@ -7,7 +7,7 @@ import { cleanBtn, cleanFont } from '@/lib/style';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
-  const [u, links, daily, sources, extra, look, more] = await Promise.all([
+  const [u, links, daily, sources, extra, look, more, plan] = await Promise.all([
     sql`select username,display_name,bio,theme,photo_url,views from users where id=${id}`,
     sql`select id,title,url,clicks,thumb,hidden,price,old_price,label,kind from links where user_id=${id} order by position,id`
       .catch(() => sql`select id,title,url,clicks,thumb,hidden,price,old_price,label from links where user_id=${id} order by position,id`)
@@ -24,8 +24,15 @@ async function load(id) {
     sql`select socials,colors from users where id=${id}`.catch((e) => { console.error('Kolom socials/colors belum ada (jalankan schema-update.sql):', e.message); return []; }),
     sql`select btn_style,font_key from users where id=${id}`.catch(() => []),
     sql`select bg,verified from users where id=${id}`.catch(() => []),
+    sql`select (plan_until > now()) as pro, plan_until from users where id=${id}`.catch(() => []),
   ]);
-  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: l.kind === 'header' ? 'header' : 'link' })), bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
+  const pro = plan[0]?.pro === true;
+  // Statistik per link: Pro 30 hari, gratis 7 hari (zona Jakarta). Hanya hari yang ada isinya.
+  const linkDays = await sql`select ls.link_id, to_char(ls.day,'YYYY-MM-DD') as day, ls.clicks
+      from link_stats ls join links l on l.id=ls.link_id
+      where l.user_id=${id} and ls.day >= ((now() at time zone 'Asia/Jakarta')::date - ${pro ? 29 : 6}::int)
+      order by ls.day`.catch((e) => { console.error('Statistik per link gagal (sudah jalankan schema-update.sql?):', e.message); return []; });
+  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: l.kind === 'header' ? 'header' : 'link' })), bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, stat_days: pro ? 30 : 7, link_days: linkDays, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
 }
 export async function GET() {
   const id = await getUserId();
@@ -49,89 +56,54 @@ export async function PUT(req) {
   };
   const theme = THEME_KEYS.includes(b.theme) ? b.theme : 'kobalt';
   const photo = b.photo_url && allowed(b.photo_url) ? b.photo_url : null;
-  await sql`update users set display_name=${String(b.display_name || '').slice(0, 40)}, bio=${String(b.bio || '').slice(0, 160)}, theme=${theme}, photo_url=${photo} where id=${id}`;
-  // Pembatas cukup punya judul; link biasa wajib punya judul dan alamat.
-  const links = (b.links || []).filter((l) => (l.kind === 'header' ? l.title?.trim() : l.title?.trim() && l.url?.trim())).slice(0, 30);
-  const kept = [], kinds = [], thumbs = [], hiddens = [], prices = [], olds = [], labels = [];
-  for (let i = 0; i < links.length; i++) {
-    const l = links[i], head = l.kind === 'header', t = l.title.trim().slice(0, 60), url = head ? '' : fix(l.url);
-    let lid;
-    if (l.id) {
-      await sql`update links set title=${t}, url=${url}, position=${i} where id=${Number(l.id)} and user_id=${id}`;
-      lid = Number(l.id);
-    } else {
-      const r = await sql`insert into links(user_id,title,url,position) values(${id},${t},${url},${i}) returning id`;
-      lid = r[0].id;
-    }
-    kept.push(lid);
-    kinds.push(head ? 'header' : 'link');
-    thumbs.push(head ? '' : okThumb(l.thumb)); hiddens.push(l.hidden === true);
-    prices.push(head ? '' : cleanPrice(l.price)); olds.push(head ? '' : cleanPrice(l.old_price)); labels.push(head ? '' : cleanLabel(l.label));
-  }
-  await sql`delete from links where user_id=${id} and id <> all(${kept})`;
-  if (kept.length) {
-    try {
-      await sql`update links set thumb=v.thumb, hidden=v.hidden
-        from (select unnest(${kept}::int[]) as id, unnest(${thumbs}::text[]) as thumb, unnest(${hiddens}::boolean[]) as hidden) v
-        where links.id=v.id and links.user_id=${id}`;
-    } catch (e) {
-      console.error('Gagal menyimpan gambar/sembunyikan link (sudah jalankan schema-update.sql?):', e.message);
-      if (thumbs.some(Boolean) || hiddens.some(Boolean)) {
-        return Response.json({ error: 'Link tersimpan, tapi gambar/sembunyikan link belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
-      }
-    }
-  }
-  if (kept.length) {
-    try {
-      await sql`update links set price=v.price, old_price=v.old_price, label=v.label
-        from (select unnest(${kept}::int[]) as id, unnest(${prices}::text[]) as price, unnest(${olds}::text[]) as old_price, unnest(${labels}::text[]) as label) v
-        where links.id=v.id and links.user_id=${id}`;
-    } catch (e) {
-      console.error('Gagal menyimpan harga/label (sudah jalankan schema-update.sql?):', e.message);
-      if (prices.some(Boolean) || olds.some(Boolean) || labels.some(Boolean)) {
-        return Response.json({ error: 'Link tersimpan, tapi harga/label belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
-      }
-    }
-  }
-  if (kept.length) {
-    try {
-      await sql`update links set kind=v.kind
-        from (select unnest(${kept}::int[]) as id, unnest(${kinds}::text[]) as kind) v
-        where links.id=v.id and links.user_id=${id}`;
-    } catch (e) {
-      console.error('Gagal menyimpan pembatas (sudah jalankan schema-update.sql?):', e.message);
-      if (kinds.includes('header')) {
-        return Response.json({ error: 'Link tersimpan, tapi pembatas belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
-      }
-    }
-  }
-  try {
-    await sql`update users set btn_style=${cleanBtn(b.btn_style)}, font_key=${cleanFont(b.font_key)} where id=${id}`;
-  } catch (e) {
-    console.error('Gagal menyimpan gaya tombol/font (sudah jalankan schema-update.sql?):', e.message);
-    if (cleanBtn(b.btn_style) !== 'bulat' || cleanFont(b.font_key) !== 'standar') {
-      return Response.json({ error: 'Link dan profil tersimpan, tapi gaya tombol/font belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
-    }
-  }
-  const socials = cleanSocials(b.socials), colors = cleanColors(b.colors);
-  try {
-    await sql`update users set socials=${JSON.stringify(socials)}, colors=${JSON.stringify(colors)} where id=${id}`;
-  } catch (e) {
-    console.error('Gagal menyimpan ikon sosial/warna (sudah jalankan schema-update.sql?):', e.message);
-    if (Object.keys(socials).length || Object.keys(colors).length) {
-      return Response.json({ error: 'Link dan profil tersimpan, tapi ikon sosial/warna belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
-    }
-  }
   let bg = cleanBg(b.bg);
   if (bg.t === 'image' && !allowed(bg.url)) bg = {};
+
+  // Pembatas cukup punya judul; link biasa wajib punya judul dan alamat.
+  const links = (b.links || []).filter((l) => (l.kind === 'header' ? l.title?.trim() : l.title?.trim() && l.url?.trim())).slice(0, 30);
+  // Dua kelompok kolom paralel: link yang sudah ada (punya id, diubah) dan yang baru (ditambah).
+  const cols = () => ({ id: [], title: [], url: [], position: [], thumb: [], hidden: [], price: [], old_price: [], label: [], kind: [] });
+  const old = cols(), fresh = cols();
+  links.forEach((l, i) => {
+    const head = l.kind === 'header', c = l.id ? old : fresh;
+    if (l.id) c.id.push(Number(l.id));
+    c.title.push(l.title.trim().slice(0, 60));
+    c.url.push(head ? '' : fix(l.url));
+    c.position.push(i);
+    c.thumb.push(head ? '' : okThumb(l.thumb));
+    c.hidden.push(l.hidden === true);
+    c.price.push(head ? '' : cleanPrice(l.price));
+    c.old_price.push(head ? '' : cleanPrice(l.old_price));
+    c.label.push(head ? '' : cleanLabel(l.label));
+    c.kind.push(head ? 'header' : 'link');
+  });
+
+  // Semua perubahan dalam satu transaksi: kalau satu langkah gagal, tidak ada yang berubah (tidak ada simpan setengah jalan).
+  // Urutannya penting: hapus dulu link yang dibuang, baru ubah yang lama, terakhir tambah yang baru.
   try {
-    await sql`update users set bg=${JSON.stringify(bg)} where id=${id}`;
+    await sql.transaction([
+      sql`update users set display_name=${String(b.display_name || '').slice(0, 40)}, bio=${String(b.bio || '').slice(0, 160)}, theme=${theme}, photo_url=${photo},
+          btn_style=${cleanBtn(b.btn_style)}, font_key=${cleanFont(b.font_key)},
+          socials=${JSON.stringify(cleanSocials(b.socials))}, colors=${JSON.stringify(cleanColors(b.colors))}, bg=${JSON.stringify(bg)}
+          where id=${id}`,
+      sql`delete from links where user_id=${id} and id <> all(${old.id}::int[])`,
+      sql`update links set title=v.title, url=v.url, position=v.position, thumb=v.thumb, hidden=v.hidden,
+          price=v.price, old_price=v.old_price, label=v.label, kind=v.kind
+          from unnest(${old.id}::int[], ${old.title}::text[], ${old.url}::text[], ${old.position}::int[], ${old.thumb}::text[], ${old.hidden}::boolean[],
+                      ${old.price}::text[], ${old.old_price}::text[], ${old.label}::text[], ${old.kind}::text[])
+            as v(id,title,url,position,thumb,hidden,price,old_price,label,kind)
+          where links.id=v.id and links.user_id=${id}`,
+      sql`insert into links(user_id,title,url,position,thumb,hidden,price,old_price,label,kind)
+          select ${id}::int, v.title, v.url, v.position, v.thumb, v.hidden, v.price, v.old_price, v.label, v.kind
+          from unnest(${fresh.title}::text[], ${fresh.url}::text[], ${fresh.position}::int[], ${fresh.thumb}::text[], ${fresh.hidden}::boolean[],
+                      ${fresh.price}::text[], ${fresh.old_price}::text[], ${fresh.label}::text[], ${fresh.kind}::text[])
+            as v(title,url,position,thumb,hidden,price,old_price,label,kind)`,
+    ]);
   } catch (e) {
-    console.error('Gagal menyimpan latar belakang (sudah jalankan schema-update.sql?):', e.message);
-    if (bg.t) {
-      return Response.json({ error: 'Tersimpan, tapi latar belakang belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
-    }
+    console.error('Gagal menyimpan (sudah jalankan schema-update.sql?):', e.message);
+    return Response.json({ error: 'Gagal menyimpan, tidak ada yang berubah. Pastikan schema-update.sql sudah dijalankan, lalu coba lagi.' }, { status: 500 });
   }
+
   // Hapus dari Blob file yang tadinya dipakai tapi sekarang tidak (foto/gambar diganti atau dihapus, link dihapus).
   try {
     const after = new Set(await userBlobs(id));

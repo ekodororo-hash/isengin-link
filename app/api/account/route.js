@@ -3,6 +3,7 @@ import { sql } from '@/lib/db';
 import { getUserId, clearSession } from '@/lib/auth';
 import { hit, clear, tooMany } from '@/lib/limit';
 import { userBlobs, dropBlobs } from '@/lib/blob';
+import { removeDomain } from '@/lib/vercel';
 const MIN_PASS = 8;
 const needLogin = () => Response.json({ error: 'Belum masuk.' }, { status: 401 });
 const bad = (error, status = 400) => Response.json({ error }, { status });
@@ -63,7 +64,9 @@ export async function DELETE(req) {
   if (c.res) return c.res;
   if (String(b.confirm || '').trim().toLowerCase() !== c.user.username) return bad('Ketik nama pengguna dengan benar untuk konfirmasi.');
   const files = await userBlobs(id);
+  const dom = (await sql`select custom_domain from users where id=${id}`.catch(() => []))[0]?.custom_domain;
   await sql`delete from users where id=${id}`;
+  await removeDomain(dom);
   await dropBlobs(files, id);
   clearSession();
   return Response.json({ ok: true });

@@ -55,6 +55,7 @@ export default async function Profile({ params, searchParams }) {
   const src = detectSource({ param, referer: h.get('referer'), ua: h.get('user-agent'), ownHost: (h.get('host') || '').split(':')[0].replace(/^www\./, '').toLowerCase() });
   // Latar belakang dan centang verifikasi dibaca terpisah supaya halaman tetap terbuka walau schema-update.sql belum dijalankan.
   const more = (await sql`select bg,verified from users where id=${u.id}`.catch(() => []))[0] || {};
+  const pro = (await sql`select (plan_until > now()) as pro from users where id=${u.id}`.catch(() => []))[0]?.pro === true;
   const look = (await sql`select btn_style,font_key from users where id=${u.id}`.catch(() => []))[0] || {};
   const name = u.display_name || u.username;
   return (
@@ -83,7 +84,7 @@ export default async function Profile({ params, searchParams }) {
             </a>
           );
         })}
-        <div className="foot">Dibuat di <a href="/">isengin.site</a></div>
+        {!pro && <div className="foot">Dibuat di <a href="https://isengin.site">isengin.site</a></div>}
       </main>
     </div>
   );
