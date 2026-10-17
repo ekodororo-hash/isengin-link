@@ -5,7 +5,7 @@ import Shell from '../Shell';
 import Loader from '../Loader';
 const Ctx = createContext(null);
 export const useDash = () => useContext(Ctx);
-const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil']];
+const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan']];
 export function DashProvider({ children }) {
   const [m, setM] = useState(null);
   const [msg, setMsg] = useState('');
@@ -17,6 +17,15 @@ export function DashProvider({ children }) {
   if (!m) return <Loader />;
   const set = (k, v) => setM({ ...m, [k]: v });
   const setL = (i, k, v) => set('links', m.links.map((l, j) => (j === i ? { ...l, [k]: v } : l)));
+  const addLink = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), title: '', url: '' }]);
+  const delLink = (i) => set('links', m.links.filter((_, j) => j !== i));
+  const move = (i, d) => {
+    const j = i + d;
+    if (j < 0 || j >= m.links.length) return;
+    const a = [...m.links];
+    [a[i], a[j]] = [a[j], a[i]];
+    set('links', a);
+  };
   async function save() {
     const r = await fetch('/api/me', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(m) });
     const d = await r.json();
@@ -35,7 +44,7 @@ export function DashProvider({ children }) {
     location.href = '/';
   }
   return (
-    <Ctx.Provider value={{ m, set, setL, save, up, msg }}>
+    <Ctx.Provider value={{ m, set, setL, addLink, delLink, move, save, up, msg }}>
       <Shell title="isengin.site" menu={MENU} out={out}>{children}</Shell>
     </Ctx.Provider>
   );

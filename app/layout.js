@@ -1,5 +1,9 @@
 import './globals.css';
-export const metadata = { title: 'isengin.site – satu link untuk semua kontenmu' };
+export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site'),
+  title: 'isengin.site – satu link untuk semua kontenmu',
+  description: 'Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman, lalu lihat berapa kali tiap link diklik.',
+};
 export default function RootLayout({ children }) {
   return (
     <html lang="id">

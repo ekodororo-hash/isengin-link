@@ -27,6 +27,10 @@ export function AdminProvider({ children }) {
     await fetch('/api/admin', { method: 'PATCH', headers: J, body: JSON.stringify({ id, active }) });
     load();
   }
+  async function del(id) {
+    await fetch('/api/admin', { method: 'DELETE', headers: J, body: JSON.stringify({ id }) });
+    load();
+  }
   if (d === null) return (
     <div className="px-app"><main className="px-login px-main">
       <h1>Admin</h1><p className="px-sub">Khusus pemilik situs.</p>
@@ -39,7 +43,7 @@ export function AdminProvider({ children }) {
     </main></div>
   );
   return (
-    <Ctx.Provider value={{ d, tog }}>
+    <Ctx.Provider value={{ d, tog, del }}>
       <Shell title="Admin" menu={MENU} out={out}>{children}</Shell>
     </Ctx.Provider>
   );

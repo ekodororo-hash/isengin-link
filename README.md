@@ -11,8 +11,9 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | `/dashboard/link` | Pengguna | Tambah, ubah, hapus link |
 | `/dashboard/tampilan` | Pengguna | Pilih tema dengan pratinjau |
 | `/dashboard/profil` | Pengguna | Foto, nama tampilan, bio |
+| `/dashboard/bagikan` | Pengguna | Salin link dan unduh kode QR |
 | `/admin` | Pemilik situs | Login terpisah; ringkasan situs |
-| `/admin/pengguna` | Pemilik situs | Daftar pengguna, aktifkan atau nonaktifkan halaman |
+| `/admin/pengguna` | Pemilik situs | Daftar pengguna, aktifkan, nonaktifkan, atau hapus akun |
 | `/nama` | Pengunjung | Halaman publik tiap pengguna |
 | `/go/<id>` | Pengunjung | Menghitung klik lalu mengarahkan ke link tujuan |
 
@@ -25,12 +26,13 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | `ADMIN_USER` | Nama login untuk `/admin` (terpisah dari akun pengguna) |
 | `ADMIN_PASS` | Sandi login untuk `/admin`. Pakai yang kuat |
 | `BLOB_READ_WRITE_TOKEN` | Terisi otomatis saat Vercel Blob disambungkan ke project |
+| `NEXT_PUBLIC_SITE_URL` | Alamat situs, mis. `https://isengin.site`. Dipakai untuk kode QR dan gambar preview saat link dibagikan |
 
 Setelah mengubah environment variable di Vercel, lakukan **Redeploy**.
 
 ## Pasang dari nol
 
-1. **Neon**: buat project, buka SQL Editor, jalankan `schema.sql`, lalu `schema-update.sql` (menambah kolom `active` dan `views`). Kalau database sudah jalan, cukup jalankan `schema-update.sql`.
+1. **Neon**: buat project, buka SQL Editor, jalankan `schema.sql`, lalu `schema-update.sql` (kolom `active` dan `views`, tabel `daily_stats` untuk statistik harian, dan `rate_limits` untuk batas percobaan login). Kalau database sudah jalan, cukup jalankan `schema-update.sql` lagi. Aman diulang, dan **harus dijalankan sebelum deploy versi ini**.
 2. **GitHub**: push proyek ini ke repo.
 3. **Vercel**: import repo. Di Storage, buat **Blob** dan sambungkan ke project. Isi semua environment variable di atas.
 4. **Deploy**, lalu di Settings, Domains, tambahkan `isengin.site` dan ikuti petunjuk DNS.
@@ -58,6 +60,11 @@ app/
   Shell.js, Loader.js         kerangka sidebar dan animasi loading
   panel.css                   gaya dasbor dan admin (neobrutalism, responsif)
 lib/db.js, lib/auth.js        koneksi Neon dan sesi login
+lib/themes.js                 daftar tema (tambah tema cukup di sini)
+lib/limit.js                  pembatas percobaan login/daftar (disimpan di database)
+lib/bot.js                    penyaring crawler agar kunjungan/klik tidak membengkak
+app/icons.js                  ikon link, dipilih otomatis dari alamat (WhatsApp, Instagram, dll)
+app/[username]/opengraph-image.js   gambar preview saat link dibagikan
 schema.sql, schema-update.sql skema database
 ```
 
@@ -67,3 +74,9 @@ schema.sql, schema-update.sql skema database
 - Halaman publik pengguna memakai tema pilihan penggunanya (kobalt, permen, hutan).
 - Menonaktifkan pengguna di admin hanya menyembunyikan halaman publiknya; orangnya masih bisa login.
 - Nama yang dilarang (`api`, `dashboard`, `login`, `admin`, `go`) dan batas 30 link per pengguna diatur di kode.
+
+## Catatan
+
+- **Preview WhatsApp/Instagram** disimpan oleh aplikasi mereka dan bisa baru berubah setelah beberapa hari. Untuk memaksa segar, pakai Sharing Debugger Facebook (berlaku juga untuk Instagram).
+- **Statistik harian** baru terisi sejak versi ini dipasang. Klik dan kunjungan sebelumnya hanya ada sebagai total.
+- **Batas percobaan**: login 8 kali per akun dan 30 kali per alamat IP per 15 menit; daftar 5 kali per IP per jam; login admin 8 kali per IP per 15 menit.

@@ -1,9 +1,9 @@
 'use client';
 import './landing.css';
 import { useState } from 'react';
+import { THEMES, themeStyle } from '@/lib/themes';
 
 const LINKS = ['Pesan lewat WhatsApp', 'Portofolio di Instagram', 'Preset Lightroom (toko)', 'Video terbaru di YouTube', 'Kirim email'];
-const THEMES = [['kobalt', 'Kobalt'], ['permen', 'Permen'], ['hutan', 'Hutan']];
 
 export default function Home() {
   const [mode, setMode] = useState('register');
@@ -46,13 +46,13 @@ export default function Home() {
         </div>
         <div className="lp-theme" role="group" aria-label="Tema contoh">
           <b>Tema</b>
-          {THEMES.map(([k, v]) => <button key={k} aria-pressed={t === k} onClick={() => setT(k)}>{v}</button>)}
+          {THEMES.map((x) => <button key={x.key} aria-pressed={t === x.key} onClick={() => setT(x.key)}>{x.label}</button>)}
         </div>
         <p className="lp-note">Klik link di ponsel untuk mencoba penghitung klik. Tema asli kamu pilih nanti di dashboard.</p>
       </section>
 
       <section aria-label="Contoh halaman">
-        <div className="lp-phone" data-t={t}>
+        <div className="lp-phone" data-t={t} style={themeStyle(t)}>
           <div className="lp-url">isengin.site/{nm}</div>
           <div className="lp-ava" aria-hidden="true">{nm[0].toUpperCase()}</div>
           <h2 className="lp-name">{nm}</h2>
