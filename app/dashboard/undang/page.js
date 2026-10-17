@@ -1,13 +1,16 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 
 export default function Undang() {
-  const [d, setD] = useState(null);
-  const [err, setErr] = useState('');
+  const p = usePre('/api/referral');
+  const [d, setD] = useState(p?.ok ? p.data : null);
+  const [err, setErr] = useState(p && !p.ok ? p.data?.error || 'Gagal memuat.' : '');
   const [copied, setCopied] = useState(false);
   useEffect(() => {
+    if (p) return;
     fetch('/api/referral').then(async (r) => { const x = await r.json().catch(() => ({})); if (r.ok) setD(x); else setErr(x.error || 'Gagal memuat.'); });
   }, []);
   async function copy() {

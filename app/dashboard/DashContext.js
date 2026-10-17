@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
 import Loader from '../Loader';
+import { PreCtx, fetchPre, needsPre } from '../prefetch';
 import { SOCIALS } from '@/lib/socials';
 import { COLOR_KEYS } from '@/lib/themes';
 // Salinan data tersimpan terakhir. Kalau provider sempat dibuat ulang (mis. Next memuat halaman penuh), isi halaman langsung tampil.
@@ -46,11 +47,13 @@ export function DashProvider({ children }) {
   const [busy, setBusy] = useState(false);
   const [nav, setNav] = useState(false);
   const path = usePathname();
+  const [pre, setPre] = useState(null);
   const pm = m ? parts(m) : null, ps = saved ? parts(saved) : null;
   const changed = pm && ps ? SECTIONS.filter(([k]) => pm[k] !== ps[k]) : [];
   const dirty = changed.length > 0;
   useEffect(() => {
     fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); } });
+    fetchPre(path).then(setPre);
   }, []);
   useEffect(() => { setMsg(''); }, [path]);
   // Pindah menu terasa seperti memuat ulang halaman: perubahan yang belum disimpan dibuang, animasi memuat tampil,
@@ -64,10 +67,10 @@ export function DashProvider({ children }) {
     setNav(true);
     if (savedRef.current) setM(savedRef.current);
     const t0 = Date.now();
-    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {})
+    Promise.all([fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {}), fetchPre(path).then(setPre)])
       .then(() => setTimeout(() => setNav(false), Math.max(0, 450 - (Date.now() - t0))));
   }, [path]);
-  if (!m || nav) return <Loader />;
+  if (!m || nav || (needsPre(path) && pre?.path !== path)) return <Loader />;
   const set = (k, v) => { setMsg(''); setM({ ...m, [k]: v }); };
   // Memilih tema berarti mulai dari warna tema itu, jadi warna kustom dikosongkan.
   const setTheme = (key) => { setMsg(''); setM({ ...m, theme: key, colors: {} }); };
@@ -159,9 +162,11 @@ export function DashProvider({ children }) {
   }
   return (
     <Ctx.Provider value={{ m, set, setTheme, upThumb, upBg, setL, addLink, addHeader, delLink, move, reorder, save, up, msg, busy, dirty }}>
-      <Shell title="isengin.site" menu={MENU} out={out}>
-        {children}
-      </Shell>
+      <PreCtx.Provider value={pre}>
+        <Shell title="isengin.site" menu={MENU} out={out}>
+          {children}
+        </Shell>
+      </PreCtx.Provider>
     </Ctx.Provider>
   );
 }

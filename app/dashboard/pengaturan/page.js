@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import VerifyBox from '../VerifyBox';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 
 // Kekuatan sandi: 0 sampai 4. Panjang paling berpengaruh, lalu ragam jenis karakter.
 function strength(p) {
@@ -32,8 +33,9 @@ async function call(method, body) {
 const Msg = ({ m }) => (m ? <span role="status" className={'px-msg' + (m.err ? ' err' : '')}>{m.t}</span> : null);
 
 export default function Pengaturan() {
-  const [acc, setAcc] = useState(null);
-  const [email, setEmail] = useState('');
+  const p = usePre('/api/account');
+  const [acc, setAcc] = useState(p?.ok ? p.data : null);
+  const [email, setEmail] = useState(p?.ok ? p.data?.email || '' : '');
   const [em, setEm] = useState(null);
   const [cur, setCur] = useState(''), [nw, setNw] = useState(''), [again, setAgain] = useState('');
   const [show, setShow] = useState(false);
@@ -46,6 +48,7 @@ export default function Pengaturan() {
   const st = strength(nw);
 
   useEffect(() => {
+    if (p) return;
     fetch('/api/account').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setAcc(d); setEmail(d.email || ''); } });
   }, []);
 

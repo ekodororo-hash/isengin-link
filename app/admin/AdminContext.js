@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
 import Loader from '../Loader';
+import { PreCtx, fetchPre, needsPre } from '../prefetch';
 const Ctx = createContext(null);
 export const useAdmin = () => useContext(Ctx);
 const menu = (n) => [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna'], ['/admin/centang', n ? `Centang (${n})` : 'Centang'], ['/admin/referral', 'Referral']];
@@ -13,19 +14,20 @@ export function AdminProvider({ children }) {
   const [pw, setPw] = useState('');
   const [err, setErr] = useState('');
   const load = () => fetch('/api/admin').then((r) => (r.ok ? r.json() : null)).then(setD);
-  useEffect(() => { load(); }, []);
+  const path = usePathname();
+  const [pre, setPre] = useState(null);
+  useEffect(() => { load(); fetchPre(path).then(setPre); }, []);
   // Sama seperti dashboard: pindah menu menampilkan animasi memuat (minimal 0,45 detik) dan mengambil data ulang.
   const [nav, setNav] = useState(false);
-  const path = usePathname();
   const first = useRef(true);
   useEffect(() => {
     if (first.current) { first.current = false; return; }
     setNav(true);
     const t0 = Date.now();
-    fetch('/api/admin').then((r) => (r.ok ? r.json() : null)).then(setD).catch(() => {})
+    Promise.all([fetch('/api/admin').then((r) => (r.ok ? r.json() : null)).then(setD).catch(() => {}), fetchPre(path).then(setPre)])
       .then(() => setTimeout(() => setNav(false), Math.max(0, 450 - (Date.now() - t0))));
   }, [path]);
-  if (d === undefined || nav) return <Loader />;
+  if (d === undefined || nav || (needsPre(path) && pre?.path !== path)) return <Loader />;
   async function login() {
     setErr('');
     const r = await fetch('/api/admin', { method: 'POST', headers: J, body: JSON.stringify({ mode: 'login', username: u, password: pw }) });
@@ -71,7 +73,9 @@ export function AdminProvider({ children }) {
   );
   return (
     <Ctx.Provider value={{ d, tog, verify, pro, del, decide }}>
-      <Shell title="Admin" menu={menu((d.requests || []).length)} out={out}>{children}</Shell>
+      <PreCtx.Provider value={pre}>
+        <Shell title="Admin" menu={menu((d.requests || []).length)} out={out}>{children}</Shell>
+      </PreCtx.Provider>
     </Ctx.Provider>
   );
 }

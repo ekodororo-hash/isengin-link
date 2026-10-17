@@ -2,15 +2,17 @@
 import { useEffect, useState } from 'react';
 import Verified from '../Verified';
 import Loader from '../Loader';
+import { usePre } from '../prefetch';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 
 export default function VerifyBox() {
-  const [d, setD] = useState(null);
+  const p = usePre('/api/verify');
+  const [d, setD] = useState(p?.ok ? p.data : null);
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState(false);
   const [m, setM] = useState(null);
   const load = () => fetch('/api/verify').then((r) => (r.ok ? r.json() : null)).then((x) => { if (x) setD(x); });
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!p) load(); }, []);
 
   async function send(e) {
     e.preventDefault(); setBusy(true); setM(null);

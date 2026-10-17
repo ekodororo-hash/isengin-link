@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 const rp = (n) => 'Rp ' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 const STATUS = { paid: 'Lunas', pending: 'Menunggu pembayaran', expire: 'Kedaluwarsa', cancel: 'Dibatalkan', deny: 'Ditolak', failure: 'Gagal', failed: 'Gagal' };
@@ -12,11 +13,12 @@ const ROWS = [
 ];
 
 export default function Paket() {
-  const [d, setD] = useState(null);
+  const p = usePre('/api/billing');
+  const [d, setD] = useState(p?.ok ? p.data : null);
   const [busy, setBusy] = useState('');
   const [err, setErr] = useState('');
   const load = () => fetch('/api/billing').then((r) => (r.ok ? r.json() : null)).then((x) => { if (x) setD(x); });
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!p) load(); }, []);
   // Setelah membayar, konfirmasi datang lewat webhook; cek ulang beberapa kali sampai paket aktif.
   const waiting = d?.payments?.some((p) => p.status === 'pending' && Date.now() - new Date(p.created_at).getTime() < 3600000);
   useEffect(() => {

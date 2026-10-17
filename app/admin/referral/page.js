@@ -1,12 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '–');
 
 export default function Referral() {
-  const [r, setR] = useState(null);
-  const [err, setErr] = useState('');
+  const p = usePre('/api/admin/referral');
+  const [r, setR] = useState(p?.ok ? p.data : null);
+  const [err, setErr] = useState(p && !p.ok ? p.data?.error || 'Gagal memuat.' : '');
   useEffect(() => {
+    if (p) return;
     fetch('/api/admin/referral').then(async (res) => { const x = await res.json().catch(() => ({})); if (res.ok) setR(x); else setErr(x.error || 'Gagal memuat.'); });
   }, []);
   if (err) return (<><h1>Referral</h1><p className="px-err" role="alert">{err}</p></>);

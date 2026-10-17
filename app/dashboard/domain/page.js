@@ -1,18 +1,20 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 import Link from 'next/link';
 // Domain dua tingkat seperti toko.co.id tetap dianggap domain utama (butuh record A, bukan CNAME).
 const SLD = ['co.id', 'or.id', 'web.id', 'my.id', 'sch.id', 'ac.id', 'go.id', 'biz.id', 'net.id', 'com.au', 'co.uk'];
 const isApex = (d) => { const p = d.split('.'); return p.length === 2 || (p.length === 3 && SLD.includes(p.slice(1).join('.'))); };
 
 export default function Domain() {
-  const [d, setD] = useState(null);
+  const p = usePre('/api/domain');
+  const [d, setD] = useState(p?.ok ? p.data : null);
   const [val, setVal] = useState('');
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState(null);
   const load = () => fetch('/api/domain').then((r) => (r.ok ? r.json() : null)).then((x) => { if (x) setD(x); });
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!p) load(); }, []);
   const post = async (body) => {
     const r = await fetch('/api/domain', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     return { ok: r.ok, x: await r.json().catch(() => ({})) };
