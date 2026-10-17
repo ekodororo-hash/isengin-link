@@ -3,7 +3,9 @@ import { headers } from 'next/headers';
 import { sql } from '@/lib/db';
 import { isBot } from '@/lib/bot';
 import { themeStyle } from '@/lib/themes';
-import { LinkIcon } from '../icons';
+import { socialList } from '@/lib/socials';
+import { detectSource } from '@/lib/source';
+import { NamedIcon, LinkIcon } from '../icons';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 const find = async (name) =>
@@ -22,7 +24,7 @@ export async function generateMetadata({ params }) {
     twitter: { card: 'summary_large_image', title: name, description: desc },
   };
 }
-export default async function Profile({ params }) {
+export default async function Profile({ params, searchParams }) {
   const u = await find(params.username);
   if (!u || u.active === false) notFound();
   if (!isBot(headers().get('user-agent'))) {
@@ -37,15 +39,28 @@ export default async function Profile({ params }) {
     }
   }
   const links = await sql`select id,title,url from links where user_id=${u.id} order by position,id`;
+  // Ikon sosial dan warna kustom dibaca terpisah supaya halaman tetap terbuka walau schema-update.sql belum dijalankan.
+  const extra = (await sql`select socials,colors from users where id=${u.id}`.catch((e) => { console.error('Kolom socials/colors belum ada (jalankan schema-update.sql):', e.message); return []; }))[0] || {};
+  const socials = socialList(extra.socials);
+  // Asal pengunjung dicatat di tiap link lewat ?s=, lalu dihitung saat link diklik.
+  const h = headers();
+  const sp = searchParams || {};
+  const param = [sp.src, sp.utm_source, sp.ref].find((v) => typeof v === 'string' && v);
+  const src = detectSource({ param, referer: h.get('referer'), ua: h.get('user-agent'), ownHost: (h.get('host') || '').split(':')[0].replace(/^www\./, '').toLowerCase() });
   const name = u.display_name || u.username;
   return (
-    <div className="phone" data-t={u.theme} style={themeStyle(u.theme)}>
+    <div className="phone" data-t={u.theme} style={themeStyle(u.theme, extra.colors)}>
       <main className="pub">
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}</h1>
         {u.bio && <p className="bio">{u.bio}</p>}
+        {socials.length > 0 && (
+          <div className="socials">
+            {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer"><NamedIcon name={x.key} /></a>)}
+          </div>
+        )}
         {links.map((l) => (
-          <a key={l.id} className="plink" href={`/go/${l.id}`}>
+          <a key={l.id} className="plink" href={`/go/${l.id}?s=${src}`}>
             <LinkIcon url={l.url} /><span className="pt">{l.title}</span><span className="psp" aria-hidden="true" />
           </a>
         ))}

@@ -1,16 +1,19 @@
 'use client';
 import { useState } from 'react';
 import { useDash } from './DashContext';
-import { LinkIcon } from '../icons';
+import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle } from '@/lib/themes';
+import { socialList } from '@/lib/socials';
 
 export function Phone() {
   const { m } = useDash();
   const n = m.display_name || m.username;
+  const soc = socialList(m.socials);
   return (
-    <div className="px-ph" data-t={m.theme} style={themeStyle(m.theme)}>
+    <div className="px-ph" data-t={m.theme} style={themeStyle(m.theme, m.colors)}>
       {m.photo_url ? <img className="a" src={m.photo_url} alt="" /> : <div className="a">{n[0].toUpperCase()}</div>}
       <h3>{n}</h3><p>{m.bio}</p>
+      {soc.length > 0 && <div className="so">{soc.map((x) => <span className="s" key={x.key}><NamedIcon name={x.key} size={14} /></span>)}</div>}
       {m.links.map((l, i) => <div className="l" key={l.id || l._k || i}><LinkIcon url={l.url} size={16} /><span>{l.title || 'Judul link'}</span></div>)}
     </div>
   );

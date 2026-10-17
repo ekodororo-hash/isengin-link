@@ -63,6 +63,8 @@ lib/db.js, lib/auth.js        koneksi Neon dan sesi login
 lib/themes.js                 daftar tema (tambah tema cukup di sini)
 lib/limit.js                  pembatas percobaan login/daftar (disimpan di database)
 lib/bot.js                    penyaring crawler agar kunjungan/klik tidak membengkak
+lib/source.js                 menebak asal klik (Instagram, TikTok, dll)
+lib/socials.js                ikon sosial media di header profil (validasi dan alamat)
 app/icons.js                  ikon link, dipilih otomatis dari alamat (WhatsApp, Instagram, dll)
 app/[username]/opengraph-image.js   gambar preview saat link dibagikan
 schema.sql, schema-update.sql skema database
@@ -79,4 +81,8 @@ schema.sql, schema-update.sql skema database
 
 - **Preview WhatsApp/Instagram** disimpan oleh aplikasi mereka dan bisa baru berubah setelah beberapa hari. Untuk memaksa segar, pakai Sharing Debugger Facebook (berlaku juga untuk Instagram).
 - **Statistik harian** baru terisi sejak versi ini dipasang. Klik dan kunjungan sebelumnya hanya ada sebagai total.
+- **Asal klik** dicatat per hari di tabel `click_sources` dan tampil di Ringkasan (30 hari terakhir). Asal ditebak dari parameter `?src=` (atau `utm_source`), lalu domain referer, lalu aplikasi pembuka. WhatsApp dan beberapa aplikasi tidak mengirim asal, jadi tercatat "Langsung / tidak diketahui" kecuali linknya diberi `?src=whatsapp`. Hanya nama yang dikenal (lihat `lib/source.js`) yang dicatat.
+- **Ikon sosial media** (Instagram, WhatsApp, TikTok, YouTube, Facebook, X, Telegram, email) diatur di Profil dan tampil di bawah bio. Kliknya langsung ke tujuan, tidak lewat `/go`, jadi tidak masuk hitungan klik.
+- **Warna kustom** (latar, teks, tombol, aksen) diatur di Tampilan dan menimpa warna tema. Memilih tema lain mengosongkan warna kustom. Dashboard memberi peringatan bila kontras teks terlalu rendah.
+- Ikon sosial dan warna kustom disimpan di kolom `socials` dan `colors` (JSON teks) pada tabel `users`. Jalankan `schema-update.sql` sebelum memakai ketiga fitur ini.
 - **Batas percobaan**: login 8 kali per akun dan 30 kali per alamat IP per 15 menit; daftar 5 kali per IP per jam; login admin 8 kali per IP per 15 menit.

@@ -145,3 +145,17 @@
 .px-dirty{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:12px;width:max-content;max-width:calc(100vw - 24px);background:var(--cream);color:var(--navy);border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);padding:8px 8px 8px 18px;font-weight:800;font-size:.85rem;line-height:1.25}
 .px-dirty .px-btn{margin:0;padding:6px 16px;font-size:.8rem;flex:none}
 .px-btn:disabled{opacity:.6;cursor:wait}
+
+/* asal klik, ikon sosial, warna kustom */
+.px-mt{margin-top:22px}
+.px-hint{margin:6px 0 0;font-size:.85rem;font-weight:600;color:var(--mut)}
+.px-hint-i{font-size:.8rem;font-weight:600;color:var(--mut);margin-left:6px}
+.px-hint code{background:#fff;border:2px solid var(--navy);border-radius:8px;padding:0 6px;font-weight:700}
+.px-warn{margin:6px 0 0;font-size:.85rem;font-weight:700;color:#a00018}
+.px-socs{display:grid;gap:0 12px;grid-template-columns:1fr}
+@media(min-width:760px){.px-socs{grid-template-columns:1fr 1fr}}
+.px-colors{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-top:10px}
+.px-main .px-clr{display:flex;align-items:center;gap:10px;margin:0;font-size:.88rem}
+.px-main input[type="color"]{width:46px;height:40px;padding:2px;flex:none;cursor:pointer;border-radius:12px}
+.px-ph .so{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0 0 12px}
+.px-ph .so .s{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--pb);color:var(--pi)}

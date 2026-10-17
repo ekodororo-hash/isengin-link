@@ -43,3 +43,11 @@ export function LinkIcon({ url, size = 20 }) {
     </svg>
   );
 }
+// Ikon berdasarkan nama (dipakai untuk ikon sosial media di header profil).
+export function NamedIcon({ name, size = 20 }) {
+  return (
+    <svg className="lico" width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" focusable="false" {...S}>
+      {ICONS[name] || ICONS.link}
+    </svg>
+  );
+}

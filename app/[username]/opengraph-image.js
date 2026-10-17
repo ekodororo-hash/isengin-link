@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { sql } from '@/lib/db';
-import { getTheme } from '@/lib/themes';
+import { themeWith } from '@/lib/themes';
 export const alt = 'Halaman link isengin.site';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
@@ -17,8 +17,9 @@ async function photoOk(url) {
 }
 
 export default async function Image({ params }) {
-  const u = (await sql`select username,display_name,bio,theme,photo_url,active from users where username=${String(params.username).toLowerCase()}`)[0];
-  const t = getTheme(u?.theme);
+  const u = (await sql`select id,username,display_name,bio,theme,photo_url,active from users where username=${String(params.username).toLowerCase()}`)[0];
+  const extra = u ? (await sql`select colors from users where id=${u.id}`.catch(() => []))[0] : null;
+  const t = themeWith(u?.theme, extra?.colors);
   const name = u && u.active !== false ? u.display_name || u.username : 'isengin.site';
   const bio = u && u.active !== false && u.bio ? (u.bio.length > 110 ? u.bio.slice(0, 107) + '…' : u.bio) : 'Satu link untuk semua kontenmu.';
   const showPhoto = u && u.active !== false && (await photoOk(u.photo_url));

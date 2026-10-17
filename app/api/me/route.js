@@ -1,17 +1,23 @@
 import { sql } from '@/lib/db';
 import { getUserId } from '@/lib/auth';
-import { THEME_KEYS } from '@/lib/themes';
+import { THEME_KEYS, cleanColors } from '@/lib/themes';
+import { cleanSocials, parseSocials } from '@/lib/socials';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
-  const [u, links, daily] = await Promise.all([
+  const [u, links, daily, sources, extra] = await Promise.all([
     sql`select username,display_name,bio,theme,photo_url,views from users where id=${id}`,
     sql`select id,title,url,clicks from links where user_id=${id} order by position,id`,
     // 30 hari terakhir (zona Jakarta), hari tanpa data diisi 0
     sql`select to_char(d,'YYYY-MM-DD') as day, coalesce(s.views,0)::int as views, coalesce(s.clicks,0)::int as clicks
         from generate_series(((now() at time zone 'Asia/Jakarta')::date - 29)::timestamp, (now() at time zone 'Asia/Jakarta')::date::timestamp, interval '1 day') d
         left join daily_stats s on s.user_id=${id} and s.day=d::date order by d`.catch((e) => { console.error('Statistik harian gagal (sudah jalankan schema-update.sql?):', e.message); return []; }),
+    // asal klik 30 hari terakhir, terbanyak dulu
+    sql`select src, sum(clicks)::int as clicks from click_sources
+        where user_id=${id} and day >= ((now() at time zone 'Asia/Jakarta')::date - 29)
+        group by src order by 2 desc`.catch((e) => { console.error('Asal klik gagal (sudah jalankan schema-update.sql?):', e.message); return []; }),
+    sql`select socials,colors from users where id=${id}`.catch((e) => { console.error('Kolom socials/colors belum ada (jalankan schema-update.sql):', e.message); return []; }),
   ]);
-  return { ...u[0], links, daily };
+  return { ...u[0], links, daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
 }
 export async function GET() {
   const id = await getUserId();
@@ -37,5 +43,14 @@ export async function PUT(req) {
     }
   }
   await sql`delete from links where user_id=${id} and id <> all(${kept})`;
+  const socials = cleanSocials(b.socials), colors = cleanColors(b.colors);
+  try {
+    await sql`update users set socials=${JSON.stringify(socials)}, colors=${JSON.stringify(colors)} where id=${id}`;
+  } catch (e) {
+    console.error('Gagal menyimpan ikon sosial/warna (sudah jalankan schema-update.sql?):', e.message);
+    if (Object.keys(socials).length || Object.keys(colors).length) {
+      return Response.json({ error: 'Link dan profil tersimpan, tapi ikon sosial/warna belum bisa disimpan. Jalankan schema-update.sql di database.' }, { status: 500 });
+    }
+  }
   return Response.json(await load(id));
 }

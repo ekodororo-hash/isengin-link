@@ -3,6 +3,8 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
 import Loader from '../Loader';
+import { SOCIALS } from '@/lib/socials';
+import { COLOR_KEYS } from '@/lib/themes';
 const Ctx = createContext(null);
 export const useDash = () => useContext(Ctx);
 const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashboard/tampilan', 'Tampilan'], ['/dashboard/profil', 'Profil'], ['/dashboard/bagikan', 'Bagikan']];
@@ -11,6 +13,8 @@ const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashb
 const snap = (x) => JSON.stringify({
   n: x.display_name || '', b: x.bio || '', t: x.theme, p: x.photo_url || '',
   l: x.links.map((l) => [l.id || 0, l.title, l.url]),
+  s: SOCIALS.map((k) => (x.socials?.[k.key] || '').trim()),
+  c: COLOR_KEYS.map((k) => x.colors?.[k] || ''),
 });
 
 // Perkecil foto di peramban (maks 640px, JPEG) supaya unggahan kecil dan selalu lolos batas ukuran.
@@ -45,6 +49,8 @@ export function DashProvider({ children }) {
   }, [dirty]);
   if (!m) return <Loader />;
   const set = (k, v) => { setMsg(''); setM({ ...m, [k]: v }); };
+  // Memilih tema berarti mulai dari warna tema itu, jadi warna kustom dikosongkan.
+  const setTheme = (key) => { setMsg(''); setM({ ...m, theme: key, colors: {} }); };
   const setL = (i, k, v) => set('links', m.links.map((l, j) => (j === i ? { ...l, [k]: v } : l)));
   const addLink = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), title: '', url: '' }]);
   const delLink = (i) => set('links', m.links.filter((_, j) => j !== i));
@@ -85,7 +91,7 @@ export function DashProvider({ children }) {
     location.href = '/';
   }
   return (
-    <Ctx.Provider value={{ m, set, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
+    <Ctx.Provider value={{ m, set, setTheme, setL, addLink, delLink, move, save, up, msg, busy, dirty }}>
       <Shell title="isengin.site" menu={MENU} out={out}>
         {children}
         {dirty && (
