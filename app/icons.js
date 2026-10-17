@@ -15,6 +15,9 @@ const ICONS = {
   email: (<><rect x="3" y="5.5" width="18" height="13" rx="3" /><path d="M4 8l8 5.5L20 8" /></>),
   toko: (<><path d="M5 8h14l-1 12H6L5 8z" /><path d="M9 8V6.5a3 3 0 0 1 6 0V8" /></>),
   link: (<><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" /><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" /></>),
+  // Tiga titik vertikal (menu opsi per-tautan) dan ikon salin (dipakai di modal "Bagikan tautan").
+  dots: (<g fill="currentColor" stroke="none"><circle cx="12" cy="5" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="12" cy="19" r="1.7" /></g>),
+  copy: (<><rect x="9" y="9" width="11" height="11" rx="2.5" /><path d="M6.5 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1.5" /></>),
 };
 const RULES = [
   ['whatsapp', ['wa.me', 'whatsapp.com', 'api.whatsapp.com']],

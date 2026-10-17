@@ -7,9 +7,10 @@ import { socialList } from '@/lib/socials';
 import { detectSource } from '@/lib/source';
 import { fmtPrice, labelText, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont, fontCss } from '@/lib/style';
-import { NamedIcon, LinkIcon } from '../icons';
+import { NamedIcon } from '../icons';
 import Verified from '../Verified';
 import Report from './Report';
+import LinkRow from './LinkRow';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
@@ -79,14 +80,21 @@ export default async function Profile({ params, searchParams }) {
           const th = thumbOk(links, i, pro) ? l.thumb : '';
           const cat = !!(price || old || lab);
           return (
-            <a key={l.id} className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (lab === 'habis' ? ' soldout' : '')} href={`/go/${l.id}?s=${src}`} rel="noopener noreferrer" target={/^mailto:/i.test(l.url || '') ? undefined : '_blank'}>
-              {th ? <img className="pth" src={th} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={l.url} />}
-              <span className="pt">
-                {l.title}
-                {(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}
-              </span>
-              {lab ? <span className={'pbd ' + lab}>{labelText(lab)}</span> : <span className="psp" aria-hidden="true" />}
-            </a>
+            <LinkRow
+              key={l.id}
+              title={l.title}
+              url={l.url}
+              th={th}
+              cat={cat}
+              soldout={lab === 'habis'}
+              labelKey={lab}
+              labelDisplay={lab ? labelText(lab) : ''}
+              price={price}
+              old={old}
+              href={`/go/${l.id}?s=${src}`}
+              pageUsername={u.username}
+              pageName={name}
+            />
           );
         })}
         {/* tombol lapor selalu tampil, termasuk di akun Pro */}
