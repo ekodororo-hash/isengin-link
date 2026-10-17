@@ -47,3 +47,6 @@
 .px-err{color:#a00018;font-weight:700;margin:8px 0 0}
 .px-login{max-width:380px;margin:10vh auto;padding:0 8px;grid-column:1/-1}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.px-main input[type="file"]{padding:7px 10px;cursor:pointer;font-size:.9rem}
+.px-main input[type="file"]::file-selector-button{font-family:Bungee,sans-serif;font-size:.8rem;border:3px solid var(--navy);border-radius:999px;background:var(--yel);color:var(--navy);box-shadow:3px 3px 0 var(--navy);padding:6px 14px;margin-right:12px;cursor:pointer}
+.px-main input[type="file"]::file-selector-button:active{transform:translate(3px,3px);box-shadow:none}
