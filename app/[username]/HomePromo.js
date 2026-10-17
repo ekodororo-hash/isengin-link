@@ -20,7 +20,7 @@ export default function HomePromo({ pageUsername, pageName }) {
 
   function claim(e) {
     e.preventDefault();
-    window.location.href = `/daftar?ref=${ref}${nm ? '&u=' + encodeURIComponent(nm) : ''}`;
+    window.open(`/daftar?ref=${ref}${nm ? '&u=' + encodeURIComponent(nm) : ''}`, '_blank', 'noopener,noreferrer');
   }
   const shown = nm || 'namamu';
 
@@ -33,7 +33,7 @@ export default function HomePromo({ pageUsername, pageName }) {
         <div className="hp-ov" role="dialog" aria-modal="true" aria-labelledby="hp-h" onClick={() => setOpen(false)}>
           <div className="hp" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="hp-x" onClick={() => setOpen(false)} aria-label="Tutup"><NamedIcon name="close" size={16} /></button>
-            <div className="hp-brand">ISENGIN.SITE</div>
+            <div className="hp-brand"><img src="/icon.svg" width="40" height="40" alt="" />ISENGIN.SITE</div>
             <h2 id="hp-h" className="hp-h">Satu link untuk <span>semua kontenmu.</span></h2>
             <p className="hp-p">Gabung dengan {pageName || pageUsername}. Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman.</p>
 
