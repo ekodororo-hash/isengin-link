@@ -61,10 +61,7 @@ export default function LinkPage() {
 
   return (<>
     <h1>Link</h1>
-    <p className="px-sub">
-      <span className="px-dsk">Seret ikon titik-titik untuk mengubah urutan, atau pakai tombol panah. Urutan di sini sama dengan urutan di halamanmu. Pembatas adalah judul seksi tanpa alamat untuk mengelompokkan link (mis. “Produk”, “Sosial media”). Link atau pembatas yang disembunyikan tidak tampil, dan link tersembunyi tidak dihitung kliknya. Setelah mengubah, klik Simpan.</span>
-      <span className="px-mob">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</span>
-    </p>
+    <p className="px-sub">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</p>
     <Importer />
     {!m.pro && <p className="px-hint" role="status">Paket gratis: {Math.min(thumbs, FREE_THUMBS)} dari {FREE_THUMBS} gambar link terpakai.{thumbs > FREE_THUMBS && ` Hanya ${FREE_THUMBS} gambar pertama yang tampil di halamanmu.`} <Link href="/dashboard/paket">Pro: tanpa batas</Link></p>}
     <div className="px-card">

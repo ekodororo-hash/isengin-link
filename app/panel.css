@@ -213,9 +213,7 @@
 .px-ib:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
 .px-lk-e{display:grid;gap:10px;margin-top:12px;padding-top:12px;border-top:3px dashed var(--navy)}
 @media(max-width:560px){.px-lk-b{width:100%;justify-content:flex-end}}
-/* deskripsi: lengkap di desktop, ringkas di HP */
-.px-sub .px-mob{display:none}
-@media(max-width:560px){.px-sub .px-dsk{display:none}.px-sub .px-mob{display:inline}}
+
 @media(prefers-reduced-motion:reduce){.px-ib{transition:none}}
 
 /* halaman Tampilan dan Profil: bagian bertajuk */
@@ -413,5 +411,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-ph .pp{justify-content:center}
 
 /* HP: hilangkan highlight biru saat tombol/toggle disentuh */
-.px-main button,.px-main a,.px-main label,.px-main summary{-webkit-tap-highlight-color:transparent}
+.px-top,.px-top *,.px-main,.px-main *{-webkit-tap-highlight-color:rgba(0,0,0,0)}
+.px-top,.px-main{outline:0}
+.px-main button:focus:not(:focus-visible),.px-main label:focus:not(:focus-visible),.px-main a:focus:not(:focus-visible),.px-top button:focus:not(:focus-visible),.px-top a:focus:not(:focus-visible){outline:0}
 .px-grip,.px-ib,.px-sw2,.px-lk-r .px-th,.px-lk-no{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
