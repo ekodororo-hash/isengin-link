@@ -5,6 +5,7 @@ import { isBot } from '@/lib/bot';
 import { themeStyle } from '@/lib/themes';
 import { LinkIcon } from '../icons';
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 const find = async (name) =>
   (await sql`select id,username,display_name,bio,theme,photo_url,active from users where username=${String(name).toLowerCase()}`)[0];
 export async function generateMetadata({ params }) {

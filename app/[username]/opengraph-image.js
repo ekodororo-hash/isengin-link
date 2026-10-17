@@ -5,6 +5,7 @@ export const alt = 'Halaman link isengin.site';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 
 // Pembuat gambar tidak bisa membaca webp/heic, jadi foto hanya dipakai bila PNG/JPEG/GIF.
 async function photoOk(url) {

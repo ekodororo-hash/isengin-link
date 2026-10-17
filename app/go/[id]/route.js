@@ -1,6 +1,7 @@
 import { sql } from '@/lib/db';
 import { isBot } from '@/lib/bot';
 export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
 export async function GET(req, { params }) {
   const id = Number(params.id) || 0;
   let r;
