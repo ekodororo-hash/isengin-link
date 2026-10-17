@@ -7,8 +7,12 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | Alamat | Untuk | Keterangan |
 |---|---|---|
 | `/` | Umum | Halaman depan, daftar dan masuk |
-| `/dashboard` | Pengguna | Ringkasan, Link, Tampilan, Profil (sidebar) |
-| `/admin` | Pemilik situs | Login terpisah; ringkasan situs dan daftar pengguna (aktif/nonaktifkan) |
+| `/dashboard` | Pengguna | Ringkasan (statistik klik dan kunjungan) |
+| `/dashboard/link` | Pengguna | Tambah, ubah, hapus link |
+| `/dashboard/tampilan` | Pengguna | Pilih tema dengan pratinjau |
+| `/dashboard/profil` | Pengguna | Foto, nama tampilan, bio |
+| `/admin` | Pemilik situs | Login terpisah; ringkasan situs |
+| `/admin/pengguna` | Pemilik situs | Daftar pengguna, aktifkan atau nonaktifkan halaman |
 | `/nama` | Pengunjung | Halaman publik tiap pengguna |
 | `/go/<id>` | Pengunjung | Menghitung klik lalu mengarahkan ke link tujuan |
 
@@ -46,8 +50,8 @@ Buka `http://localhost:3000`.
 ```
 app/
   page.js, landing.css        halaman depan
-  dashboard/page.js           dasbor pengguna
-  admin/page.js               halaman admin
+  dashboard/                  layout + data bersama (DashContext), page.js, link/, tampilan/, profil/
+  admin/                      layout + login (AdminContext), page.js, pengguna/
   [username]/page.js          halaman publik
   go/[id]/route.js            hitung klik
   api/auth, api/me, api/upload, api/admin
@@ -59,6 +63,7 @@ schema.sql, schema-update.sql skema database
 
 ## Catatan
 
+- Di HP (lebar di bawah 860px), sidebar berubah jadi bilah atas dengan tombol hamburger yang membuka menu; tombol Escape atau pindah halaman menutupnya.
 - Halaman publik pengguna memakai tema pilihan penggunanya (kobalt, permen, hutan).
 - Menonaktifkan pengguna di admin hanya menyembunyikan halaman publiknya; orangnya masih bisa login.
 - Nama yang dilarang (`api`, `dashboard`, `login`, `admin`, `go`) dan batas 30 link per pengguna diatur di kode.
