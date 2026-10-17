@@ -73,7 +73,7 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, on
       <div className="shm" onClick={(e) => e.stopPropagation()}>
         <div className="shm-top">
           <h2>Bagikan tautan</h2>
-          <button type="button" className="shm-x" onClick={onClose} aria-label="Tutup"><NamedIcon name="x" size={16} /></button>
+          <button type="button" className="shm-x" onClick={onClose} aria-label="Tutup"><NamedIcon name="close" size={16} /></button>
         </div>
 
         <div className="shm-prev">

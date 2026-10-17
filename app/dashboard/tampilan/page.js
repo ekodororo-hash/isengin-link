@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useDash } from '../DashContext';
-import { Phone, SaveBar } from '../parts';
+import { Phone, PreviewDock, SaveBar } from '../parts';
 import { BUTTON_STYLES, FONTS } from '@/lib/style';
 import { PRO_THEMES, PRO_FONTS, PRO_BTNS, proUses } from '@/lib/pro';
 import { THEMES, ANGLES, themeWith, cleanColors, contrast } from '@/lib/themes';
@@ -136,7 +136,7 @@ export default function Tampilan() {
         </section>
         <SaveBar />
       </div>
-      <div><Phone trial={tr} /></div>
+      <PreviewDock><Phone trial={tr} /></PreviewDock>
     </div>
   </>);
 }

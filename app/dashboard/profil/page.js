@@ -1,6 +1,6 @@
 'use client';
 import { useDash } from '../DashContext';
-import { Phone, SaveBar } from '../parts';
+import { Phone, PreviewDock, SaveBar } from '../parts';
 import { SOCIALS, socialHref } from '@/lib/socials';
 import { NamedIcon } from '../../icons';
 export default function Profil() {
@@ -46,7 +46,7 @@ export default function Profil() {
         </section>
         <SaveBar />
       </div>
-      <div><Phone /></div>
+      <PreviewDock><Phone /></PreviewDock>
     </div>
   </>);
 }

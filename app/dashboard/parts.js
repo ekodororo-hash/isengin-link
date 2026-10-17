@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDash } from './DashContext';
 import { LinkIcon, NamedIcon } from '../icons';
@@ -9,6 +9,25 @@ import { socialList } from '@/lib/socials';
 import { fmtPrice, labelText } from '@/lib/catalog';
 import { fontCss } from '@/lib/style';
 import { effectiveLook, thumbOk } from '@/lib/pro';
+
+// Pratinjau: di desktop tampil di samping form. Di HP berupa tombol melayang "Pratinjau" yang membuka lembar pratinjau, jadi tidak perlu scroll ke bawah.
+export function PreviewDock({ children }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open) return undefined;
+    const key = (e) => { if (e.key === 'Escape') setOpen(false); };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', key);
+    return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', key); };
+  }, [open]);
+  return (
+    <div className={'px-pvd' + (open ? ' open' : '')}>
+      <button type="button" className="px-pvb" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{open ? 'Tutup' : 'Pratinjau'}</button>
+      <div className="px-pvs" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>{children}</div>
+    </div>
+  );
+}
 
 // trial: pilihan Pro yang dicoba pengguna gratis. Hanya tampil di pratinjau, tidak disimpan dan tidak tampil di halaman publik.
 export function Phone({ trial }) {
