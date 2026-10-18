@@ -15,6 +15,7 @@ export default function Daftar() {
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState('');
+  const [refShown, setRefShown] = useState(false);
   const nm = username || 'rani';
 
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
@@ -25,14 +26,21 @@ export default function Daftar() {
   }, [err]);
 
   // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
+  // Notifikasi "Kamu diundang" hanya muncul kalau ?ref= memang ada di URL kunjungan ini,
+  // bukan tiap kali buka halaman polos karena ada sisa kode lama di localStorage.
   useEffect(() => {
     try {
       const q = (new URLSearchParams(location.search).get('ref') || '').toLowerCase();
-      if (/^[a-z0-9_]{3,20}$/.test(q)) localStorage.setItem('ref', q);
       const pu = (new URLSearchParams(location.search).get('u') || '').toLowerCase();
       if (/^[a-z0-9_]{3,20}$/.test(pu)) setU(pu);
-      const v = localStorage.getItem('ref') || '';
-      if (/^[a-z0-9_]{3,20}$/.test(v)) setRef(v);
+      if (/^[a-z0-9_]{3,20}$/.test(q)) {
+        localStorage.setItem('ref', q);
+        setRef(q);
+        setRefShown(true);
+      } else {
+        const v = localStorage.getItem('ref') || '';
+        if (/^[a-z0-9_]{3,20}$/.test(v)) setRef(v);
+      }
     } catch {}
   }, []);
 
@@ -87,7 +95,7 @@ export default function Daftar() {
             <Link href="/daftar" aria-current="page">Daftar</Link>
           </nav>
           <form className="au-form" onSubmit={submit}>
-            {ref && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
+            {refShown && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
             <label htmlFor="u">Alamat halamanmu</label>
             <div className="au-field">
               <span>isengin.site/</span>

@@ -17,6 +17,7 @@ export default function Home() {
   const t = 'neo';
   const nm = username || 'rani';
   const [ref, setRef] = useState('');
+  const [refShown, setRefShown] = useState(false);
 
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
   useEffect(() => {
@@ -25,12 +26,19 @@ export default function Home() {
     return () => clearTimeout(id);
   }, [err]);
   // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
+  // Notifikasi "Kamu diundang" hanya muncul kalau ?ref= memang ada di URL kunjungan ini,
+  // bukan tiap kali buka halaman polos karena ada sisa kode lama di localStorage.
   useEffect(() => {
     try {
       const q = (new URLSearchParams(location.search).get('ref') || '').toLowerCase();
-      if (/^[a-z0-9_]{3,20}$/.test(q)) localStorage.setItem('ref', q);
-      const v = localStorage.getItem('ref') || '';
-      if (/^[a-z0-9_]{3,20}$/.test(v)) setRef(v);
+      if (/^[a-z0-9_]{3,20}$/.test(q)) {
+        localStorage.setItem('ref', q);
+        setRef(q);
+        setRefShown(true);
+      } else {
+        const v = localStorage.getItem('ref') || '';
+        if (/^[a-z0-9_]{3,20}$/.test(v)) setRef(v);
+      }
     } catch {}
   }, []);
 
@@ -58,7 +66,7 @@ export default function Home() {
         <h1 className="lp-h1">Satu link untuk semua kontenmu.</h1>
         <p className="lp-lead">Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman. Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
         <div className="lp-claim">
-          {ref && mode === 'register' && <p className="lp-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
+          {refShown && mode === 'register' && <p className="lp-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
           <label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>
           <div className="lp-field">
             {mode === 'register' && <span>isengin.site/</span>}
