@@ -121,3 +121,13 @@ create table if not exists site_settings(
   key text primary key,
   value text not null,
   updated_at timestamptz default now());
+
+-- Klaim hadiah referral dipisah: ref_rewarded_at = pengundang sudah klaim hadiah untuk teman ini,
+-- ref_bonus_at = teman itu sudah klaim bonus undangannya sendiri.
+-- Hadiah yang sudah dibayarkan sebelum kolom ini ada dianggap bonusnya sudah diklaim (hanya sekali, saat kolom dibuat).
+do $$ begin
+  if not exists (select 1 from information_schema.columns where table_name='users' and column_name='ref_bonus_at') then
+    alter table users add column ref_bonus_at timestamptz;
+    update users set ref_bonus_at = ref_rewarded_at where ref_rewarded_at is not null;
+  end if;
+end $$;

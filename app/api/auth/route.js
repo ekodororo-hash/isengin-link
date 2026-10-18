@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/db';
 import { setSession, clearSession } from '@/lib/auth';
 import { hit, clear, ipOf, tooMany } from '@/lib/limit';
+import { MAX_REWARDED } from '@/lib/referral';
 const RESERVED = ['api', 'dashboard', 'login', 'admin', 'go', 's', '_next', 'privasi', 'syarat', 'domain', 'daftar', 'masuk'];
 export async function POST(req) {
   const { mode, username = '', password = '', ref = '' } = await req.json();
@@ -24,7 +25,10 @@ export async function POST(req) {
     if (/^[a-z0-9_]{3,20}$/.test(code)) {
       try {
         const by = (await sql`select id from users where username=${code} and active is not false`)[0];
-        if (by) await sql`update users set referred_by=${by.id} where id=${r[0].id}`;
+        // Batas MAX_REWARDED teman per pengundang: bila sudah penuh, pendaftar tetap dibuat tapi tidak tercatat sebagai undangan
+        // (satu perintah, jadi dua pendaftaran bersamaan tidak melewati batas).
+        if (by) await sql`update users set referred_by=${by.id} where id=${r[0].id}
+          and (select count(*) from users x where x.referred_by=${by.id}) < ${MAX_REWARDED}`;
       } catch (e) { console.error('Referral gagal dicatat (sudah jalankan schema-update.sql?):', e.message); }
     }
     await setSession(r[0].id);

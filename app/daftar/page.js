@@ -16,6 +16,8 @@ export default function Daftar() {
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState('');
   const [refShown, setRefShown] = useState(false);
+  const [refFull, setRefFull] = useState(false); // undangan dari kode ini sudah penuh (batas teman per pengundang)
+  const [refMax, setRefMax] = useState(10);
   const nm = username || 'david';
 
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
@@ -44,11 +46,19 @@ export default function Daftar() {
     } catch {}
   }, []);
 
+  // Cek apakah undangan sudah penuh. Kalau penuh, kode lama dibuang dari peramban dan tidak dikirim saat daftar.
+  useEffect(() => {
+    if (!ref) return;
+    fetch('/api/referral/cek?ref=' + encodeURIComponent(ref)).then((r) => (r.ok ? r.json() : null)).then((d) => {
+      if (d?.full) { setRefFull(true); setRefMax(d.max || 10); try { localStorage.removeItem('ref'); } catch {} }
+    }).catch(() => {});
+  }, [ref]);
+
   async function submit(e) {
     e.preventDefault();
     setErr(''); setBusy(true);
     try {
-      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'register', username, password, ref }) });
+      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'register', username, password, ref: refFull ? '' : ref }) });
       const d = await r.json();
       if (r.ok) { location.href = '/dashboard'; return; }
       setErr(d.error || 'Gagal.');
@@ -95,7 +105,8 @@ export default function Daftar() {
             <Link href="/daftar" aria-current="page">Daftar</Link>
           </nav>
           <form className="au-form" onSubmit={submit}>
-            {refShown && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
+            {refShown && refFull && <p className="au-note">Undangan dari <b>@{ref}</b> sudah penuh (maksimal {refMax} teman). Kamu tetap bisa daftar, tapi tanpa bonus undangan.</p>}
+            {refShown && !refFull && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
             <label htmlFor="u">Alamat halamanmu</label>
             <div className="au-field">
               <span>isengin.site/</span>

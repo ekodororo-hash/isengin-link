@@ -8,7 +8,7 @@ import { urlProblem, flaggedUrls } from '@/lib/safe';
 import { PRO_THEMES, PRO_FONTS, PRO_BTNS, FREE_THUMBS } from '@/lib/pro';
 import { cleanGuard, hashPass, PASS_MIN, PASS_MAX } from '@/lib/linkguard';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
-import { settle } from '@/lib/referral';
+import { pending, pendingBonus } from '@/lib/referral';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
   const [u, links, daily, sources, extra, look, more, plan] = await Promise.all([
@@ -42,8 +42,10 @@ async function load(id) {
 export async function GET() {
   const id = await getUserId();
   if (!id) return Response.json({ error: 'Belum masuk.' }, { status: 401 });
-  await settle(id).catch(() => {}); // hadiah referral yang sudah matang dibayarkan tiap kali dashboard dibuka
-  return Response.json(await load(id));
+  // ref_gift: hadiah pengundang yang siap diklaim; ref_bonus: bonus undangan milik pengguna ini. Keduanya untuk modal setelah login (null bila tidak ada).
+  // Belum ada yang dibayar sampai pengguna klik Klaim sendiri.
+  const [data, gift, bonus] = await Promise.all([load(id), pending(id).catch(() => null), pendingBonus(id).catch(() => null)]);
+  return Response.json({ ...data, ref_gift: gift, ref_bonus: bonus });
 }
 export async function PUT(req) {
   const id = await getUserId();

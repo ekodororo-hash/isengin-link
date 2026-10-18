@@ -4,7 +4,6 @@ import { getUserId } from '@/lib/auth';
 import { hit, tooMany } from '@/lib/limit';
 import { PLANS, planKey } from '@/lib/plan';
 import { createSnap, midtransReady } from '@/lib/midtrans';
-import { settle } from '@/lib/referral';
 export const dynamic = 'force-dynamic';
 const no = () => Response.json({ error: 'Belum masuk.' }, { status: 401 });
 
@@ -13,7 +12,6 @@ export async function GET() {
   await loadSettings();
   const id = await getUserId();
   if (!id) return no();
-  await settle(id).catch(() => {}); // hadiah referral yang sudah matang dibayarkan sebelum status paket dibaca
   const [u, pays] = await Promise.all([
     sql`select (plan_until > now()) as pro, plan_until from users where id=${id}`.catch(() => []),
     sql`select order_id, plan, amount, status, created_at, paid_at from payments where user_id=${id} order by created_at desc limit 10`.catch(() => []),

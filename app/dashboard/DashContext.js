@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Shell from '../Shell';
 import Banners from './Banners';
+import RefModal from './RefModal';
 import Loader from '../Loader';
 import { PreCtx, fetchPre, needsPre } from '../prefetch';
 import { SOCIALS } from '@/lib/socials';
@@ -49,11 +50,19 @@ export function DashProvider({ children }) {
   const [nav, setNav] = useState(false);
   const path = usePathname();
   const [pre, setPre] = useState(null);
+  // Modal referral: antrean hadiah pengundang (ref_gift) dan bonus teman (ref_bonus), masing-masing diklaim sendiri.
+  // giftDone: jenis yang sudah diklaim atau ditunda di sesi ini, jadi tidak muncul lagi tiap pindah menu.
+  const [gifts, setGifts] = useState([]);
+  const giftDone = useRef(new Set());
+  const takeGift = (d) => {
+    const next = [d?.ref_gift, d?.ref_bonus].filter((g) => g && !giftDone.current.has(g.kind));
+    if (next.length) setGifts((cur) => (cur.length ? cur : next));
+  };
   const pm = m ? parts(m) : null, ps = saved ? parts(saved) : null;
   const changed = pm && ps ? SECTIONS.filter(([k]) => pm[k] !== ps[k]) : [];
   const dirty = changed.length > 0;
   useEffect(() => {
-    fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); } });
+    fetch('/api/me').then((r) => (r.ok ? r.json() : (location.href = '/', null))).then((d) => { if (d) { setM(d); setSaved(d); takeGift(d); } });
     fetchPre(path).then(setPre);
   }, []);
   useEffect(() => { setMsg(''); }, [path]);
@@ -68,7 +77,7 @@ export function DashProvider({ children }) {
     setNav(true);
     if (savedRef.current) setM(savedRef.current);
     const t0 = Date.now();
-    Promise.all([fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {}), fetchPre(path).then(setPre)])
+    Promise.all([fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); takeGift(d); } }).catch(() => {}), fetchPre(path).then(setPre)])
       .then(() => setTimeout(() => setNav(false), Math.max(0, 450 - (Date.now() - t0))));
   }, [path]);
   if (!m || nav || (needsPre(path) && pre?.path !== path)) return <Loader />;
@@ -157,6 +166,18 @@ export function DashProvider({ children }) {
       } else setMsg(d.error || 'Gambar gagal diunggah.');
     } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
   }
+  // Tutup modal (diklaim atau ditunda): jenis itu tidak tampil lagi sampai muat ulang, lalu modal berikutnya (kalau ada) muncul.
+  // Yang ditunda tetap bisa diklaim di halaman Undang.
+  function closeGift() {
+    const g = gifts[0];
+    if (g) giftDone.current.add(g.kind);
+    setGifts((cur) => cur.slice(1));
+  }
+  // Setelah klaim, ambil ulang data supaya status Pro langsung terbarui.
+  function claimed(kind) {
+    giftDone.current.add(kind);
+    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {});
+  }
   async function out() {
     await fetch('/api/auth', { method: 'POST', body: JSON.stringify({ mode: 'logout' }) });
     location.href = '/';
@@ -167,6 +188,7 @@ export function DashProvider({ children }) {
         <Shell title="isengin.site" menu={MENU} out={out}>
           <Banners />
           {children}
+          <RefModal key={gifts[0]?.kind} gift={gifts[0] || null} onClose={closeGift} onClaimed={claimed} />
         </Shell>
       </PreCtx.Provider>
     </Ctx.Provider>
