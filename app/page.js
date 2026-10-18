@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { themeStyle } from '@/lib/themes';
 import { LinkIcon, NamedIcon } from './icons';
+import Bawah from './Bawah';
 
 const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/david'], ['Video terbaru di YouTube', 'https://youtube.com/@david'], ['Kirim email', 'mailto:david@email.com']];
 
@@ -105,10 +106,8 @@ export default function Home() {
           <div className="lp-foot">Dibuat di isengin.site</div>
         </div>
         </div>
-        <p className="lp-legal">
-          <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
-        </p>
       </section>
     </main>
+    <Bawah />
   </>);
 }
