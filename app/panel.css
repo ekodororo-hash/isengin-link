@@ -466,3 +466,10 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-places{display:grid;gap:8px;margin-top:12px}
 .px-place{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 8px 8px 14px;background:#fff;border:3px solid var(--navy);border-radius:14px;font-weight:800}
 .px-place .px-btn{margin:0;padding:6px 16px;font-size:.8rem}
+
+/* ikon pengumuman dan info (polos, tanpa lingkaran) */
+.px-bn{padding-left:12px}
+.px-bn .ico{flex:none;width:24px;margin-top:4px;display:grid;place-items:center;color:var(--navy)}
+.px-bn.penting .ico{color:#c4210c}
+.px-bn p{padding-top:5px}
+.px-bn button{display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
