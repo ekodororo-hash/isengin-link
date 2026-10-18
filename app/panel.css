@@ -473,3 +473,21 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-bn.penting .ico{color:#c4210c}
 .px-bn p{padding-top:5px}
 .px-bn button{display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+
+/* Admin Pengaturan: baris status rapi */
+.px-kv{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 0;border-bottom:2px dashed rgba(31,34,85,.25)}
+.px-kv>div:first-child{min-width:0}
+.px-kv b{display:block;font-weight:800}
+.px-kv small{display:block;margin-top:2px;font-weight:600;font-size:.8rem;color:var(--mut);line-height:1.4}
+.px-kv-v{flex:none;font-weight:800;text-align:right}
+.px-pill{display:inline-block;padding:3px 12px;border:2px solid var(--navy);border-radius:999px;font-size:.8rem;font-weight:800;background:#ffe3dd}
+.px-pill.ok{background:#c9f2c7}
+.px-url{margin:8px 0 0;padding:8px 12px;background:#fff;border:2px solid var(--navy);border-radius:12px;font-weight:700;font-size:.82rem;word-break:break-all}
+.px-h3{font-family:Bungee,sans-serif;font-weight:400;font-size:.85rem;margin:20px 0 8px}
+.px-mini-g{margin:16px 0 0;gap:12px}
+.px-mini-g .px-stat b{font-size:1.3rem}
+@media(max-width:560px){
+.px-kv{flex-direction:column;align-items:flex-start;gap:8px}
+.px-kv-v{text-align:left}
+.px-mini-g{grid-template-columns:1fr 1fr}
+}
