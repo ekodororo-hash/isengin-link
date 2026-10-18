@@ -9,7 +9,7 @@ import ShareLink from './ShareLink';
 export default function LinkRow({ title, url, th, cat, soldout, labelKey, labelDisplay, price, old, feat, guard, href, pageUsername, pageName }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (soldout ? ' soldout' : '') + (feat ? ' feat' : '') + ((feat || guard) ? ' has-ind' : '')}>
+    <div className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (soldout ? ' soldout' : '') + (feat ? ' feat' : '') + ((feat || guard) ? ' has-ind' : '') + ((feat && guard) ? ' ind2' : '')}>
       <a className="plink-main" href={href} rel="noopener noreferrer" target={/^mailto:/i.test(url || '') ? undefined : '_blank'}>
         {th ? <img className="pth" src={th} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={url} />}
         <span className="pt">

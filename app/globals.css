@@ -147,7 +147,8 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .plink.feat::after{content:"";position:absolute;inset:-5px;border:2px solid var(--accent);border-radius:calc(var(--r,16px) + 5px);pointer-events:none}
 .phone[data-b="pil"] .plink.feat{--r:999px}.phone[data-b="kotak"] .plink.feat{--r:4px}.phone[data-b="timbul"] .plink.feat{--r:10px}.phone[data-b="garis"] .plink.feat{--r:14px}
 .plink .pind{position:absolute;right:46px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:6px}
-.plink.has-ind .pt{padding:0 40px 0 80px}
+/* Penanda (bintang/gembok/18+) melayang di atas ruang kosong (spacer) di kanan judul, jadi judul tidak perlu dipersempit. Hanya kalau bintang + penanda sekaligus di link tanpa gambar, judul diberi sedikit ruang ekstra. */
+.plink.ind2:not(.has-th) .pt{padding:0 14px 0 54px}
 .plink .pstar{color:var(--accent)}
 .plink .p18{font-size:.62rem;font-weight:800;letter-spacing:.03em;border:1.5px solid currentColor;border-radius:99px;padding:0 6px;line-height:1.5}
 
