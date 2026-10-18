@@ -64,6 +64,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phone[data-b="garis"] .plink{background:transparent;border:2px solid var(--ink);border-radius:14px}
 .phone[data-b="timbul"] .plink{border:2px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink)}
 .phone[data-b="pil"] .plink.has-th{padding-left:10px}
+.phone[data-b="pil"] .plink .pth{border-radius:50%}
 .phone[data-b="pil"] .plink.cat{border-radius:28px}
 
 /* tombol titik tiga di tiap tautan (buka modal "Bagikan tautan") */

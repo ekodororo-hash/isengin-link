@@ -249,6 +249,7 @@
 .px-ph[data-b="kotak"] .l{border-radius:4px}
 .px-ph[data-b="garis"] .l{background:transparent;border:2px solid var(--pi)}
 .px-ph[data-b="timbul"] .l{border:2px solid var(--pi);border-radius:8px;box-shadow:3px 3px 0 var(--pi)}
+.px-ph[data-b="pil"] .l .t{border-radius:50%}
 
 /* seret dan lepas, katalog produk di editor link */
 .px-grip{box-sizing:border-box;flex:none;width:28px;height:36px;display:grid;place-items:center;padding:0;border:0;background:none;color:var(--mut);cursor:grab;touch-action:none;border-radius:8px}
@@ -597,3 +598,9 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 
 /* saat diseret: baris terangkat (bayangan besar, sedikit transparan) dan menempel di jari */
 .px-lk.drag{transform:none;box-shadow:8px 10px 0 var(--navy);outline:3px solid var(--navy);outline-offset:0;z-index:5}
+
+/* pratinjau sama seperti halaman publik: gambar/ikon link menempel di kiri, judul tetap di tengah baris */
+.px-ph .l{padding-left:44px;padding-right:44px}
+.px-ph .l>.t,.px-ph .l>.lico{position:absolute;top:50%;transform:translateY(-50%)}
+.px-ph .l>.t{left:8px}
+.px-ph .l>.lico{left:14px}
