@@ -59,7 +59,7 @@ export default async function Fitur() {
     <div className="ft">
       <header className="ft-nav">
         <Link className="ft-brand" href="/">ISENGIN.SITE</Link>
-        <nav aria-label="Akun">
+        <nav className="ft-nbtn" aria-label="Akun">
           <Link className="ft-nb" href="/masuk">Masuk</Link>
           <Link className="ft-nb r" href="/daftar">Daftar</Link>
         </nav>
@@ -134,7 +134,7 @@ export default async function Fitur() {
         </div>
       </main>
       <footer className="ft-foot">
-        <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link><br />Dibuat di isengin.site
+        <Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link><br />© 2026 isengin.site
       </footer>
     </div>
   );

@@ -100,7 +100,7 @@ export default function Masuk() {
             {err && <p className="au-err" role="alert">{err}</p>}
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Masuk'}</button>
           </form>
-          <p className="au-legal"><Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
+          <p className="au-legal"><Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
         </div>
       </main>
     </div>
