@@ -54,8 +54,15 @@ export function DashProvider({ children }) {
   // giftDone: jenis yang sudah diklaim atau ditunda di sesi ini, jadi tidak muncul lagi tiap pindah menu.
   const [gifts, setGifts] = useState([]);
   const giftDone = useRef(new Set());
+  // Sekali per hadiah: setelah ditutup (Klaim atau Nanti saja), modal tidak muncul lagi untuk hadiah yang sama,
+  // walau halaman dimuat ulang atau login ulang. Kalau ada teman baru yang memenuhi syarat, daftarnya berubah dan modal muncul sekali lagi.
+  const SEEN = 'isengin_gift_seen';
+  const giftKey = (g) => (g.kind === 'bonus' ? 'bonus:' + g.by : 'reward:' + (g.friends || []).join(','));
+  const readSeen = () => { try { return JSON.parse(localStorage.getItem(SEEN)) || {}; } catch { return {}; } };
+  const markSeen = (g) => { try { localStorage.setItem(SEEN, JSON.stringify({ ...readSeen(), [g.kind]: giftKey(g) })); } catch {} };
   const takeGift = (d) => {
-    const next = [d?.ref_gift, d?.ref_bonus].filter((g) => g && !giftDone.current.has(g.kind));
+    const seen = readSeen();
+    const next = [d?.ref_gift, d?.ref_bonus].filter((g) => g && !giftDone.current.has(g.kind) && seen[g.kind] !== giftKey(g));
     if (next.length) setGifts((cur) => (cur.length ? cur : next));
   };
   const pm = m ? parts(m) : null, ps = saved ? parts(saved) : null;
@@ -166,16 +173,17 @@ export function DashProvider({ children }) {
       } else setMsg(d.error || 'Gambar gagal diunggah.');
     } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
   }
-  // Tutup modal (diklaim atau ditunda): jenis itu tidak tampil lagi sampai muat ulang, lalu modal berikutnya (kalau ada) muncul.
+  // Tutup modal (diklaim atau ditunda): hadiah itu tidak tampil lagi (dicatat di localStorage), lalu modal berikutnya (kalau ada) muncul.
   // Yang ditunda tetap bisa diklaim di halaman Undang.
   function closeGift() {
     const g = gifts[0];
-    if (g) giftDone.current.add(g.kind);
+    if (g) { giftDone.current.add(g.kind); markSeen(g); }
     setGifts((cur) => cur.slice(1));
   }
   // Setelah klaim, ambil ulang data supaya status Pro langsung terbarui.
   function claimed(kind) {
     giftDone.current.add(kind);
+    window.dispatchEvent(new Event('isengin:claimed')); // halaman Paket/Undang ikut memuat ulang datanya
     fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setM(d); setSaved(d); } }).catch(() => {});
   }
   async function out() {
@@ -185,7 +193,7 @@ export function DashProvider({ children }) {
   return (
     <Ctx.Provider value={{ m, set, setTheme, upThumb, upBg, setL, addLink, addHeader, delLink, move, reorder, save, up, msg, busy, dirty }}>
       <PreCtx.Provider value={pre}>
-        <Shell title="isengin.site" menu={MENU} out={out}>
+        <Shell title="isengin.site" menu={MENU.map(([h, l]) => (h === '/dashboard/undang' && (m.ref_gift || m.ref_bonus) ? [h, l, true] : [h, l]))} out={out}>
           <Banners />
           {children}
           <RefModal key={gifts[0]?.kind} gift={gifts[0] || null} onClose={closeGift} onClaimed={claimed} />

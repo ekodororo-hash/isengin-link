@@ -32,8 +32,8 @@ export default function Shell({ title, menu, out, reload = false, children }) {
           <button className="px-close" aria-label="Tutup menu" onClick={() => setOpen(false)}>✕</button>
         </div>
         <nav aria-label="Menu">
-          {menu.map(([href, label]) => (
-            <Item key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}</Item>
+          {menu.map(([href, label, badge]) => (
+            <Item key={href} href={href} aria-current={path === href ? 'page' : undefined}>{label}{badge && <i className="px-badge" role="img" aria-label="ada hadiah siap diklaim" />}</Item>
           ))}
         </nav>
         <button className="px-out" onClick={out}>Keluar</button>

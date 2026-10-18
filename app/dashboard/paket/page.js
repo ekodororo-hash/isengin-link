@@ -27,8 +27,11 @@ export default function Paket() {
   const [d, setD] = useState(p?.ok ? p.data : null);
   const [busy, setBusy] = useState('');
   const [err, setErr] = useState('');
+  const [got, setGot] = useState('');
   const load = () => fetch('/api/billing').then((r) => (r.ok ? r.json() : null)).then((x) => { if (x) setD(x); });
   useEffect(() => { if (!p) load(); }, []);
+  // Modal klaim (RefModal) memberi tahu halaman ini supaya status paket ikut diperbarui.
+  useEffect(() => { window.addEventListener('isengin:claimed', load); return () => window.removeEventListener('isengin:claimed', load); }, []);
   // Setelah membayar, konfirmasi datang lewat webhook; cek ulang beberapa kali sampai paket aktif.
   const waiting = d?.payments?.some((p) => p.status === 'pending' && Date.now() - new Date(p.created_at).getTime() < 3600000);
   useEffect(() => {
@@ -38,6 +41,18 @@ export default function Paket() {
     return () => clearInterval(t);
   }, [waiting]);
 
+  // Klaim hadiah referral langsung dari halaman ini (endpoint sama dengan modal dan halaman Undang).
+  async function klaim(kind) {
+    if (busy) return;
+    setBusy('ref'); setGot(''); setErr('');
+    try {
+      const r = await fetch('/api/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ kind }) });
+      const x = await r.json().catch(() => ({}));
+      if (!r.ok) setErr(x.error || 'Klaim gagal. Coba lagi.');
+      else { setGot(x.n > 0 ? `Berhasil. ${x.days} hari Pro sudah ditambahkan ke akunmu.` : 'Hadiah ini sudah diklaim sebelumnya.'); await load(); }
+    } catch { setErr('Klaim gagal. Periksa koneksi, lalu coba lagi.'); }
+    setBusy('');
+  }
   async function buy(plan) {
     setBusy(plan); setErr('');
     const r = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ plan }) });
@@ -46,10 +61,37 @@ export default function Paket() {
     setErr(x.error || 'Gagal membuat pesanan.'); setBusy('');
   }
   if (!d) return (<><h1>Paket</h1><Loader inline /></>);
+  const rf = d.referral || { pending: null, bonus: null, claims: [], refDays: 0, paidDays: 0 };
+  const sisa = d.pro && d.until ? Math.max(0, Math.ceil((new Date(d.until) - Date.now()) / 86400000)) : 0;
+  const rows = [
+    ...d.payments.map((p) => ({ key: p.order_id, at: p.created_at, name: d.plans[p.plan]?.label ? `Pro ${d.plans[p.plan].label}` : p.plan, amt: rp(p.amount), st: STATUS[p.status] || p.status, ref: false })),
+    ...rf.claims.map((c) => ({ key: `${c.kind}-${c.at}`, at: c.at, name: c.kind === 'bonus' ? `Bonus undangan @${c.by}` : `Hadiah referral ${c.friends.slice(0, 3).map((u) => '@' + u).join(', ')}${c.friends.length > 3 ? ` +${c.friends.length - 3}` : ''}`, amt: `+${c.days} hari`, st: 'Diklaim', ref: true })),
+  ].sort((a, b) => new Date(b.at) - new Date(a.at));
   return (<>
     <h1>Paket</h1>
     <p className="px-sub">{d.pro ? <>Paket <b>Pro</b> aktif sampai {tgl(d.until)}.</> : 'Kamu memakai paket Gratis.'}</p>
+    {(rf.pending || rf.bonus) && (
+      <div className="pk-claim">
+        <span><b>Hadiah referral siap diklaim.</b>{rf.pending && ` ${rf.pending.n} temanmu sudah memenuhi syarat (${rf.pending.friends.slice(0, 3).map((u) => '@' + u).join(', ')}${rf.pending.n > 3 ? ` dan ${rf.pending.n - 3} lainnya` : ''}).`}{rf.bonus && ` Kamu mendaftar lewat undangan @${rf.bonus.by}.`}</span>
+        {rf.pending && <button className="px-btn d" disabled={!!busy} aria-busy={busy === 'ref'} onClick={() => klaim('reward')}>{busy === 'ref' ? 'Memproses…' : `Klaim ${rf.pending.days} hari Pro`}</button>}
+        {rf.bonus && <button className="px-btn d" disabled={!!busy} aria-busy={busy === 'ref'} onClick={() => klaim('bonus')}>{busy === 'ref' ? 'Memproses…' : `Klaim bonus ${rf.bonus.days} hari Pro`}</button>}
+      </div>
+    )}
+    {got && <p className="px-hint" role="status">{got}</p>}
     <div className="px-card">
+      <section className="px-sec">
+        <h2>Status paket</h2>
+        <div className="pk-top">
+          <span className={'pk-badge' + (d.pro ? '' : ' free')}>{d.pro ? 'Pro aktif' : 'Gratis'}</span>
+          <span className="pk-until">{d.pro ? `Berakhir ${tgl(d.until)} · sisa ${sisa} hari` : 'Upgrade atau klaim hadiah referral untuk membuka fitur Pro.'}</span>
+        </div>
+        {(rf.paidDays > 0 || rf.refDays > 0) && (
+          <ul className="pk-src">
+            {rf.paidDays > 0 && <li><i className="pay" aria-hidden="true" />Pembelian paket<small>+{rf.paidDays} hari</small></li>}
+            {rf.refDays > 0 && <li><i className="ref" aria-hidden="true" />Hadiah referral dan bonus undangan<small>+{rf.refDays} hari</small></li>}
+          </ul>
+        )}
+      </section>
       <section className="px-sec">
         <h2>Gratis dan Pro</h2>
         <div className="px-tw"><table className="px-cmp">
@@ -73,13 +115,13 @@ export default function Paket() {
         {err && <p className="px-err" role="alert">{err}</p>}
         <p className="px-hint">Pembayaran lewat Midtrans (QRIS, transfer bank, e-wallet, kartu). Perpanjangan ditambahkan setelah masa aktif yang tersisa, jadi tidak ada hari yang hilang. Paket tidak diperpanjang otomatis.</p>
       </section>
-      {d.payments.length > 0 && (
+      {rows.length > 0 && (
         <section className="px-sec">
           <h2>Riwayat</h2>
           <div className="px-tw"><table>
-            <thead><tr><th>Tanggal</th><th>Paket</th><th>Jumlah</th><th>Status</th></tr></thead>
-            <tbody>{d.payments.map((p) => (
-              <tr key={p.order_id}><td>{tgl(p.created_at)}</td><td>{d.plans[p.plan]?.label || p.plan}</td><td>{rp(p.amount)}</td><td>{STATUS[p.status] || p.status}</td></tr>
+            <thead><tr><th>Tanggal</th><th>Paket / sumber</th><th>Jumlah</th><th>Status</th></tr></thead>
+            <tbody>{rows.map((r) => (
+              <tr key={r.key}><td>{tgl(r.at)}</td><td>{r.name}</td><td>{r.amt}</td><td>{r.ref ? <span className="pk-tg">{r.st}</span> : r.st}</td></tr>
             ))}</tbody>
           </table></div>
         </section>

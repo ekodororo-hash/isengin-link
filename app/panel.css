@@ -626,3 +626,21 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .pm-frnd small{margin-left:auto;font-weight:700;color:var(--mut);font-size:.72rem;flex:none}
 .pm-more{font-size:.76rem;font-weight:700;color:var(--navy);background:none;border:none;text-decoration:underline;cursor:pointer;padding:4px;font-family:inherit}
 .pm-pb:disabled,.pm-sb:disabled{opacity:.6;cursor:default}
+
+/* Halaman Paket: kotak klaim referral, status paket, sumber hari Pro */
+.pk-claim{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:#fff3b8;border:3px solid var(--navy);border-radius:16px;padding:12px 14px;margin-bottom:18px;font-weight:700;font-size:.9rem}
+.pk-claim span{flex:1 1 220px}.pk-claim .px-btn{margin:0}
+.pk-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.pk-badge{font-family:Bungee,sans-serif;font-size:.8rem;border:3px solid var(--navy);border-radius:99px;padding:3px 14px;background:#c9f2c7;box-shadow:3px 3px 0 var(--navy);text-transform:uppercase}
+.pk-badge.free{background:#fff}
+.pk-until{font-weight:800}
+.pk-src{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+.pk-src li{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--navy);border-radius:12px;padding:8px 12px;font-weight:800;font-size:.88rem}
+.pk-src i{width:14px;height:14px;border-radius:50%;border:3px solid var(--navy);flex:none;background:var(--red)}
+.pk-src i.ref{background:var(--yel)}
+.pk-src small{margin-left:auto;font-weight:800;color:var(--mut);white-space:nowrap}
+.pk-tg{display:inline-block;border:2px solid var(--navy);border-radius:99px;padding:1px 10px;font-size:.78rem;font-weight:800;background:var(--yel);white-space:nowrap}
+
+/* Titik penanda di menu: ada hadiah referral yang belum diklaim */
+.px-app nav a .px-badge{display:inline-block;width:10px;height:10px;margin-left:8px;border-radius:50%;background:var(--red);border:2px solid var(--navy);vertical-align:middle}
+.px-app nav a[aria-current="page"] .px-badge{background:var(--yel)}
