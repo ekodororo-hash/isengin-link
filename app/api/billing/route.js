@@ -1,4 +1,5 @@
 import { sql } from '@/lib/db';
+import { loadSettings } from '@/lib/settings';
 import { getUserId } from '@/lib/auth';
 import { hit, tooMany } from '@/lib/limit';
 import { PLANS, planKey } from '@/lib/plan';
@@ -9,6 +10,7 @@ const no = () => Response.json({ error: 'Belum masuk.' }, { status: 401 });
 
 // Status paket, harga, dan riwayat pembayaran.
 export async function GET() {
+  await loadSettings();
   const id = await getUserId();
   if (!id) return no();
   await settle(id).catch(() => {}); // hadiah referral yang sudah matang dibayarkan sebelum status paket dibaca
@@ -27,6 +29,7 @@ export async function GET() {
 
 // Buat pesanan lalu kembalikan alamat pembayaran Midtrans. Paket baru aktif setelah webhook mengonfirmasi.
 export async function POST(req) {
+  await loadSettings();
   const id = await getUserId();
   if (!id) return no();
   if (!midtransReady()) return Response.json({ error: 'Pembayaran belum diaktifkan oleh pemilik situs.' }, { status: 503 });

@@ -114,3 +114,9 @@ create table if not exists announcements(
   level text not null default 'info',
   active boolean not null default true,
   created_at timestamptz default now());
+
+-- Pengaturan situs yang diubah dari halaman admin (pembayaran dan domain). Mengalahkan Environment Variables Vercel bila diisi.
+create table if not exists site_settings(
+  key text primary key,
+  value text not null,
+  updated_at timestamptz default now());

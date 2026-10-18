@@ -1,4 +1,5 @@
 import { sql } from '@/lib/db';
+import { loadSettings } from '@/lib/settings';
 import { getUserId } from '@/lib/auth';
 import { hit, tooMany } from '@/lib/limit';
 import { addDomain, domainState, removeDomain, cleanDomain, vercelReady } from '@/lib/vercel';
@@ -13,6 +14,7 @@ async function mine(id) {
 }
 
 export async function GET() {
+  await loadSettings();
   const id = await getUserId();
   if (!id) return no();
   const d = await mine(id);
@@ -21,6 +23,7 @@ export async function GET() {
 
 // mode "add": pasang domain (Pro). mode "check": cek DNS lalu aktifkan bila sudah benar.
 export async function POST(req) {
+  await loadSettings();
   const id = await getUserId();
   if (!id) return no();
   if (!vercelReady()) return bad('Fitur domain belum dikonfigurasi oleh pemilik situs.', 503);
@@ -55,6 +58,7 @@ export async function POST(req) {
 }
 
 export async function DELETE() {
+  await loadSettings();
   const id = await getUserId();
   if (!id) return no();
   const cur = await mine(id);

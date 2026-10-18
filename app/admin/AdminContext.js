@@ -6,7 +6,7 @@ import Loader from '../Loader';
 import { PreCtx, fetchPre, needsPre } from '../prefetch';
 const Ctx = createContext(null);
 export const useAdmin = () => useContext(Ctx);
-const menu = (n, r) => [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna'], ['/admin/centang', n ? `Centang (${n})` : 'Centang'], ['/admin/referral', 'Referral'], ['/admin/laporan', r ? `Laporan (${r})` : 'Laporan'], ['/admin/pengumuman', 'Pengumuman'], ['/admin/pengaturan', 'Pengaturan']];
+const menu = (n, r) => [['/admin', 'Ringkasan'], ['/admin/pengguna', 'Pengguna'], ['/admin/centang', n ? `Centang (${n})` : 'Centang'], ['/admin/referral', 'Referral'], ['/admin/laporan', r ? `Laporan (${r})` : 'Laporan'], ['/admin/pengumuman', 'Pengumuman'], ['/admin/pembayaran', 'Pembayaran'], ['/admin/domain', 'Domain']];
 const J = { 'Content-Type': 'application/json' };
 export function AdminProvider({ children }) {
   const [d, setD] = useState(undefined);

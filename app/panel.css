@@ -491,3 +491,10 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-kv-v{text-align:left}
 .px-mini-g{grid-template-columns:1fr 1fr}
 }
+
+/* Admin Pembayaran dan Domain: isian dengan keterangan */
+.px-fld{margin-bottom:6px}
+.px-fld label{margin-top:14px}
+.px-fld .px-hint{margin-top:6px}
+.px-sec h2 .px-pill{margin-left:10px;vertical-align:middle;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
+.px-main .px-seg button{font-size:.8rem;padding:6px 16px}

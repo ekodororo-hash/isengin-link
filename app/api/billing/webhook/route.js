@@ -1,4 +1,5 @@
 import { sql } from '@/lib/db';
+import { loadSettings } from '@/lib/settings';
 import { PLANS } from '@/lib/plan';
 import { signatureOk, fetchStatus, isPaid, isDead } from '@/lib/midtrans';
 export const dynamic = 'force-dynamic';
@@ -7,6 +8,7 @@ export const dynamic = 'force-dynamic';
 // Tiga lapis pengaman: tanda tangan, status dicek ulang langsung ke Midtrans, dan nominal harus sama dengan pesanan.
 // Aman dipanggil berulang: pesanan yang sudah lunas tidak memperpanjang paket dua kali.
 export async function POST(req) {
+  await loadSettings();
   const n = await req.json().catch(() => null);
   if (!n || !n.order_id || !signatureOk(n)) return Response.json({ error: 'Tanda tangan tidak valid.' }, { status: 401 });
   const pay = (await sql`select order_id,user_id,plan,amount,status from payments where order_id=${String(n.order_id)}`)[0];
