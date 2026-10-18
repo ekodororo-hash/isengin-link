@@ -79,6 +79,8 @@ export default function LinkPage() {
     }
     place();
   }, [m.links]);
+  // Handler terbaru disimpan di ref: pendengar di window dipasang sekali saat mulai seret, tapi state-nya terus berubah.
+  const hMove = useRef(null), hUp = useRef(null), stopDrag = useRef(null);
   const down = (e, key) => {
     if (e.button > 0) return;
     e.preventDefault();
@@ -86,11 +88,26 @@ export default function LinkPage() {
     lastY.current = e.clientY;
     grab.current = row ? e.clientY - row.getBoundingClientRect().top : 0;
     dragKey.current = key; setDrag(key);
-    e.currentTarget.setPointerCapture(e.pointerId);
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    // Saat urutan berubah, React memindahkan elemen di DOM dan capture bisa lepas (seret jadi macet).
+    // Karena itu gerak dan lepas dipantau di window, bukan di tombol.
+    const mv = (ev) => hMove.current && hMove.current(ev);
+    const end = () => hUp.current && hUp.current();
+    window.addEventListener('pointermove', mv);
+    window.addEventListener('pointerup', end);
+    window.addEventListener('pointercancel', end);
+    window.addEventListener('blur', end);
+    stopDrag.current = () => {
+      window.removeEventListener('pointermove', mv);
+      window.removeEventListener('pointerup', end);
+      window.removeEventListener('pointercancel', end);
+      window.removeEventListener('blur', end);
+    };
   };
   const moveDrag = (e) => {
     const key = dragKey.current;
     if (key == null || !listRef.current) return;
+    if (e.pointerType === 'mouse' && e.buttons === 0) { up(); return; } // tombol mouse sudah dilepas tapi pointerup terlewat
     lastY.current = e.clientY;
     const rows = [...listRef.current.querySelectorAll('[data-k]')];
     // Titik tengah tiap baris dihitung dari posisi aslinya (bukan yang sedang beranimasi) supaya tidak bolak-balik.
@@ -118,8 +135,11 @@ export default function LinkPage() {
       el.style.transform = '';
       delete el.dataset.ty;
     }
+    if (stopDrag.current) { stopDrag.current(); stopDrag.current = null; }
     dragKey.current = null; setDrag(null);
   };
+  hMove.current = moveDrag; hUp.current = up;
+  useLayoutEffect(() => () => { if (stopDrag.current) stopDrag.current(); }, []);
 
   return (<>
     <ProModal fitur={pm} info={{ used: thumbs, limit: FREE_THUMBS }} onClose={() => setPm(null)} />
@@ -137,7 +157,7 @@ export default function LinkPage() {
             <div className={'px-lk px-hd' + (l.hidden ? ' off' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
               <div className="px-lk-r">
                 <button className="px-grip" aria-label={`Seret untuk memindahkan pembatas ${i + 1}`} title="Seret untuk mengurutkan"
-                  onPointerDown={(e) => down(e, k)} onPointerMove={moveDrag} onPointerUp={up} onPointerCancel={up}><Grip /></button>
+                  onPointerDown={(e) => down(e, k)}><Grip /></button>
                 <span className="px-lk-no">{i + 1}</span>
                 <span className="px-th e" aria-hidden="true"><Head /></span>
                 {hed
@@ -162,7 +182,7 @@ export default function LinkPage() {
             <div className={'px-lk' + (l.hidden ? ' off' : '') + (ed ? ' ed' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
               <div className="px-lk-r">
                 <button className="px-grip" aria-label={`Seret untuk memindahkan link ${i + 1}`} title="Seret untuk mengurutkan"
-                  onPointerDown={(e) => down(e, k)} onPointerMove={moveDrag} onPointerUp={up} onPointerCancel={up}><Grip /></button>
+                  onPointerDown={(e) => down(e, k)}><Grip /></button>
                 <span className="px-lk-no">{i + 1}</span>
                 {l.thumb ? <img className="px-th" src={l.thumb} alt="" /> : <span className="px-th e" aria-hidden="true"><LinkIcon url={l.url} size={20} /></span>}
                 <div className="px-lk-i">
@@ -220,9 +240,6 @@ export default function LinkPage() {
                     {l.guard === 'adult' && <p className="px-hint">Pengunjung melihat peringatan konten dewasa dulu dan harus memilih “Saya 18+” untuk lanjut.</p>}
                   </fieldset>
                   <div className="px-lk-t">
-                    <label className="px-btn g sm px-fl" onClick={(e) => gate(e, l)}>{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
-                      <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />
-                    </label>
                     {l.thumb && <button className="px-btn g sm" onClick={() => setL(i, 'thumb', '')}>Hapus gambar</button>}
                   </div>
                 </div>

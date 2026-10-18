@@ -208,7 +208,7 @@
 .px-lk-r>.px-sw2{margin:0}
 .px-ib{box-sizing:border-box;flex:none;width:36px;height:36px;margin:0;display:grid;place-items:center;padding:0;color:var(--navy);background:#fff;border:3px solid var(--navy);border-radius:12px;box-shadow:2px 2px 0 var(--navy);cursor:pointer;transition:transform .1s,box-shadow .1s}
 .px-ib.on{background:var(--yel)}
-.px-ib-img{display:none;position:relative}
+.px-ib-img{position:relative}
 .px-ok{position:absolute;top:-8px;right:-8px;pointer-events:none}
 .px-ib.d{background:var(--red);color:#fff}
 .px-ib:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
@@ -592,9 +592,8 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 /* seret di hp: harus menang atas .px-app button{touch-action:manipulation} supaya layar tidak ikut scroll saat ikon titik-titik digeser */
 .px-app .px-grip{touch-action:none}
 
-/* tombol gambar di baris link: .px-main label{margin;display:block} tadi menimpa .px-ib, jadi turun dan tidak sejajar */
-.px-main label.px-ib-img{display:none;margin:0;font-size:inherit}
-@media(max-width:560px){.px-main label.px-ib-img{display:grid}}
+/* tombol gambar di baris link: .px-main label{margin;display:block} menimpa .px-ib, jadi harus lebih spesifik */
+.px-main label.px-ib-img{display:grid;margin:0;font-size:inherit}
 
 /* saat diseret: baris terangkat (bayangan besar, sedikit transparan) dan menempel di jari */
 .px-lk.drag{transform:none;box-shadow:8px 10px 0 var(--navy);outline:3px solid var(--navy);outline-offset:0;z-index:5}
