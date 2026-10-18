@@ -75,7 +75,7 @@ export default function Home() {
           </div>
           <label htmlFor="p">Sandi</label>
           <div className="lp-field">
-            <input id="p" type={show ? 'text' : 'password'} value={password} onChange={(e) => setP(e.target.value)}
+            <input id="p" type={show ? 'text' : 'password'} placeholder={mode === 'register' ? 'Minimal 6 karakter' : ''} value={password} onChange={(e) => setP(e.target.value)}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'} />
             <button type="button" className="lp-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
