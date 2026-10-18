@@ -93,7 +93,7 @@ export default function Home() {
           <div className="lp-isl" aria-hidden="true" />
           <div className="lp-url">isengin.site/{nm}</div>
           <div className="lp-ava" aria-hidden="true">{nm[0].toUpperCase()}</div>
-          <h2 className="lp-name">{nm}</h2>
+          <h2 className="lp-name">{username || 'David'}</h2>
           <p className="lp-bio">Fotografer lepas. Pesan sesi foto atau lihat karya terbaru di bawah.</p>
           {LINKS.map(([l, u]) => (
             <div key={l} className="lp-link">

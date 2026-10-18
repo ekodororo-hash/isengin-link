@@ -66,7 +66,7 @@ export default function Daftar() {
               <div className="lp-isl" />
               <div className="lp-url">isengin.site/{nm}</div>
               <div className="lp-ava">{nm[0].toUpperCase()}</div>
-              <h2 className="lp-name">{nm}</h2>
+              <h2 className="lp-name">{username || 'David'}</h2>
               <p className="lp-bio">Fotografer lepas. Pesan sesi foto atau lihat karya terbaru di bawah.</p>
               {LINKS.map(([l, u]) => (
                 <div key={l} className="lp-link">
