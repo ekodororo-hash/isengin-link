@@ -48,6 +48,7 @@ create unique index if not exists users_email_uniq on users (email) where email 
 alter table links add column if not exists kind text default 'link';
 alter table users add column if not exists bg text default '';
 alter table users add column if not exists verified boolean default false;
+alter table users add column if not exists verified_at timestamptz;
 
 -- Statistik per link (klik per hari)
 create table if not exists link_stats(

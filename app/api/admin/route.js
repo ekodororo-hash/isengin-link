@@ -35,7 +35,7 @@ export async function PATCH(req) {
   if (decide === 'approve' || decide === 'reject') {
     try {
       if (decide === 'approve') {
-        await sql`update users set verified=true where id=${Number(id)}`;
+        await sql`update users set verified=true, verified_at=now() where id=${Number(id)}`;
         await sql`delete from verify_requests where user_id=${Number(id)}`;
       } else {
         await sql`update verify_requests set status='rejected', reason=${String(reason || '').trim().slice(0, 200)}, decided_at=now() where user_id=${Number(id)}`;
@@ -48,7 +48,7 @@ export async function PATCH(req) {
   }
   // Centang verifikasi hanya bisa diubah dari sini (pengguna tidak punya akses lewat /api/me).
   if (typeof verified === 'boolean') {
-    try { await sql`update users set verified=${verified} where id=${Number(id)}`; }
+    try { await sql`update users set verified=${verified}, verified_at=case when ${verified} then now() else null end where id=${Number(id)}`; }
     catch (e) {
       console.error('Gagal mengubah verifikasi (sudah jalankan schema-update.sql?):', e.message);
       return Response.json({ error: 'Kolom verified belum ada. Jalankan schema-update.sql di database.' }, { status: 500 });

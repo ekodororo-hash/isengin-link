@@ -12,11 +12,11 @@ export async function GET() {
   const id = await getUserId();
   if (!id) return needLogin();
   try {
-    const u = (await sql`select verified from users where id=${id}`)[0];
+    const u = (await sql`select verified,verified_at from users where id=${id}`)[0];
     const req = (await sql`select note,status,reason,created_at,decided_at from verify_requests where user_id=${id}`)[0] || null;
     const c = await checks(id);
     const retryAt = req?.status === 'rejected' && req.decided_at ? new Date(new Date(req.decided_at).getTime() + RETRY_DAYS * 86400000).toISOString() : null;
-    return Response.json({ verified: u?.verified === true, request: req, checks: c.list, ready: c.ready, retryAt, noteMin: NOTE_MIN, noteMax: NOTE_MAX });
+    return Response.json({ verified: u?.verified === true, verifiedAt: u?.verified_at || null, request: req, checks: c.list, ready: c.ready, retryAt, noteMin: NOTE_MIN, noteMax: NOTE_MAX });
   } catch (e) {
     console.error('Verifikasi gagal dibaca (sudah jalankan schema-update.sql?):', e.message);
     return bad(SETUP, 500);
@@ -34,7 +34,7 @@ export async function POST(req) {
   if (note.length < NOTE_MIN) return bad(`Tulis alasan atau tautan akun resmimu (minimal ${NOTE_MIN} karakter).`);
   try {
     const u = (await sql`select verified from users where id=${id}`)[0];
-    if (u?.verified === true) return bad('Akunmu sudah bercentang.', 409);
+    if (u?.verified === true) return bad('Akunmu sudah terverifikasi.', 409);
     const old = (await sql`select status,decided_at from verify_requests where user_id=${id}`)[0];
     if (old?.status === 'pending') return bad('Pengajuanmu masih menunggu.', 409);
     if (old?.status === 'rejected' && old.decided_at && Date.now() - new Date(old.decided_at).getTime() < RETRY_DAYS * 86400000)
