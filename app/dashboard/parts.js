@@ -11,7 +11,7 @@ import { fontCss } from '@/lib/style';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 
 // Pratinjau: di desktop tampil di samping form. Di HP berupa tombol melayang "Pratinjau" yang membuka lembar pratinjau, jadi tidak perlu scroll ke bawah.
-export function PreviewDock({ children }) {
+export function PreviewDock({ children, low }) {
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!open) return undefined;
@@ -22,7 +22,7 @@ export function PreviewDock({ children }) {
     return () => { document.body.style.overflow = prev; window.removeEventListener('keydown', key); };
   }, [open]);
   return (
-    <div className={'px-pvd' + (open ? ' open' : '')}>
+    <div className={'px-pvd' + (open ? ' open' : '') + (low ? ' low' : '')}>
       <button type="button" className="px-pvb" aria-expanded={open} onClick={() => setOpen((o) => !o)}>{open ? 'Tutup' : 'Pratinjau'}</button>
       <div className="px-pvs" onClick={(e) => { if (e.target === e.currentTarget) setOpen(false); }}>{children}</div>
     </div>

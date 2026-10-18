@@ -604,3 +604,6 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-ph .l>.t,.px-ph .l>.lico{position:absolute;top:50%;transform:translateY(-50%)}
 .px-ph .l>.t{left:8px}
 .px-ph .l>.lico{left:14px}
+
+/* halaman Link, Tampilan, Profil: tombol Pratinjau melayang di kanan bawah (bukan tengah) supaya tidak menutupi tombol/isian di tepi kanan */
+@media(max-width:759px){.px-pvd.low .px-pvb{top:auto;bottom:18px;margin-top:0}.px-two{padding-bottom:72px}}

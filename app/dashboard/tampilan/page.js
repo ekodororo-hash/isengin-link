@@ -149,7 +149,7 @@ export default function Tampilan() {
         {/* Modal Pro muncul saat menyimpan, kalau masih ada pilihan Pro yang hanya dicoba di pratinjau. Tombol sekunder (kelas g) tidak dicegat. */}
         <div style={{ display: 'contents' }} onClickCapture={(e) => { const b = e.target.closest && e.target.closest('button'); if (trying && b && !b.classList.contains('g')) setPm(fiturPro()); }}><SaveBar /></div>
       </div>
-      <PreviewDock><Phone trial={tr} /></PreviewDock>
+      <PreviewDock low><Phone trial={tr} /></PreviewDock>
     </div>
   </>);
 }

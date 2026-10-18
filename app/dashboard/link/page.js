@@ -1,7 +1,7 @@
 'use client';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useDash } from '../DashContext';
-import { SaveBar } from '../parts';
+import { Phone, PreviewDock, SaveBar } from '../parts';
 import Importer from '../Importer';
 import ProModal from '../ProModal';
 import { FREE_THUMBS } from '@/lib/pro';
@@ -145,6 +145,8 @@ export default function LinkPage() {
     <ProModal fitur={pm} info={{ used: thumbs, limit: FREE_THUMBS }} onClose={() => setPm(null)} />
     <h1>Link</h1>
     <p className="px-sub">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</p>
+    <div className="px-two">
+    <div className="px-lnkcol">
     <Importer />
     {!m.pro && thumbs >= 2 && <p className="px-hint px-quota" role="status"><span>Gambar {Math.min(thumbs, FREE_THUMBS)}/{FREE_THUMBS}</span><button type="button" className="px-lnk" onClick={() => setPm('gambar')}>Pro: tanpa batas</button></p>}
     <div className="px-card">
@@ -255,6 +257,9 @@ export default function LinkPage() {
           <button className="px-btn g" onClick={addHeader}>Tambah pembatas</button>
         </SaveBar>
       </div>
+    </div>
+    </div>
+    <PreviewDock low><Phone /></PreviewDock>
     </div>
   </>);
 }

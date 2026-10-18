@@ -46,7 +46,7 @@ export default function Profil() {
         </section>
         <SaveBar />
       </div>
-      <PreviewDock><Phone /></PreviewDock>
+      <PreviewDock low><Phone /></PreviewDock>
     </div>
   </>);
 }
