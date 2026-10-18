@@ -454,3 +454,10 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-bar b{grid-column:2;grid-row:1;text-align:right}
 .px-bar i{grid-column:1/-1;grid-row:2}
 }
+
+/* HP: tidak ada sorotan biru / blok teks saat tombol, tab, dan menu diketuk */
+.px-app,.px-app *{-webkit-tap-highlight-color:transparent}
+.px-app button,.px-app a,.px-app label,.px-app summary,.px-app [role="button"],.px-seg,.px-stat,.px-bar,.px-ch-head>b{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.px-app input,.px-app textarea{-webkit-user-select:text;user-select:text}
+.px-app button:focus:not(:focus-visible),.px-app a:focus:not(:focus-visible),.px-app label:focus:not(:focus-visible){outline:0}
+.px-app button::selection,.px-app a::selection{background:transparent}

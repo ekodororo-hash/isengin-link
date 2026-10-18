@@ -24,7 +24,8 @@ export default function Ringkasan() {
       {src.length ? <div className="px-srcs">{src.map((x) => (
         <div className="px-src" key={x.src}><span>{SOURCES[x.src] || x.src}</span><b>{x.clicks}</b><i style={{ width: Math.max(4, (x.clicks / smx) * 100) + '%' }} /></div>
       ))}</div> : <p className="px-empty">Belum ada data.</p>}
-      <p className="px-hint">WhatsApp dan beberapa aplikasi sering tercatat &quot;Langsung&quot;. Tambahkan <code>?src=whatsapp</code> di akhir link agar terhitung. Lainnya: instagram, tiktok, facebook, youtube, x, telegram.</p>
+      <p className="px-hint">Klik dari WhatsApp sering muncul sebagai &quot;Langsung&quot;. Supaya terbaca sebagai WhatsApp, tambahkan <code>?src=whatsapp</code> di belakang link saat kamu bagikan.</p>
+      <p className="px-hint">Contoh: isengin.site/{m.username}?src=whatsapp. Ganti &quot;whatsapp&quot; dengan instagram, tiktok, facebook, youtube, atau telegram sesuai tempat kamu membagikannya.</p>
     </div>
   </>);
 }
