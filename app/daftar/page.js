@@ -16,6 +16,14 @@ export default function Daftar() {
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState('');
   const nm = username || 'rani';
+
+  // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
+  useEffect(() => {
+    if (!err) return;
+    const id = setTimeout(() => setErr(''), 3000);
+    return () => clearTimeout(id);
+  }, [err]);
+
   // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
   useEffect(() => {
     try {

@@ -2,7 +2,7 @@
 import '../landing.css';
 import '../auth.css';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle } from '@/lib/themes';
 
@@ -14,6 +14,13 @@ export default function Masuk() {
   const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+
+  // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
+  useEffect(() => {
+    if (!err) return;
+    const id = setTimeout(() => setErr(''), 3000);
+    return () => clearTimeout(id);
+  }, [err]);
 
   async function submit(e) {
     e.preventDefault();

@@ -11,10 +11,19 @@ export default function Home() {
   const [mode, setMode] = useState('register');
   const [username, setU] = useState('');
   const [password, setP] = useState('');
+  const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
   const t = 'neo';
   const nm = username || 'rani';
   const [ref, setRef] = useState('');
+
+  // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
+  useEffect(() => {
+    if (!err) return;
+    const id = setTimeout(() => setErr(''), 3000);
+    return () => clearTimeout(id);
+  }, [err]);
   // Kode undangan dari ?ref= disimpan di peramban supaya tidak hilang bila pengunjung baru mendaftar nanti.
   useEffect(() => {
     try {
@@ -26,10 +35,14 @@ export default function Home() {
   }, []);
 
   async function go() {
-    setErr('');
-    const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode, username, password, ref }) });
-    const d = await r.json();
-    if (r.ok) location.href = '/dashboard'; else setErr(d.error || 'Gagal.');
+    setErr(''); setBusy(true);
+    try {
+      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode, username, password, ref }) });
+      const d = await r.json();
+      if (r.ok) { location.href = '/dashboard'; return; }
+      setErr(d.error || 'Gagal.');
+    } catch { setErr('Gagal terhubung. Coba lagi.'); }
+    setBusy(false);
   }
 
   return (<>
@@ -54,11 +67,12 @@ export default function Home() {
           </div>
           <label htmlFor="p">Sandi</label>
           <div className="lp-field">
-            <input id="p" type="password" value={password} onChange={(e) => setP(e.target.value)}
+            <input id="p" type={show ? 'text' : 'password'} value={password} onChange={(e) => setP(e.target.value)}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'} />
+            <button type="button" className="lp-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
           {err && <p className="lp-err" role="alert">{err}</p>}
-          <button className="lp-btn" onClick={go}>{mode === 'register' ? 'Klaim nama' : 'Masuk'}</button>
+          <button className="lp-btn" onClick={go} disabled={busy}>{busy ? 'Memproses...' : (mode === 'register' ? 'Klaim nama' : 'Masuk')}</button>
           <button className="lp-btn alt" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setErr(''); }}>
             {mode === 'register' ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar'}
           </button>
