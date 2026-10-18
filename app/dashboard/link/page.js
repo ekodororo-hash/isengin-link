@@ -26,6 +26,10 @@ export default function LinkPage() {
   // Link yang sedang diedit (dikunci lewat id/_k karena urutan bisa berubah). Link baru kosong otomatis terbuka.
   const [open, setOpen] = useState({});
   const [pm, setPm] = useState(null);
+  // Gambar yang sudah ada saat halaman dibuka. Paket gratis boleh menambah gambar ke-4 dan seterusnya, tapi server menolak menyimpannya.
+  const orig = useRef(null);
+  if (orig.current === null) orig.current = new Set(m.links.map((l) => l.thumb).filter(Boolean));
+  const overNew = !m.pro && thumbs > FREE_THUMBS && m.links.some((l) => l.kind !== 'header' && l.thumb && !orig.current.has(l.thumb));
   const keyOf = (l, i) => l.id || l._k || 'n' + i;
   const isOpen = (l, i) => {
     const v = open[keyOf(l, i)];
@@ -152,13 +156,9 @@ export default function LinkPage() {
                     {l.guard === 'adult' && <p className="px-hint">Pengunjung melihat peringatan konten dewasa dulu dan harus memilih “Saya 18+” untuk lanjut.</p>}
                   </fieldset>
                   <div className="px-lk-t">
-                    {!m.pro && !l.thumb && thumbs >= FREE_THUMBS
-                      ? <button type="button" className="px-btn g sm" onClick={() => setPm('gambar')}>Tambah gambar · Pro</button>
-                      : (
-                        <label className="px-btn g sm px-fl">{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
-                          <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />
-                        </label>
-                      )}
+                    <label className="px-btn g sm px-fl">{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
+                      <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />
+                    </label>
                     {l.thumb && <button className="px-btn g sm" onClick={() => setL(i, 'thumb', '')}>Hapus gambar</button>}
                   </div>
                 </div>
@@ -167,10 +167,13 @@ export default function LinkPage() {
           );
         })}
       </div>
-      <SaveBar>
-        <button className="px-btn g" onClick={addLink}>Tambah link</button>
-        <button className="px-btn g" onClick={addHeader}>Tambah pembatas</button>
-      </SaveBar>
+      {/* Gambar lebih dari batas gratis tidak bisa disimpan: simpan dicegat dan modal Pro muncul. Tombol sekunder (kelas g) tidak dicegat. */}
+      <div style={{ display: 'contents' }} onClickCapture={(e) => { const b = e.target.closest && e.target.closest('button'); if (overNew && b && !b.classList.contains('g')) { e.stopPropagation(); e.preventDefault(); setPm('gambar'); } }}>
+        <SaveBar>
+          <button className="px-btn g" onClick={addLink}>Tambah link</button>
+          <button className="px-btn g" onClick={addHeader}>Tambah pembatas</button>
+        </SaveBar>
+      </div>
     </div>
   </>);
 }
