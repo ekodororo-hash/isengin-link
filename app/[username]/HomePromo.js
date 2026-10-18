@@ -2,6 +2,9 @@
 import { useEffect, useState } from 'react';
 import { NamedIcon } from '../icons';
 
+// Alamat utama situs. Tautan di popup selalu ke sini, termasuk saat halaman dibuka lewat domain kustom.
+const SITE = (process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site').replace(/\/$/, '');
+
 // Logo isengin (sama dengan app/icon.svg), digambar langsung supaya tidak terpotong dan warnanya tetap Neo.
 function Logo({ className }) {
   return (
@@ -33,7 +36,7 @@ export default function HomePromo({ pageUsername, pageName }) {
 
   function claim(e) {
     e.preventDefault();
-    window.open(`/daftar?ref=${ref}${nm ? '&u=' + encodeURIComponent(nm) : ''}`, '_blank', 'noopener,noreferrer');
+    window.open(`${SITE}/daftar?ref=${ref}${nm ? '&u=' + encodeURIComponent(nm) : ''}`, '_blank', 'noopener,noreferrer');
   }
   const shown = nm || 'namamu';
 
@@ -59,10 +62,10 @@ export default function HomePromo({ pageUsername, pageName }) {
             </form>
 
             <div className="hp-links">
-              <a href="/masuk">Sudah punya akun? Masuk</a>
-              <a href="/">Pelajari isengin.site</a>
+              <a href={`${SITE}/masuk`}>Sudah punya akun? Masuk</a>
+              <a href={SITE}>Pelajari isengin.site</a>
             </div>
-            <a className="hp-free" href={`/daftar?ref=${ref}`}>Daftar gratis</a>
+            <a className="hp-free" href={`${SITE}/daftar?ref=${ref}`}>Daftar gratis</a>
 
             <div className="hp-ph" aria-hidden="true">
               <i className="hp-a" />
