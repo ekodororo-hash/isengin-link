@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle } from '@/lib/themes';
 
-const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/rani'], ['Video terbaru di YouTube', 'https://youtube.com/@rani'], ['Kirim email', 'mailto:rani@email.com']];
+const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/david'], ['Video terbaru di YouTube', 'https://youtube.com/@david'], ['Kirim email', 'mailto:david@email.com']];
 
 export default function Daftar() {
   const [username, setU] = useState('');
@@ -16,7 +16,7 @@ export default function Daftar() {
   const [busy, setBusy] = useState(false);
   const [ref, setRef] = useState('');
   const [refShown, setRefShown] = useState(false);
-  const nm = username || 'rani';
+  const nm = username || 'david';
 
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
   useEffect(() => {

@@ -44,7 +44,7 @@ body:has(.au-wrap){background:#fffbe8}
 @media(prefers-reduced-motion:reduce){.au-btn{transition:none}}
 @media(min-width:861px) and (max-height:780px){.au-demo .lp-iph{zoom:.78}}
 
-.au-rk{text-align:left}
+.au-rk{text-align:left;min-height:609px;display:flex;flex-direction:column}
 .au-rk-h{font-family:var(--disp,inherit);font-size:1.7rem;margin:0 0 2px;color:var(--navy);text-transform:uppercase}
 .au-rk-u{margin:0 0 14px;font-size:.8rem;font-weight:700;color:var(--navy);text-decoration:underline}
 .au-rk-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
@@ -52,8 +52,8 @@ body:has(.au-wrap){background:#fffbe8}
 .au-rk-c b{font-size:1.4rem;line-height:1.1;color:var(--navy)}
 .au-rk-c span{font-size:.72rem;color:var(--navy)}
 .au-rk-w{grid-column:1/-1}
-.au-rk-chart{padding:12px}
+.au-rk-chart{padding:12px;flex:1}
 .au-rk-chart strong{font-size:.85rem;color:var(--navy)}
 .au-rk-n{margin:2px 0 8px}
-.au-rk-bars{display:flex;align-items:flex-end;gap:4px;height:96px;border-bottom:3px solid var(--navy)}
+.au-rk-bars{display:flex;align-items:flex-end;gap:4px;flex:1;min-height:96px;border-bottom:3px solid var(--navy)}
 .au-rk-bars i{flex:1;background:#ff5a45;border:2px solid var(--navy);border-bottom:0;border-radius:4px 4px 0 0}

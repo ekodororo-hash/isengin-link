@@ -51,7 +51,7 @@ export default function Masuk() {
                 <span className="au-rk-n">23 klik dalam 14 hari terakhir</span>
                 <div className="au-rk-bars">
                   {[0, 1, 0, 2, 1, 0, 3, 1, 2, 0, 4, 2, 1, 6].map((v, n) => (
-                    <i key={n} style={{ height: v ? 6 + v * 14 : 3 }} />
+                    <i key={n} style={{ height: Math.max(2, (v / 6) * 100) + '%' }} />
                   ))}
                 </div>
               </div>
