@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useDash } from '../DashContext';
 import { SaveBar } from '../parts';
 import Importer from '../Importer';
+import ProModal from '../ProModal';
 import { FREE_THUMBS } from '@/lib/pro';
 import { LinkIcon } from '../../icons';
 import { LABELS, fmtPrice, labelText } from '@/lib/catalog';
@@ -24,6 +25,7 @@ export default function LinkPage() {
   const feats = m.links.filter((l) => l.kind !== 'header' && l.featured).length; // maksimal 2 link sorotan
   // Link yang sedang diedit (dikunci lewat id/_k karena urutan bisa berubah). Link baru kosong otomatis terbuka.
   const [open, setOpen] = useState({});
+  const [pm, setPm] = useState(null);
   const keyOf = (l, i) => l.id || l._k || 'n' + i;
   const isOpen = (l, i) => {
     const v = open[keyOf(l, i)];
@@ -60,6 +62,7 @@ export default function LinkPage() {
   const up = () => { dragKey.current = null; setDrag(null); };
 
   return (<>
+    <ProModal fitur={pm} info={{ used: thumbs, limit: FREE_THUMBS }} onClose={() => setPm(null)} />
     <h1>Link</h1>
     <p className="px-sub">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</p>
     <Importer />
@@ -150,7 +153,7 @@ export default function LinkPage() {
                   </fieldset>
                   <div className="px-lk-t">
                     {!m.pro && !l.thumb && thumbs >= FREE_THUMBS
-                      ? <Link className="px-btn g sm" href="/dashboard/paket">Tambah gambar · Pro</Link>
+                      ? <button type="button" className="px-btn g sm" onClick={() => setPm('gambar')}>Tambah gambar · Pro</button>
                       : (
                         <label className="px-btn g sm px-fl">{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
                           <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />

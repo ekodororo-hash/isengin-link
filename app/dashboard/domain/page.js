@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
 import { usePre } from '../../prefetch';
 import Link from 'next/link';
+import ProModal from '../ProModal';
 // Domain dua tingkat seperti toko.co.id tetap dianggap domain utama (butuh record A, bukan CNAME).
 const SLD = ['co.id', 'or.id', 'web.id', 'my.id', 'sch.id', 'ac.id', 'go.id', 'biz.id', 'net.id', 'com.au', 'co.uk'];
 const isApex = (d) => { const p = d.split('.'); return p.length === 2 || (p.length === 3 && SLD.includes(p.slice(1).join('.'))); };
@@ -13,6 +14,7 @@ export default function Domain() {
   const [val, setVal] = useState('');
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState(null);
+  const [pm, setPm] = useState(null);
   const load = () => fetch('/api/domain').then((r) => (r.ok ? r.json() : null)).then((x) => { if (x) setD(x); });
   useEffect(() => { if (!p) load(); }, []);
   const post = async (body) => {
@@ -42,13 +44,15 @@ export default function Domain() {
   const apex = d.domain ? isApex(d.domain) : false;
   const sub = d.domain ? d.domain.split('.')[0] : '';
   return (<>
+    <ProModal fitur={pm} onClose={() => setPm(null)} />
     <h1>Domain</h1>
     <p className="px-sub">Pakai domain sendiri untuk halamanmu, misalnya link.tokokamu.com.</p>
     <div className="px-card">
       {!d.pro && !d.domain && (
         <section className="px-sec">
           <h2>Khusus Pro</h2>
-          <p className="px-hint">Domain kustom tersedia di paket Pro. <Link href="/dashboard/paket">Lihat paket</Link></p>
+          <p className="px-hint">Domain kustom tersedia di paket Pro.</p>
+          <button type="button" className="px-btn g" onClick={() => setPm('domain')}>Lihat keuntungan Pro</button>
         </section>
       )}
       {!d.ready && <p className="px-warn" role="status">Fitur domain belum dikonfigurasi oleh pemilik situs.</p>}

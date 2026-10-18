@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import ProModal from './ProModal';
 import { useDash } from './DashContext';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle, bgStyle } from '@/lib/themes';
@@ -110,10 +110,10 @@ const dayAt = (k) => { const d = new Date(TODAY() + 'T00:00:00Z'); d.setUTCDate(
 const lastDays = (n) => Array.from({ length: n }, (_, i) => dayAt(n - 1 - i));
 
 // Peringkat link terlaris. Pilihan "Semua" memakai total seumur hidup; 7 dan 30 hari memakai statistik harian per link.
-// Gratis dibatasi 7 hari; tombol 30 hari mengarah ke halaman Paket. Klik nama link untuk melihat grafik hariannya.
+// Gratis dibatasi 7 hari; tombol 30 hari membuka modal Pro. Klik nama link untuk melihat grafik hariannya.
 export function LinkRank() {
   const { m } = useDash();
-  const router = useRouter();
+  const [pm, setPm] = useState(null);
   const [range, setRange] = useState('all');
   const [open, setOpen] = useState(null);
   const links = m.links.filter((l) => l.kind !== 'header');
@@ -125,8 +125,10 @@ export function LinkRank() {
   const rows = links.map((l) => ({ l, v: n ? sumDays(l.id, lastDays(n)) : l.clicks || 0 })).sort((a, b) => b.v - a.v);
   const mx = Math.max(1, ...rows.map((r) => r.v));
   const opts = [['all', 'Semua'], [7, '7 hari'], [30, m.pro ? '30 hari' : '30 hari · Pro']];
-  const pick = (v) => { if (v === 30 && !m.pro) { router.push('/dashboard/paket'); return; } setRange(v); };
+  const pick = (v) => { if (v === 30 && !m.pro) { setPm('stat'); return; } setRange(v); };
   return (
+    <>
+    <ProModal fitur={pm} onClose={() => setPm(null)} />
     <div className="px-card">
       <div className="px-ch-head">
         <b>Peringkat link</b>
@@ -159,5 +161,6 @@ export function LinkRank() {
         );
       })}
     </div>
+    </>
   );
 }

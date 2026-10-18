@@ -525,3 +525,40 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-main .px-cmp .px-grp th{font-size:.62rem;padding:6px 8px}
 .px-main .px-cmp .px-tag{padding:0 8px}
 }
+
+/* modal Pro (dipakai semua fitur Pro; modal ini dirender di body jadi warna ditulis lengkap) */
+.pm-ov{--navy:#1f2255;--yel:#ffd23f;--red:#ff5a43;--cream:#fffbe8;--mut:#4a4d7a;position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(31,34,85,.62);font-family:"Plus Jakarta Sans",system-ui,sans-serif;color:var(--navy)}
+.pm-md{position:relative;width:100%;max-width:420px;max-height:calc(100dvh - 32px);overflow:auto;background:#fff;border:3px solid var(--navy);border-radius:24px;box-shadow:8px 8px 0 var(--navy);padding:26px 24px 20px;text-align:center;line-height:1.5;animation:pm-pop .22s ease-out}
+@keyframes pm-pop{from{transform:translateY(14px) scale(.97);opacity:0}}
+.pm-x{position:absolute;top:12px;right:12px;width:38px;height:38px;display:grid;place-items:center;border-radius:50%;border:3px solid var(--navy);background:#fff;color:var(--navy);font-family:Bungee,sans-serif;font-size:.9rem;line-height:1;cursor:pointer;padding:0}
+.pm-ic{display:grid;place-items:center;width:60px;height:60px;margin:0 auto 12px;border-radius:50%;background:var(--red);color:#fff;border:3px solid var(--navy);box-shadow:4px 4px 0 var(--navy)}
+.pm-ic svg{width:28px;height:28px}
+.pm-md h3{font-family:Bungee,Impact,sans-serif;font-weight:400;text-transform:uppercase;font-size:1.2rem;line-height:1.15;margin:0 0 8px}
+.pm-t{margin:0 0 14px;font-weight:700;color:var(--mut);font-size:.95rem}
+.pm-slot{background:var(--cream);border:3px solid var(--navy);border-radius:18px;padding:14px;margin:0 0 16px;min-height:96px;display:grid;align-content:center;gap:10px;text-align:left}
+.pm-btns{display:grid;gap:12px}
+.pm-pb,.pm-sb{display:block;width:100%;font-family:Bungee,sans-serif;font-size:.9rem;text-align:center;border:3px solid var(--navy);border-radius:99px;padding:12px 18px;cursor:pointer;box-shadow:4px 4px 0 var(--navy);transition:transform .1s,box-shadow .1s}
+.pm-pb{background:var(--red);color:#fff}
+.pm-sb{background:#fff;color:var(--navy)}
+.pm-pb:active,.pm-sb:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--navy)}
+.pm-md button:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
+.pm-fine{margin:12px 0 0;font-size:.78rem;font-weight:700;color:var(--mut)}
+.pm-lk{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;flex:none}
+.pm-lk svg{width:12px;height:12px}
+.pm-mt{display:flex;justify-content:space-between;font-weight:800;font-size:.85rem}
+.pm-meter{height:18px;border:3px solid var(--navy);border-radius:99px;background:#fff;overflow:hidden}
+.pm-meter i{display:block;height:100%;background:var(--red)}
+.pm-thumbs{display:grid;gap:8px}
+.pm-thumbs i{aspect-ratio:1;border:3px solid var(--navy);border-radius:12px;background:var(--yel)}
+.pm-thumbs i.c1{background:var(--red)}.pm-thumbs i.c2{background:#2b3cff}
+.pm-thumbs i.add{background:#fff;border-style:dashed;display:grid;place-items:center;font-family:Bungee,sans-serif;font-size:1.1rem;font-style:normal}
+.pm-bars{display:flex;align-items:flex-end;gap:3px;height:64px;border-bottom:3px solid var(--navy)}
+.pm-bars i{flex:1;background:var(--red);border:2px solid var(--navy);border-bottom:0;border-radius:4px 4px 0 0}
+.pm-bars i.off{background:repeating-linear-gradient(45deg,#e6e3d0 0 4px,#fff 4px 8px);border-style:dashed}
+.pm-leg{display:flex;justify-content:space-between;font-size:.75rem;font-weight:800}
+.pm-dom{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--navy);border-radius:12px;padding:9px 12px;font-weight:800;font-size:.88rem}
+.pm-dom.old{opacity:.7}
+.pm-dom span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pm-arr{text-align:center;font-family:Bungee,sans-serif;font-size:.8rem}
+@media(max-width:420px){.pm-md{padding:24px 18px 18px}}
+@media(prefers-reduced-motion:reduce){.pm-md{animation:none}.pm-pb,.pm-sb{transition:none}}
