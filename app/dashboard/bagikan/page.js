@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
 import { useDash } from '../DashContext';
+const PLACES = [['whatsapp', 'WhatsApp'], ['instagram', 'Instagram'], ['tiktok', 'TikTok'], ['facebook', 'Facebook'], ['youtube', 'YouTube'], ['telegram', 'Telegram'], ['x', 'X (Twitter)']];
 export default function Bagikan() {
   const { m } = useDash();
   const [url, setUrl] = useState('');
@@ -15,6 +16,10 @@ export default function Bagikan() {
   }, [m.username]);
   async function copy() {
     try { await navigator.clipboard.writeText(url); setNote('Link tersalin.'); } catch { setNote('Salin manual: ' + url); }
+  }
+  async function copyFor(key, name) {
+    const u = `${url}?src=${key}`;
+    try { await navigator.clipboard.writeText(u); setNote(`Link untuk ${name} tersalin.`); } catch { setNote('Salin manual: ' + u); }
   }
   return (<>
     <h1>Bagikan</h1><p className="px-sub">Tempel link-mu di bio, atau cetak kode QR untuk kartu nama dan etalase.</p>
@@ -31,8 +36,17 @@ export default function Bagikan() {
           </div>
         </section>
         <section className="px-sec">
+          <h2>Link per tempat</h2>
+          <p className="px-hint">Pakai link yang sesuai tempatmu membagikannya. Di Ringkasan, kamu jadi tahu klik datang dari mana.</p>
+          <div className="px-places">
+            {PLACES.map(([k, n]) => (
+              <div className="px-place" key={k}><span>{n}</span><button type="button" className="px-btn g" onClick={() => copyFor(k, n)}>Salin</button></div>
+            ))}
+          </div>
+        </section>
+        <section className="px-sec">
           <h2>Tips</h2>
-          <p className="px-hint">Cetak kode QR di kartu nama, kemasan, atau etalase supaya pelanggan bisa langsung membuka halamanmu. Tambahkan <code>?src=whatsapp</code> di akhir link untuk melihat asal kliknya di Ringkasan.</p>
+          <p className="px-hint">Cetak kode QR di kartu nama, kemasan, atau etalase supaya pelanggan bisa langsung membuka halamanmu.</p>
         </section>
       </div>
       <div className="px-card px-qr">

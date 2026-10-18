@@ -3,6 +3,7 @@ import { useDash } from './DashContext';
 import { DailyChart, LinkRank } from './parts';
 import { SOURCES } from '@/lib/source';
 import Langkah from './Langkah';
+import Link from 'next/link';
 export default function Ringkasan() {
   const { m } = useDash();
   const tot = m.links.reduce((a, l) => a + (l.clicks || 0), 0);
@@ -24,8 +25,7 @@ export default function Ringkasan() {
       {src.length ? <div className="px-srcs">{src.map((x) => (
         <div className="px-src" key={x.src}><span>{SOURCES[x.src] || x.src}</span><b>{x.clicks}</b><i style={{ width: Math.max(4, (x.clicks / smx) * 100) + '%' }} /></div>
       ))}</div> : <p className="px-empty">Belum ada data.</p>}
-      <p className="px-hint">Klik dari WhatsApp sering muncul sebagai &quot;Langsung&quot;. Supaya terbaca sebagai WhatsApp, tambahkan <code>?src=whatsapp</code> di belakang link saat kamu bagikan.</p>
-      <p className="px-hint">Contoh: isengin.site/{m.username}?src=whatsapp. Ganti &quot;whatsapp&quot; dengan instagram, tiktok, facebook, youtube, atau telegram sesuai tempat kamu membagikannya.</p>
+      <p className="px-hint">Klik dari WhatsApp sering muncul sebagai &quot;Langsung&quot;. Agar asalnya tercatat, bagikan memakai link dari menu <Link href="/dashboard/bagikan">Bagikan</Link>.</p>
     </div>
   </>);
 }
