@@ -41,7 +41,16 @@ export default function VerifyBox() {
       </>) : (<>
         <p className="px-hint">Tanda terverifikasi menandai akun resmi. Pengajuan ditinjau manual oleh admin.</p>
         {req?.status === 'rejected' && <p className="px-warn" role="status">Pengajuan verifikasi sebelumnya ditolak{req.reason ? `: ${req.reason}` : '.'}{waitRetry ? ` Kamu bisa mengajukan lagi setelah ${tgl(d.retryAt)}.` : ''}</p>}
-        <ul className="px-chk">{d.checks.map((c) => <li key={c.text} className={c.ok ? 'ok' : 'no'}>{c.ok ? '✓' : '✗'} {c.text}</li>)}</ul>
+        <ul className="px-chk">{d.checks.map((c) => (
+          <li key={c.text} className={c.ok ? 'ok' : 'no'}>
+            <span className="b" aria-hidden="true">
+              {c.ok
+                ? <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 13l5 5L19 7" stroke="#fffbe8" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                : <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#1f2255" strokeWidth="2.6" strokeLinecap="round" /></svg>}
+            </span>
+            {c.text}
+          </li>
+        ))}</ul>
         <form onSubmit={send}>
           <label htmlFor="vn">Alasan atau bukti akun resmi</label>
           <textarea id="vn" rows={3} value={note} maxLength={d.noteMax} placeholder="Mis. tautan akun Instagram/YouTube resmimu yang mencantumkan alamat halaman ini" onChange={(e) => setNote(e.target.value)} />
