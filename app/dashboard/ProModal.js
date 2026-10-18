@@ -16,7 +16,7 @@ const BAR8 = [45, 65, 35, 75, 55, 80, 40, 60];
 
 const FITUR = {
   gambar: {
-    judul: 'Batas gambar tercapai',
+    judul: (i) => ((i.used ?? 0) >= (i.limit || 3) ? 'Batas gambar tercapai' : 'Gambar tanpa batas'),
     teks: (i) => `Paket Gratis memuat sampai ${i.limit || 3} gambar di link. Pro tanpa batas.`,
     kedua: 'Kelola gambar',
     isi: (i) => {
@@ -131,7 +131,7 @@ export default function ProModal({ fitur, info = {}, onClose }) {
       <div className="pm-md" ref={ref} role="dialog" aria-modal="true" aria-labelledby="pm-t">
         <button className="pm-x" onClick={onClose} aria-label="Tutup">✕</button>
         <div className="pm-ic"><Lock /></div>
-        <h3 id="pm-t">{F.judul}</h3>
+        <h3 id="pm-t">{typeof F.judul === 'function' ? F.judul(info) : F.judul}</h3>
         <p className="pm-t">{F.teks(info)}</p>
         <div className="pm-slot">{F.isi(info)}</div>
         <div className="pm-btns">

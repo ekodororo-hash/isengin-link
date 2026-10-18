@@ -1,6 +1,5 @@
 'use client';
 import { useRef, useState } from 'react';
-import Link from 'next/link';
 import { useDash } from '../DashContext';
 import { SaveBar } from '../parts';
 import Importer from '../Importer';
@@ -70,7 +69,7 @@ export default function LinkPage() {
     <h1>Link</h1>
     <p className="px-sub">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</p>
     <Importer />
-    {!m.pro && <p className="px-hint" role="status">Paket gratis: {Math.min(thumbs, FREE_THUMBS)} dari {FREE_THUMBS} gambar link terpakai.{thumbs > FREE_THUMBS && ` Hanya ${FREE_THUMBS} gambar pertama yang tampil di halamanmu.`} <Link href="/dashboard/paket">Pro: tanpa batas</Link></p>}
+    {!m.pro && <p className="px-hint" role="status">Paket gratis: {Math.min(thumbs, FREE_THUMBS)} dari {FREE_THUMBS} gambar link terpakai.{thumbs > FREE_THUMBS && ` Hanya ${FREE_THUMBS} gambar pertama yang tampil di halamanmu.`} <button type="button" className="px-lnk" onClick={() => setPm('gambar')}>Pro: tanpa batas</button></p>}
     <div className="px-card">
       {n === 0 && <p className="px-empty">Belum ada link. Klik “Tambah link” untuk mulai.</p>}
       <div ref={listRef}>
