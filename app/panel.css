@@ -588,3 +588,6 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-quota{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
 .px-quota span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .px-quota .px-lnk{flex:none}
+
+/* seret di hp: harus menang atas .px-app button{touch-action:manipulation} supaya layar tidak ikut scroll saat ikon titik-titik digeser */
+.px-app .px-grip{touch-action:none}
