@@ -1,17 +1,19 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '–');
 const J = { 'Content-Type': 'application/json' };
 
 export default function Pengumuman() {
-  const [items, setItems] = useState(null);
+  const pre = usePre('/api/admin/pengumuman');
+  const [items, setItems] = useState(pre?.ok ? pre.data?.items || [] : null);
   const [err, setErr] = useState('');
   const [text, setText] = useState('');
   const [level, setLevel] = useState('info');
   const [busy, setBusy] = useState(false);
   const load = () => fetch('/api/admin/pengumuman').then(async (r) => { const x = await r.json().catch(() => ({})); if (r.ok) { setItems(x.items); setErr(''); } else setErr(x.error || 'Gagal memuat.'); });
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (!pre) load(); }, []);
   async function call(method, body, okMsg) {
     setBusy(true); setErr('');
     const r = await fetch('/api/admin/pengumuman', { method, headers: J, body: JSON.stringify(body) });

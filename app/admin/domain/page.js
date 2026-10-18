@@ -1,17 +1,21 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 import { Pill, Field, Secret, From } from '../Bits';
 const J = { 'Content-Type': 'application/json' };
 
 export default function Domain() {
-  const [d, setD] = useState(null);
-  const [err, setErr] = useState('');
-  const [token, setToken] = useState(''), [project, setProject] = useState(''), [team, setTeam] = useState('');
+  const pre = usePre('/api/admin/domain');
+  const x0 = pre?.ok ? pre.data : null;
+  const [d, setD] = useState(x0);
+  const [err, setErr] = useState(pre && !pre.ok ? pre.data?.error || 'Gagal memuat.' : '');
+  const [token, setToken] = useState(''), [project, setProject] = useState(x0 ? x0.project : ''), [team, setTeam] = useState(x0 ? x0.team : '');
   const [busy, setBusy] = useState('');
   const [msg, setMsg] = useState(null);
   const fill = (x) => { setD(x); setProject(x.project); setTeam(x.team); setToken(''); };
   useEffect(() => {
+    if (pre) return;
     fetch('/api/admin/domain').then(async (r) => { const x = await r.json().catch(() => ({})); if (r.ok) fill(x); else setErr(x.error || 'Gagal memuat.'); });
   }, []);
   async function put(body, tag) {

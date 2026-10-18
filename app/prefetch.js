@@ -5,6 +5,9 @@ import { createContext, useContext } from 'react';
 export const PRE = {
   '/admin/referral': ['/api/admin/referral'],
   '/admin/laporan': ['/api/admin/laporan'],
+  '/admin/pengumuman': ['/api/admin/pengumuman'],
+  '/admin/pembayaran': ['/api/admin/pembayaran'],
+  '/admin/domain': ['/api/admin/domain'],
   '/dashboard/undang': ['/api/referral'],
   '/dashboard/paket': ['/api/billing'],
   '/dashboard/pengaturan': ['/api/account', '/api/verify'],

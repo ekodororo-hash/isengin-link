@@ -1,21 +1,25 @@
 'use client';
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
+import { usePre } from '../../prefetch';
 import { rp, tgl, Pill, Field, Secret, From } from '../Bits';
 const J = { 'Content-Type': 'application/json' };
 const ST = { paid: 'Lunas', pending: 'Menunggu', failed: 'Gagal', expire: 'Kedaluwarsa', cancel: 'Dibatalkan', deny: 'Ditolak' };
 const PLAN = { bulanan: '1 bulan', tahunan: '1 tahun' };
 
 export default function Pembayaran() {
-  const [d, setD] = useState(null);
-  const [err, setErr] = useState('');
+  const pre = usePre('/api/admin/pembayaran');
+  const x0 = pre?.ok ? pre.data : null;
+  const [d, setD] = useState(x0);
+  const [err, setErr] = useState(pre && !pre.ok ? pre.data?.error || 'Gagal memuat.' : '');
   const [key, setKey] = useState('');
-  const [prod, setProd] = useState(false);
-  const [month, setMonth] = useState(''), [year, setYear] = useState('');
+  const [prod, setProd] = useState(x0 ? x0.production : false);
+  const [month, setMonth] = useState(x0 ? String(x0.month) : ''), [year, setYear] = useState(x0 ? String(x0.year) : '');
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState(null);
   const fill = (x) => { setD(x); setProd(x.production); setMonth(String(x.month)); setYear(String(x.year)); setKey(''); };
   useEffect(() => {
+    if (pre) return;
     fetch('/api/admin/pembayaran').then(async (r) => { const x = await r.json().catch(() => ({})); if (r.ok) fill(x); else setErr(x.error || 'Gagal memuat.'); });
   }, []);
   async function save(e, extra = {}) {

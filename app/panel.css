@@ -498,3 +498,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-fld .px-hint{margin-top:6px}
 .px-sec h2 .px-pill{margin-left:10px;vertical-align:middle;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
 .px-main .px-seg button{font-size:.8rem;padding:6px 16px}
+
+/* latar halaman dashboard dan admin: kuning seperti temanya, tidak ada sisa biru di bawah atau saat ditarik di HP */
+html:has(.px-app),body:has(.px-app){background:#ffd23f}
+.px-app{min-height:100vh;min-height:100dvh}
