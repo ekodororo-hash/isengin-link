@@ -134,7 +134,7 @@ export function LinkRank() {
           {opts.map(([v, t]) => <button key={v} aria-pressed={range === v} onClick={() => pick(v)}>{t}</button>)}
         </div>
       </div>
-      <p className="px-ch-sum">{range === 'all' ? 'Total klik sejak link dibuat.' : `Klik dalam ${range} hari terakhir.`} Klik nama link untuk melihat grafik hariannya.{!m.pro && ' Paket gratis menampilkan statistik harian 7 hari.'}</p>
+      <p className="px-ch-sum">{range === 'all' ? 'Total klik sejak link dibuat.' : `Klik dalam ${range} hari terakhir.`} Ketuk nama link untuk grafik harian.{!m.pro && ' Gratis: 7 hari.'}</p>
       {rows.length === 0 && <p className="px-empty">Belum ada link.</p>}
       {rows.map(({ l, v }, i) => {
         const key = l.id || l._k || i, on = open === key;

@@ -30,6 +30,15 @@ async function call(method, body) {
   const d = await r.json().catch(() => ({}));
   return { ok: r.ok, d };
 }
+// Kolom sandi dengan tombol Tampilkan/Sembunyikan di dalam kolom, sama seperti halaman masuk.
+function Pw({ show, setShow, ...props }) {
+  return (
+    <div className="px-pw">
+      <input type={show ? 'text' : 'password'} {...props} />
+      <button type="button" className="px-pwb" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
+    </div>
+  );
+}
 const Msg = ({ m }) => (m ? <span role="status" className={'px-msg' + (m.err ? ' err' : '')}>{m.t}</span> : null);
 
 export default function Pengaturan() {
@@ -38,7 +47,7 @@ export default function Pengaturan() {
   const [email, setEmail] = useState(p?.ok ? p.data?.email || '' : '');
   const [em, setEm] = useState(null);
   const [cur, setCur] = useState(''), [nw, setNw] = useState(''), [again, setAgain] = useState('');
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(false), [dshow, setDshow] = useState(false);
   const [pm, setPm] = useState(null);
   const [delOpen, setDelOpen] = useState(false);
   const [dpass, setDpass] = useState(''), [dconf, setDconf] = useState('');
@@ -83,7 +92,6 @@ export default function Pengaturan() {
   }
 
   if (!acc) return (<><h1>Pengaturan</h1><Loader inline /></>);
-  const type = show ? 'text' : 'password';
   return (<>
     <h1>Pengaturan</h1>
     <p className="px-sub">Akun, sandi, dan penghapusan akun.</p>
@@ -117,9 +125,9 @@ export default function Pengaturan() {
         <h2>Ganti sandi</h2>
         <form onSubmit={savePass}>
           <label htmlFor="pc">Sandi saat ini</label>
-          <input id="pc" type={type} autoComplete="current-password" value={cur} onChange={(e) => setCur(e.target.value)} required />
+          <Pw show={show} setShow={setShow} id="pc" autoComplete="current-password" value={cur} onChange={(e) => setCur(e.target.value)} required />
           <label htmlFor="pn">Sandi baru</label>
-          <input id="pn" type={type} autoComplete="new-password" value={nw} maxLength={100} onChange={(e) => setNw(e.target.value)} required aria-describedby="pst" />
+          <Pw show={show} setShow={setShow} id="pn" autoComplete="new-password" value={nw} maxLength={100} onChange={(e) => setNw(e.target.value)} required aria-describedby="pst" />
           <div className="px-meter" id="pst" data-s={st.score}>
             <div className="px-segs" role="meter" aria-label="Kekuatan sandi" aria-valuemin={0} aria-valuemax={4} aria-valuenow={st.score} aria-valuetext={st.label || 'Belum diisi'}>
               <i /><i /><i /><i />
@@ -128,9 +136,8 @@ export default function Pengaturan() {
           </div>
           {st.tips.length > 0 && st.score < 4 && <p className="px-hint">Saran: {st.tips.join(', ')}.</p>}
           <label htmlFor="pa">Ulangi sandi baru</label>
-          <input id="pa" type={type} autoComplete="new-password" value={again} maxLength={100} onChange={(e) => setAgain(e.target.value)} required />
+          <Pw show={show} setShow={setShow} id="pa" autoComplete="new-password" value={again} maxLength={100} onChange={(e) => setAgain(e.target.value)} required />
           {again && nw !== again && <p className="px-warn" role="alert">Sandi belum sama.</p>}
-          <label className="px-check"><input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} /> Tampilkan sandi</label>
           <div className="px-actions">
             <button className="px-btn" disabled={busy === 'pass' || !cur || nw.length < 8 || nw !== again}>{busy === 'pass' ? 'Menyimpan…' : 'Ganti sandi'}</button>
             <Msg m={pm} />
@@ -148,7 +155,7 @@ export default function Pengaturan() {
             <label htmlFor="dc">Ketik <b>{acc.username}</b> untuk konfirmasi</label>
             <input id="dc" value={dconf} autoComplete="off" onChange={(e) => setDconf(e.target.value)} required />
             <label htmlFor="dp">Sandi</label>
-            <input id="dp" type="password" autoComplete="current-password" value={dpass} onChange={(e) => setDpass(e.target.value)} required />
+            <Pw show={dshow} setShow={setDshow} id="dp" autoComplete="current-password" value={dpass} onChange={(e) => setDpass(e.target.value)} required />
             <div className="px-actions">
               <button className="px-btn d" disabled={busy === 'del' || dconf.trim().toLowerCase() !== acc.username || !dpass}>{busy === 'del' ? 'Menghapus…' : 'Hapus akun saya'}</button>
               <button type="button" className="px-btn g" onClick={() => { setDelOpen(false); setDconf(''); setDpass(''); setDm(null); }}>Batal</button>

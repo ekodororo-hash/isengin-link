@@ -15,15 +15,16 @@ export default function Ringkasan() {
     <div className="px-grid">
       <div className="px-card px-stat"><b>{tot}</b><span>Total klik</span></div>
       <div className="px-card px-stat"><b>{m.links.filter((l) => !l.hidden && l.kind !== 'header').length}</b><span>Link tampil</span></div>
-      <div className="px-card px-stat"><b>{m.views || 0}</b><span>Kunjungan halaman</span></div>
+      <div className="px-card px-stat"><b>{m.views || 0}</b><span>Kunjungan</span></div>
     </div>
     <DailyChart daily={m.daily} />
     <LinkRank />
-    <div className="px-card px-mt"><b>Asal klik</b> <span className="px-hint-i">30 hari terakhir</span>
-      {src.length ? src.map((x) => (
-        <div className="px-bar" key={x.src}><span>{SOURCES[x.src] || x.src}</span><i style={{ width: Math.max(4, (x.clicks / smx) * 100) + '%' }} /><b>{x.clicks}</b></div>
-      )) : <p className="px-empty">Belum ada data. Asal klik mulai tercatat sejak fitur ini dipasang.</p>}
-      <p className="px-hint">Klik dari WhatsApp dan beberapa aplikasi lain sering tercatat sebagai &quot;Langsung / tidak diketahui&quot; karena aplikasinya tidak mengirim asal pengunjung. Supaya terhitung, tambahkan <code>?src=whatsapp</code> di akhir link saat dibagikan, misalnya isengin.site/{m.username}?src=whatsapp. Nama lain yang dikenali: instagram, tiktok, facebook, youtube, x, telegram, threads, linkedin.</p>
+    <div className="px-card px-mt">
+      <div className="px-ch-head"><b>Asal klik</b><span className="px-hint-i">30 hari terakhir</span></div>
+      {src.length ? <div className="px-srcs">{src.map((x) => (
+        <div className="px-src" key={x.src}><span>{SOURCES[x.src] || x.src}</span><b>{x.clicks}</b><i style={{ width: Math.max(4, (x.clicks / smx) * 100) + '%' }} /></div>
+      ))}</div> : <p className="px-empty">Belum ada data.</p>}
+      <p className="px-hint">WhatsApp dan beberapa aplikasi sering tercatat &quot;Langsung&quot;. Tambahkan <code>?src=whatsapp</code> di akhir link agar terhitung. Lainnya: instagram, tiktok, facebook, youtube, x, telegram.</p>
     </div>
   </>);
 }
