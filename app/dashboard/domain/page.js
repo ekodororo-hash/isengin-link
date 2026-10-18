@@ -22,7 +22,9 @@ export default function Domain() {
     return { ok: r.ok, x: await r.json().catch(() => ({})) };
   };
   async function add(e) {
-    e.preventDefault(); setBusy('add'); setMsg(null);
+    e.preventDefault();
+    if (!d.pro) { setPm('domain'); return; }
+    setBusy('add'); setMsg(null);
     const { ok, x } = await post({ mode: 'add', domain: val });
     if (ok) { setVal(''); setMsg({ t: 'Domain terpasang. Atur DNS di bawah, lalu klik Cek status.' }); await load(); } else setMsg({ t: x.error || 'Gagal memasang domain.', err: true });
     setBusy('');
@@ -48,22 +50,15 @@ export default function Domain() {
     <h1>Domain</h1>
     <p className="px-sub">Pakai domain sendiri untuk halamanmu, misalnya link.tokokamu.com.</p>
     <div className="px-card">
-      {!d.pro && !d.domain && (
-        <section className="px-sec">
-          <h2>Khusus Pro</h2>
-          <p className="px-hint">Domain kustom tersedia di paket Pro.</p>
-          <button type="button" className="px-btn g" onClick={() => setPm('domain')}>Lihat keuntungan Pro</button>
-        </section>
-      )}
       {!d.ready && <p className="px-warn" role="status">Fitur domain belum dikonfigurasi oleh pemilik situs.</p>}
-      {d.pro && !d.domain && (
+      {!d.domain && (
         <section className="px-sec">
-          <h2>Pasang domain</h2>
+          <h2>Pasang domain{!d.pro && <em className="px-pro">Pro</em>}</h2>
           <form onSubmit={add}>
             <label htmlFor="dom">Nama domain</label>
             <input id="dom" placeholder="link.tokokamu.com" value={val} maxLength={253} autoComplete="off" spellCheck={false} onChange={(e) => setVal(e.target.value)} />
             <p className="px-hint">Domain harus milikmu dan kamu bisa mengatur DNS-nya. Subdomain (link.tokokamu.com) paling mudah dan paling aman untuk situs lain yang sudah berjalan.</p>
-            <div className="px-actions"><button className="px-btn" disabled={!d.ready || busy === 'add' || !val.trim()}>{busy === 'add' ? 'Memasang…' : 'Pasang domain'}</button></div>
+            <div className="px-actions"><button className="px-btn" disabled={busy === 'add' || (d.pro && (!d.ready || !val.trim()))}>{busy === 'add' ? 'Memasang…' : 'Pasang domain'}</button></div>
           </form>
         </section>
       )}
