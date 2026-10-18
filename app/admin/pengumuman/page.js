@@ -10,7 +10,7 @@ export default function Pengumuman() {
   const [items, setItems] = useState(pre?.ok ? pre.data?.items || [] : null);
   const [err, setErr] = useState('');
   const [text, setText] = useState('');
-  const [level, setLevel] = useState('info');
+  const [level, setLevel] = useState('pengumuman');
   const [busy, setBusy] = useState(false);
   const load = () => fetch('/api/admin/pengumuman').then(async (r) => { const x = await r.json().catch(() => ({})); if (r.ok) { setItems(x.items); setErr(''); } else setErr(x.error || 'Gagal memuat.'); });
   useEffect(() => { if (!pre) load(); }, []);
@@ -33,7 +33,7 @@ export default function Pengumuman() {
         <label htmlFor="ann-t">Isi (maks. 280 karakter)</label>
         <textarea id="ann-t" rows={3} maxLength={280} value={text} onChange={(e) => setText(e.target.value)} placeholder="mis. Diskon Pro 20% sampai Minggu. Buka menu Paket." />
         <div className="px-chips" role="group" aria-label="Jenis pengumuman">
-          {[['info', 'Info'], ['penting', 'Penting']].map(([v, t]) => <button key={v} type="button" aria-pressed={level === v} onClick={() => setLevel(v)}>{t}</button>)}
+          {[['pengumuman', 'Pengumuman'], ['info', 'Info'], ['penting', 'Penting']].map(([v, t]) => <button key={v} type="button" aria-pressed={level === v} onClick={() => setLevel(v)}>{t}</button>)}
         </div>
         <div className="px-actions">
           <button className="px-btn" disabled={busy || text.trim().length < 3} onClick={() => call('POST', { text, level }, () => setText(''))}>Terbitkan</button>
@@ -46,7 +46,7 @@ export default function Pengumuman() {
         {items?.length === 0 && <p className="adm-empty">Belum ada pengumuman.</p>}
         {items?.map((x) => (
           <div className="adm-req" key={x.id}>
-            <span className={'px-tag' + (x.level === 'penting' ? ' off' : '')}>{x.level === 'penting' ? 'Penting' : 'Info'}</span>
+            <span className={'px-tag' + (x.level === 'penting' ? ' off' : '')}>{x.level === 'penting' ? 'Penting' : x.level === 'pengumuman' ? 'Pengumuman' : 'Info'}</span>
             {x.id === latest && <span className="px-tag">Sedang tampil</span>}
             {!x.active && <span className="px-tag">Disembunyikan</span>}
             <span className="adm-sm">{tgl(x.created_at)}</span>
