@@ -591,3 +591,10 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 
 /* seret di hp: harus menang atas .px-app button{touch-action:manipulation} supaya layar tidak ikut scroll saat ikon titik-titik digeser */
 .px-app .px-grip{touch-action:none}
+
+/* tombol gambar di baris link: .px-main label{margin;display:block} tadi menimpa .px-ib, jadi turun dan tidak sejajar */
+.px-main label.px-ib-img{display:none;margin:0;font-size:inherit}
+@media(max-width:560px){.px-main label.px-ib-img{display:grid}}
+
+/* saat diseret: baris terangkat (bayangan besar, sedikit transparan) dan menempel di jari */
+.px-lk.drag{transform:none;box-shadow:8px 10px 0 var(--navy);outline:3px solid var(--navy);outline-offset:0;z-index:5}

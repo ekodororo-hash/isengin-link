@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { useDash } from '../DashContext';
 import { SaveBar } from '../parts';
 import Importer from '../Importer';
@@ -44,29 +44,82 @@ export default function LinkPage() {
   const listRef = useRef(null);
   const dragKey = useRef(null);
   const [drag, setDrag] = useState(null);
+  const rects = useRef(null);   // posisi baris sebelum urutan berubah (untuk animasi geser baris lain)
+  const lastY = useRef(0);      // posisi jari/kursor terakhir
+  const grab = useRef(0);       // jarak jari dari atas baris saat mulai menyeret
+  const rowOf = (key) => listRef.current && [...listRef.current.querySelectorAll('[data-k]')].find((r) => r.dataset.k === String(key));
+  // Baris yang diseret ikut jari: digeser lewat transform dari posisi aslinya di daftar.
+  const place = () => {
+    const key = dragKey.current;
+    const el = key == null ? null : rowOf(key);
+    if (!el) return;
+    const ty = parseFloat(el.dataset.ty || '0');
+    const natural = el.getBoundingClientRect().top - ty;
+    const dy = lastY.current - grab.current - natural;
+    el.dataset.ty = String(dy);
+    el.style.transition = 'none';
+    el.style.transform = `translateY(${dy}px)`;
+  };
+  // Setelah urutan berubah: baris lain meluncur halus dari posisi lamanya ke posisi baru, baris yang diseret tetap menempel di jari.
+  useLayoutEffect(() => {
+    const prev = rects.current;
+    if (!prev || !listRef.current) return;
+    rects.current = null;
+    for (const r of listRef.current.querySelectorAll('[data-k]')) {
+      if (r.dataset.k === String(dragKey.current)) continue;
+      const o = prev[r.dataset.k];
+      if (o == null) continue;
+      const d = o - r.getBoundingClientRect().top;
+      if (Math.abs(d) < 1) continue;
+      r.style.transition = 'none';
+      r.style.transform = `translateY(${d}px)`;
+      r.getBoundingClientRect();
+      r.style.transition = 'transform .2s ease';
+      r.style.transform = '';
+    }
+    place();
+  }, [m.links]);
   const down = (e, key) => {
     if (e.button > 0) return;
     e.preventDefault();
+    const row = e.currentTarget.closest('[data-k]');
+    lastY.current = e.clientY;
+    grab.current = row ? e.clientY - row.getBoundingClientRect().top : 0;
     dragKey.current = key; setDrag(key);
     e.currentTarget.setPointerCapture(e.pointerId);
   };
   const moveDrag = (e) => {
     const key = dragKey.current;
     if (key == null || !listRef.current) return;
+    lastY.current = e.clientY;
     const rows = [...listRef.current.querySelectorAll('[data-k]')];
-    const y = e.clientY;
+    // Titik tengah tiap baris dihitung dari posisi aslinya (bukan yang sedang beranimasi) supaya tidak bolak-balik.
+    const y = e.clientY - listRef.current.getBoundingClientRect().top;
     let to = 0;
     for (const r of rows) {
       if (r.dataset.k === String(key)) continue;
-      const b = r.getBoundingClientRect();
-      if (y > b.top + b.height / 2) to++;
+      if (r.offsetTop - listRef.current.offsetTop + r.offsetHeight / 2 < y) to++;
     }
     const from = m.links.findIndex((l, i) => String(keyOf(l, i)) === String(key));
-    if (from >= 0 && from !== to) reorder(from, to);
+    if (from >= 0 && from !== to) {
+      const snap = {};
+      for (const r of rows) snap[r.dataset.k] = r.getBoundingClientRect().top;
+      rects.current = snap;
+      reorder(from, to);
+    } else place();
     if (e.clientY < 90) window.scrollBy(0, -14);
     else if (e.clientY > window.innerHeight - 90) window.scrollBy(0, 14);
   };
-  const up = () => { dragKey.current = null; setDrag(null); };
+  // Lepas: baris yang diseret meluncur halus ke tempat barunya.
+  const up = () => {
+    const el = dragKey.current == null ? null : rowOf(dragKey.current);
+    if (el) {
+      el.style.transition = 'transform .2s ease, box-shadow .2s ease';
+      el.style.transform = '';
+      delete el.dataset.ty;
+    }
+    dragKey.current = null; setDrag(null);
+  };
 
   return (<>
     <ProModal fitur={pm} info={{ used: thumbs, limit: FREE_THUMBS }} onClose={() => setPm(null)} />
