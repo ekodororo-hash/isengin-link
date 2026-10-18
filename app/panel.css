@@ -366,7 +366,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-st small{display:block;font-weight:600;color:var(--mut);font-size:.8rem}
 .px-st .ck{flex:none;width:26px;height:26px;border-radius:50%;border:3px solid var(--navy);display:grid;place-items:center;font-size:.85rem;background:#fff;color:#fff}
 .px-st .ok .ck{background:var(--red)}
-.px-st .ok .tt{text-decoration:line-through;opacity:.6}
+.px-st .ok .tt{opacity:.6}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .px-imp{margin-bottom:18px}
 .px-imp .px-hint{margin:6px 0 10px}

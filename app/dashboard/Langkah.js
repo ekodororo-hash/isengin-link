@@ -6,12 +6,10 @@ import { useDash } from './DashContext';
 export default function Langkah() {
   const { m } = useDash();
   const shown = m.links.filter((l) => !l.hidden && l.kind !== 'header').length;
-  const styled = m.theme !== 'kobalt' || m.btn_style !== 'bulat' || (m.font_key || 'standar') !== 'standar' || Object.keys(m.colors || {}).length > 0 || !!m.bg?.t;
   const steps = [
     ['Pasang foto profil', 'Halaman dengan foto lebih dipercaya pengunjung.', '/dashboard/profil', !!m.photo_url],
     ['Tulis bio singkat', 'Minimal 10 karakter, ceritakan kamu atau tokomu.', '/dashboard/profil', (m.bio || '').trim().length >= 10],
     ['Tambah link pertama', 'WhatsApp, Instagram, toko online, atau apa saja.', '/dashboard/link', shown >= 1],
-    ['Atur tampilan', 'Pilih tema, warna, atau latar sesuai gayamu.', '/dashboard/tampilan', styled],
     ['Bagikan halamanmu', 'Tempel link-mu di bio, lalu tunggu kunjungan pertama.', '/dashboard/bagikan', (m.views || 0) > 0],
   ];
   const n = steps.filter((s) => s[3]).length;
