@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
 import { usePre } from '../../prefetch';
-// Ikon status teman: menunggu (titik tiga), siap diklaim (kado), berhadiah (centang).
+// Ikon status teman: menunggu (titik tiga), siap diklaim (kado), sudah diklaim (centang).
 const IC = {
   w: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true" focusable="false"><circle cx="6" cy="12" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle cx="18" cy="12" r="1.2" /></svg>,
   r: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><rect x="3.5" y="9" width="17" height="11" rx="2" /><path d="M3.5 13h17M12 9v11M12 9c-1.5-4-6-4-6-1.5 0 1.5 2 1.5 6 1.5zM12 9c1.5-4 6-4 6-1.5 0 1.5-2 1.5-6 1.5z" /></svg>,
@@ -80,13 +80,13 @@ export default function Undang() {
       </section>
       <section className="px-sec">
         <h2>Temanmu</h2>
-        <p className="px-hint">{d.invited} diundang, {d.rewarded} sudah berhadiah ({d.earnedDays} hari Pro didapat).{d.pro ? ` Pro aktif sampai ${tgl(d.until)}.` : ''}</p>
+        <p className="px-hint">{d.invited} diundang, {d.rewarded} sudah diklaim ({d.earnedDays} hari Pro didapat).{d.pro ? ` Pro aktif sampai ${tgl(d.until)}.` : ''}</p>
         {d.friends.length > 0 && (
           <ul className="px-chk">{d.friends.map((f) => {
             const k = f.rewarded ? 'd' : f.ready ? 'r' : 'w';
             return (
               <li key={f.username} className={k === 'w' ? 'no' : 'ok'}>
-                <span className={'fi ' + k} aria-hidden="true">{IC[k]}</span>@{f.username} <span className="px-hint-i">{f.rewarded ? 'berhadiah' : f.ready ? 'siap diklaim' : 'menunggu'}</span>
+                <span className={'fi ' + k} aria-hidden="true">{IC[k]}</span>@{f.username} <span className="px-hint-i">{f.rewarded ? 'sudah diklaim' : f.ready ? 'siap diklaim' : 'menunggu'}</span>
               </li>
             );
           })}</ul>
