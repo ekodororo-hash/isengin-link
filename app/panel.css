@@ -562,3 +562,23 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .pm-arr{text-align:center;font-family:Bungee,sans-serif;font-size:.8rem}
 @media(max-width:420px){.pm-md{padding:24px 18px 18px}}
 @media(prefers-reduced-motion:reduce){.pm-md{animation:none}.pm-pb,.pm-sb{transition:none}}
+
+/* link berbentuk tombol (membuka modal Pro) dan isi pratinjau modal untuk tema, warna, font, latar */
+.px-main button.px-lnk{font:inherit;font-weight:700;color:var(--navy);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
+.px-main button.px-lnk:focus-visible{outline:3px dashed var(--navy);outline-offset:3px;border-radius:4px}
+.pm-sws{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pm-sw{position:relative;aspect-ratio:3/4;border:3px solid var(--navy);border-radius:14px;padding:8px 6px;display:grid;align-content:center;gap:6px}
+.pm-sw i{display:block;height:12px;border-radius:6px;border:2px solid var(--navy)}
+.pm-sw .pm-lk{position:absolute;top:-10px;right:-8px}
+.pm-sw span{font-size:.62rem;font-weight:800;text-align:center}
+.pm-cols{display:grid;gap:8px}
+.pm-col{display:flex;align-items:center;gap:10px;background:#fff;border:3px solid var(--navy);border-radius:12px;padding:7px 10px;font-weight:800;font-size:.85rem}
+.pm-col>b:first-child{width:26px;height:26px;border-radius:50%;border:3px solid var(--navy);flex:none}
+.pm-col span{flex:1}
+.pm-fonts{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.pm-fo{position:relative;border:3px solid var(--navy);border-radius:12px;background:#fff;text-align:center;padding:8px 0;font-size:1.2rem;font-weight:800}
+.pm-fo.l{background:#eee;color:var(--mut)}
+.pm-fo .pm-lk{position:absolute;top:-9px;right:-7px;width:20px;height:20px}
+.pm-bg{position:relative;display:grid;gap:8px;padding:14px 12px;border:3px solid var(--navy);border-radius:14px;background:repeating-linear-gradient(45deg,#ffe9a8 0 8px,#fff3c9 8px 16px)}
+.pm-bg i{display:block;height:16px;border-radius:99px;border:3px solid var(--navy);background:#fff}
+.pm-bg .pm-lk{position:absolute;top:-10px;right:-8px}

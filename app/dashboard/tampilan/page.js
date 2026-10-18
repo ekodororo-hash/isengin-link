@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import Link from 'next/link';
+import ProModal from '../ProModal';
 import { useDash } from '../DashContext';
 import { Phone, PreviewDock, SaveBar } from '../parts';
 import { BUTTON_STYLES, FONTS } from '@/lib/style';
@@ -12,6 +12,7 @@ export default function Tampilan() {
   const pro = m.pro === true;
   // Pengguna gratis boleh mencoba pilihan Pro: tampil di pratinjau saja, tidak disimpan dan tidak tampil di halaman publik.
   const [tr, setTr] = useState({});
+  const [pm, setPm] = useState(null);
   const trKeys = pro ? [] : Object.keys(tr);
   const trying = trKeys.length > 0;
   const clr = (...ks) => setTr((o) => { const n = { ...o }; ks.forEach((k) => delete n[k]); return n; });
@@ -34,17 +35,28 @@ export default function Tampilan() {
     else if (md === 'gradient') setBg({ t: 'gradient', c1: bg.c1 || t.bg, c2: bg.c2 || t.accent, angle: bg.angle || 180 });
     else setBg({ t: 'image', url: bg.url || '', dim });
   };
+  // Fitur Pro mana yang ditampilkan di modal: yang sedang dicoba, kalau tidak ada yang sudah terpilih sebelumnya.
+  const fiturPro = () => {
+    if (tr.bg) return 'latar';
+    if (tr.theme) return 'tema';
+    if (tr.colors) return 'warna';
+    if (tr.font_key || tr.btn_style) return 'font';
+    if (m.bg?.t === 'image') return 'latar';
+    if (PRO_THEMES.includes(m.theme)) return 'tema';
+    if (Object.keys(cleanColors(m.colors) || {}).length) return 'warna';
+    return 'font';
+  };
   const warns = [];
   if (mode === 'solid' && contrast(t.ink, t.bg) < 4.5) warns.push('Teks sulit dibaca di atas warna latar. Coba warna yang lebih kontras.');
   if (mode === 'gradient' && [bg.c1, bg.c2].some((c) => /^#[0-9a-f]{6}$/i.test(c || '') && contrast(t.ink, c) < 4.5)) warns.push('Teks sulit dibaca di atas salah satu warna gradasi. Coba warna yang lebih kontras dengan warna teks.');
   if (contrast(t.ink, t.btn) < 4.5) warns.push('Teks sulit dibaca di atas warna tombol link.');
   if (contrast(t.accent, t.bg) < 3) warns.push('Warna aksen terlalu mirip latar, huruf di foto profil jadi susah dibaca.');
   return (<>
+    <ProModal fitur={pm} onClose={() => setPm(null)} />
     <h1>Tampilan</h1><p className="px-sub">Pilih tema, atur warna sendiri kalau mau, pratinjau langsung di samping.</p>
     <div className="px-two">
       <div className="px-card">
-        {trying && <p className="px-warn" role="status">Pratinjau Pro, belum diterapkan ke halamanmu dan tidak ikut tersimpan. <Link href="/dashboard/paket">Aktifkan Pro</Link> untuk memakainya. <button type="button" className="px-btn g sm" onClick={() => setTr({})}>Batalkan pratinjau</button></p>}
-        {used.length > 0 && <p className="px-warn" role="status">Khusus Pro dan tidak tampil di halamanmu sekarang: {used.join(', ')}. <Link href="/dashboard/paket">Aktifkan Pro</Link> untuk menampilkannya lagi.</p>}
+        {used.length > 0 && <p className="px-warn" role="status">Khusus Pro dan tidak tampil di halamanmu sekarang: {used.join(', ')}. <button type="button" className="px-lnk" onClick={() => setPm(fiturPro())}>Aktifkan Pro</button> untuk menampilkannya lagi.</p>}
         <section className="px-sec">
           <h2>Tema</h2>
           <div className="px-themes">
@@ -120,7 +132,7 @@ export default function Tampilan() {
         </section>
         <section className="px-sec">
           <h2>Warna kustom{!pro && <em className="px-pro">Pro</em>}</h2>
-          <p className="px-hint">{pro ? 'Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.' : <>Coba dulu di pratinjau. Warna kustom baru tampil di halamanmu setelah <Link href="/dashboard/paket">Pro aktif</Link>.</>}</p>
+          <p className="px-hint">{pro ? 'Mulai dari tema yang dipilih, lalu ubah warna sesuai selera.' : <>Coba dulu di pratinjau. Warna kustom baru tampil di halamanmu setelah <button type="button" className="px-lnk" onClick={() => setPm('warna')}>Pro aktif</button>.</>}</p>
           <div className="px-colors">
             {COLORS.map(([k, lab]) => (
               <label key={k} className="px-clr">
@@ -134,7 +146,8 @@ export default function Tampilan() {
             <button className="px-btn g sm" disabled={!Object.keys(custom).length} onClick={() => { clr('colors'); set('colors', {}); }}>Kembalikan warna tema</button>
           </div>
         </section>
-        <SaveBar />
+        {/* Modal Pro muncul saat menyimpan, kalau masih ada pilihan Pro yang hanya dicoba di pratinjau. Tombol sekunder (kelas g) tidak dicegat. */}
+        <div style={{ display: 'contents' }} onClickCapture={(e) => { const b = e.target.closest && e.target.closest('button'); if (trying && b && !b.classList.contains('g')) setPm(fiturPro()); }}><SaveBar /></div>
       </div>
       <PreviewDock><Phone trial={tr} /></PreviewDock>
     </div>

@@ -2,6 +2,8 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import { THEMES } from '@/lib/themes';
+import { PRO_THEMES } from '@/lib/pro';
 
 // Satu modal untuk semua fitur Pro. Kerangkanya sama (ikon, judul, teks, kotak pratinjau, dua tombol);
 // yang berganti hanya judul, teks, dan isi kotak pratinjau sesuai fitur yang diklik pengguna Gratis.
@@ -39,6 +41,53 @@ const FITUR = {
       </div>
       <div className="pm-leg"><span>7 hari (Gratis)</span><span>30 hari (Pro)</span></div>
     </>),
+  },
+  tema: {
+    judul: 'Suka tema ini?',
+    teks: () => 'Tema selain Kobalt, Permen, dan Hutan khusus Pro. Kamu masih bisa mencobanya di pratinjau.',
+    kedua: 'Lanjut mencoba',
+    isi: () => (
+      <div className="pm-sws" aria-hidden="true">
+        {THEMES.filter((t) => PRO_THEMES.includes(t.key)).slice(0, 4).map((t) => (
+          <div key={t.key} className="pm-sw" style={{ background: t.bg, color: t.ink }}>
+            <b className="pm-lk"><Lock /></b><i style={{ background: t.btn }} /><i style={{ background: t.btn }} /><i style={{ background: t.accent }} /><span>{t.label}</span>
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  warna: {
+    judul: 'Atur warna sesukamu',
+    teks: () => 'Warna kustom baru tampil di halamanmu setelah Pro aktif. Kamu masih bisa mencobanya di pratinjau.',
+    kedua: 'Lanjut mencoba',
+    isi: () => (
+      <div className="pm-cols" aria-hidden="true">
+        {[['#ffd23f', 'Latar'], ['#ff5a43', 'Aksen'], ['#2b3cff', 'Tombol link']].map(([c, n]) => (
+          <div key={n} className="pm-col"><b style={{ background: c }} /><span>{n}</span><b className="pm-lk"><Lock /></b></div>
+        ))}
+      </div>
+    ),
+  },
+  font: {
+    judul: 'Lebih banyak font dan gaya',
+    teks: () => 'Gratis dapat 2 font dan 2 gaya tombol. Pro dapat 5 font dan 5 gaya. Kamu masih bisa mencobanya di pratinjau.',
+    kedua: 'Lanjut mencoba',
+    isi: () => (
+      <div className="pm-fonts" aria-hidden="true">
+        <div className="pm-fo">Aa</div><div className="pm-fo">Aa</div>
+        <div className="pm-fo l" style={{ fontFamily: 'Georgia, serif' }}>Aa<b className="pm-lk"><Lock /></b></div>
+        <div className="pm-fo l" style={{ fontFamily: 'monospace' }}>Aa<b className="pm-lk"><Lock /></b></div>
+        <div className="pm-fo l" style={{ fontFamily: 'Bungee, sans-serif', fontSize: '1rem' }}>Aa<b className="pm-lk"><Lock /></b></div>
+      </div>
+    ),
+  },
+  latar: {
+    judul: 'Gambar sebagai latar',
+    teks: () => 'Pasang foto atau gambar sebagai latar halamanmu. Kamu masih bisa mencobanya di pratinjau.',
+    kedua: 'Lanjut mencoba',
+    isi: () => (
+      <div className="pm-bg" aria-hidden="true"><b className="pm-lk"><Lock /></b><i /><i /><i /></div>
+    ),
   },
   domain: {
     judul: 'Pakai domain sendiri',
