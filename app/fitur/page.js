@@ -9,8 +9,8 @@ export const metadata = {
   description: 'Semua yang bisa kamu taruh di satu link: sosial media, katalog harga, link terkunci, statistik klik, kode QR, dan domain sendiri.',
 };
 
-// Harga Pro bisa diubah admin, jadi halaman dibuat ulang tiap menit.
-export const revalidate = 60;
+// Harga Pro bisa diubah admin dan dibaca dari database, jadi halaman dibuat saat dibuka (seperti halaman lain yang membaca database).
+export const dynamic = 'force-dynamic';
 
 const svg = { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.4, strokeLinecap: 'round', strokeLinejoin: 'round' };
 
