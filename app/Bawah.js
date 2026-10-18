@@ -111,7 +111,7 @@ export default function Bawah() {
       </section>
 
       <footer className="lx-foot">
-        <div className="lx-w"><Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link><br />© 2026 isengin.site</div>
+        <div className="lx-w"><Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link><br />© 2026 isengin.site</div>
       </footer>
     </div>
   );

@@ -63,7 +63,7 @@ export default function HomePromo({ pageUsername, pageName }) {
 
             <div className="hp-links">
               <a href={`${SITE}/masuk`}>Sudah punya akun? Masuk</a>
-              <a href={SITE}>Pelajari isengin.site</a>
+              <a href={`${SITE}/fitur`}>Pelajari isengin.site</a>
             </div>
             <a className="hp-free" href={`${SITE}/daftar?ref=${ref}`}>Daftar gratis</a>
 
