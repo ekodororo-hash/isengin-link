@@ -34,9 +34,16 @@ export default function LinkPage() {
   // Paket gratis sudah 3 gambar: link tanpa gambar tidak boleh menambah lagi, modal Pro langsung terbuka (mengganti gambar tetap boleh).
   const gate = (e, l) => { if (!m.pro && !l.thumb && thumbs >= FREE_THUMBS) { e.preventDefault(); setPm('gambar'); } };
   const keyOf = (l, i) => l.id || l._k || 'n' + i;
+  // Link/pembatas baru yang kosong terbuka otomatis. Kuncinya diingat di sini supaya form TIDAK menutup
+  // sendiri begitu isinya mulai diketik (sebelumnya terbuka hanya selama judul dan alamat masih kosong).
+  const autoOpen = useRef(new Set());
   const isOpen = (l, i) => {
-    const v = open[keyOf(l, i)];
-    return v === undefined ? !l.title && !l.url : v;
+    const key = keyOf(l, i);
+    const v = open[key];
+    if (v !== undefined) return v;
+    if (autoOpen.current.has(key)) return true;
+    if (!l.title && !l.url) { autoOpen.current.add(key); return true; }
+    return false;
   };
   const toggle = (l, i) => setOpen((o) => ({ ...o, [keyOf(l, i)]: !isOpen(l, i) }));
 
