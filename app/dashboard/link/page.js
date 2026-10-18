@@ -15,6 +15,8 @@ const Up = () => (<svg {...S}><path d="M12 19V5M6 11l6-6 6 6" /></svg>);
 const Down = () => (<svg {...S}><path d="M12 5v14M6 13l6 6 6-6" /></svg>);
 const Trash = () => (<svg {...S}><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5" /></svg>);
 const Head = () => (<svg {...S}><path d="M5 7V5h14v2M12 5v14M9 19h6" /></svg>);
+const Img = () => (<svg {...S}><rect x="3.5" y="5" width="17" height="14" rx="2.5" /><circle cx="9" cy="10.5" r="1.5" /><path d="M4 17l5-4.5 3.5 3L15.5 13 20 17" /></svg>);
+const Badge = () => (<svg className="px-ok" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="#2fb344" stroke="#1f2255" strokeWidth="1.6" /><path d="M4.6 8.3l2.3 2.3 4.5-4.7" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>);
 const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" /></svg>);
 
 export default function LinkPage() {
@@ -29,6 +31,8 @@ export default function LinkPage() {
   const orig = useRef(null);
   if (orig.current === null) orig.current = new Set(m.links.map((l) => l.thumb).filter(Boolean));
   const overNew = !m.pro && thumbs > FREE_THUMBS && m.links.some((l) => l.kind !== 'header' && l.thumb && !orig.current.has(l.thumb));
+  // Paket gratis sudah 3 gambar: link tanpa gambar tidak boleh menambah lagi, modal Pro langsung terbuka (mengganti gambar tetap boleh).
+  const gate = (e, l) => { if (!m.pro && !l.thumb && thumbs >= FREE_THUMBS) { e.preventDefault(); setPm('gambar'); } };
   const keyOf = (l, i) => l.id || l._k || 'n' + i;
   const isOpen = (l, i) => {
     const v = open[keyOf(l, i)];
@@ -69,12 +73,13 @@ export default function LinkPage() {
     <h1>Link</h1>
     <p className="px-sub">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</p>
     <Importer />
-    {!m.pro && <p className="px-hint" role="status">Paket gratis: {Math.min(thumbs, FREE_THUMBS)} dari {FREE_THUMBS} gambar link terpakai.{thumbs > FREE_THUMBS && ` Hanya ${FREE_THUMBS} gambar pertama yang tampil di halamanmu.`} <button type="button" className="px-lnk" onClick={() => setPm('gambar')}>Pro: tanpa batas</button></p>}
+    {!m.pro && thumbs >= 2 && <p className="px-hint px-quota" role="status"><span>Gambar {Math.min(thumbs, FREE_THUMBS)}/{FREE_THUMBS}</span><button type="button" className="px-lnk" onClick={() => setPm('gambar')}>Pro: tanpa batas</button></p>}
     <div className="px-card">
       {n === 0 && <p className="px-empty">Belum ada link. Klik “Tambah link” untuk mulai.</p>}
       <div ref={listRef}>
         {m.links.map((l, i) => {
           const k = keyOf(l, i);
+          const hed = l.kind === 'header' && isOpen(l, i);
           if (l.kind === 'header') return (
             <div className={'px-lk px-hd' + (l.hidden ? ' off' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
               <div className="px-lk-r">
@@ -82,7 +87,9 @@ export default function LinkPage() {
                   onPointerDown={(e) => down(e, k)} onPointerMove={moveDrag} onPointerUp={up} onPointerCancel={up}><Grip /></button>
                 <span className="px-lk-no">{i + 1}</span>
                 <span className="px-th e" aria-hidden="true"><Head /></span>
-                <input className="px-hd-in" aria-label={`Judul pembatas ${i + 1}`} placeholder="Judul pembatas, mis. Produk" maxLength={60} value={l.title} onChange={(e) => setL(i, 'title', e.target.value)} />
+                {hed
+                  ? <input className="px-hd-in" autoFocus={!!l.title} aria-label={`Judul pembatas ${i + 1}`} placeholder="Judul pembatas, mis. Produk" maxLength={60} value={l.title} onChange={(e) => setL(i, 'title', e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') toggle(l, i); }} />
+                  : <div className="px-lk-i"><strong>{l.title || <em>Tanpa judul</em>}</strong></div>}
                 <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
                   <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan pembatas ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
                   <span className="px-tg" aria-hidden="true" />
@@ -90,6 +97,7 @@ export default function LinkPage() {
                 <div className="px-lk-b">
                   <button className="px-ib" aria-label={`Naikkan pembatas ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
                   <button className="px-ib" aria-label={`Turunkan pembatas ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
+                  <button className={'px-ib' + (hed ? ' on' : '')} aria-label={hed ? `Selesai mengedit pembatas ${i + 1}` : `Edit pembatas ${i + 1}`} aria-expanded={hed} title={hed ? 'Selesai' : 'Edit'} onClick={() => toggle(l, i)}>{hed ? <Check /> : <Pencil />}</button>
                   <button className="px-ib d" aria-label={`Hapus pembatas ${i + 1}`} title="Hapus" onClick={() => delLink(i)}><Trash /></button>
                 </div>
               </div>
@@ -113,6 +121,10 @@ export default function LinkPage() {
                   <span className="px-tg" aria-hidden="true" />
                 </label>
                 <div className="px-lk-b">
+                  <label className={'px-ib px-ib-img'} onClick={(e) => gate(e, l)} title={l.thumb ? 'Ganti gambar' : 'Tambah gambar'}>
+                    <Img />{l.thumb && <Badge />}
+                    <input type="file" accept="image/*" className="px-sr" aria-label={l.thumb ? `Ganti gambar link ${i + 1}` : `Tambah gambar link ${i + 1}`} onChange={(e) => upThumb(l.id || l._k, e)} />
+                  </label>
                   <button className="px-ib" aria-label={`Naikkan link ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
                   <button className="px-ib" aria-label={`Turunkan link ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
                   <button className={'px-ib' + (ed ? ' on' : '')} aria-label={ed ? `Selesai mengedit link ${i + 1}` : `Edit link ${i + 1}`} aria-expanded={ed} title={ed ? 'Selesai' : 'Edit'} onClick={() => toggle(l, i)}>{ed ? <Check /> : <Pencil />}</button>
@@ -155,7 +167,7 @@ export default function LinkPage() {
                     {l.guard === 'adult' && <p className="px-hint">Pengunjung melihat peringatan konten dewasa dulu dan harus memilih “Saya 18+” untuk lanjut.</p>}
                   </fieldset>
                   <div className="px-lk-t">
-                    <label className="px-btn g sm px-fl">{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
+                    <label className="px-btn g sm px-fl" onClick={(e) => gate(e, l)}>{l.thumb ? 'Ganti gambar' : 'Tambah gambar'}
                       <input type="file" accept="image/*" className="px-sr" onChange={(e) => upThumb(l.id || l._k, e)} />
                     </label>
                     {l.thumb && <button className="px-btn g sm" onClick={() => setL(i, 'thumb', '')}>Hapus gambar</button>}
