@@ -502,3 +502,8 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 /* latar halaman dashboard dan admin: kuning seperti temanya, tidak ada sisa biru di bawah atau saat ditarik di HP */
 html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-app{min-height:100vh;min-height:100dvh}
+
+.px-cmp th:nth-child(2),.px-cmp th:nth-child(3),.px-cmp td:nth-child(2),.px-cmp td:nth-child(3){text-align:center;white-space:nowrap;width:1%}
+.px-cmp td:nth-child(3){background:#fff6d6}
+.px-cmp .px-grp th{background:var(--navy);color:#fff;text-align:left;font-size:.72rem;padding:6px 8px}
+.px-no{color:var(--mut);font-weight:700}

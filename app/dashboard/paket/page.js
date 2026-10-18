@@ -6,17 +6,21 @@ const rp = (n) => 'Rp ' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
 const STATUS = { paid: 'Lunas', pending: 'Menunggu pembayaran', expire: 'Kedaluwarsa', cancel: 'Dibatalkan', deny: 'Ditolak', failure: 'Gagal', failed: 'Gagal' };
 const ROWS = [
+  ['Dasar'],
   ['Halaman, link, tema, dan statistik dasar', 'Ya', 'Ya'],
   ['Statistik harian per link', '7 hari', '30 hari'],
-  ['Domain kustom (mis. link.tokokamu.com)', 'Tidak', 'Ya'],
-  ['Tanpa tulisan “Dibuat di isengin.site”', 'Tidak', 'Ya'],
+  ['Gambar di link', '3 gambar', 'Tanpa batas'],
+  ['Tampilan'],
   ['Latar belakang gambar', 'Tidak', 'Ya'],
   ['Warna kustom', 'Tidak', 'Ya'],
   ['Tema selain Kobalt, Permen, Hutan', 'Tidak', 'Ya'],
   ['Pilihan font', '2 font', '5 font'],
   ['Pilihan gaya tombol', '2 gaya', '5 gaya'],
-  ['Gambar di link', '3 gambar', 'Tanpa batas'],
+  ['Domain dan branding'],
+  ['Domain kustom (mis. link.tokokamu.com)', 'Tidak', 'Ya'],
+  ['Tanpa branding isengin (tulisan “Dibuat di isengin.site”, tombol logo, dan popup ajakan daftar)', 'Tidak', 'Ya'],
 ];
+const cell = (v) => (v === 'Ya' ? <span className="px-tag">Ya</span> : v === 'Tidak' ? <span className="px-no">Tidak</span> : v);
 
 export default function Paket() {
   const p = usePre('/api/billing');
@@ -48,9 +52,11 @@ export default function Paket() {
     <div className="px-card">
       <section className="px-sec">
         <h2>Gratis dan Pro</h2>
-        <div className="px-tw"><table>
+        <div className="px-tw"><table className="px-cmp">
           <thead><tr><th>Fitur</th><th>Gratis</th><th>Pro</th></tr></thead>
-          <tbody>{ROWS.map(([f, a, b]) => <tr key={f}><td>{f}</td><td>{a}</td><td>{b}</td></tr>)}</tbody>
+          <tbody>{ROWS.map(([f, a, b]) => (a === undefined
+            ? <tr key={f} className="px-grp"><th colSpan={3}>{f}</th></tr>
+            : <tr key={f}><td>{f}</td><td>{cell(a)}</td><td>{cell(b)}</td></tr>))}</tbody>
         </table></div>
       </section>
       <section className="px-sec">
