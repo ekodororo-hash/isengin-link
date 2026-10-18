@@ -3,10 +3,7 @@ import '../landing.css';
 import '../auth.css';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle } from '@/lib/themes';
-
-const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/rani'], ['Video terbaru di YouTube', 'https://youtube.com/@rani'], ['Kirim email', 'mailto:rani@email.com']];
 
 export default function Masuk() {
   const [username, setU] = useState('');
@@ -40,20 +37,24 @@ export default function Masuk() {
         <Link className="au-logo" href="/">ISENGIN.SITE</Link>
         <div className="au-demo" aria-hidden="true">
           <div className="lp-iph">
-            <div className="lp-phone" data-t="neo" style={themeStyle('neo')}>
+            <div className="lp-phone au-rk" data-t="neo" style={themeStyle('neo')}>
               <div className="lp-isl" />
-              <div className="lp-url">isengin.site/{'rani'}</div>
-              <div className="lp-ava">{'rani'[0].toUpperCase()}</div>
-              <h2 className="lp-name">{'rani'}</h2>
-              <p className="lp-bio">Fotografer lepas. Pesan sesi foto atau lihat karya terbaru di bawah.</p>
-              {LINKS.map(([l, u]) => (
-                <div key={l} className="lp-link">
-                  <LinkIcon url={u} />
-                  <span className="lp-lt">{l}</span>
-                  <span className="lp-dots"><NamedIcon name="dots" size={18} /></span>
+              <h2 className="au-rk-h">Ringkasan</h2>
+              <p className="au-rk-u">isengin.site/namamu</p>
+              <div className="au-rk-grid">
+                <div className="au-rk-c"><b>23</b><span>Total klik</span></div>
+                <div className="au-rk-c"><b>4</b><span>Link tampil</span></div>
+                <div className="au-rk-c au-rk-w"><b>87</b><span>Kunjungan</span></div>
+              </div>
+              <div className="au-rk-c au-rk-chart">
+                <strong>Per hari</strong>
+                <span className="au-rk-n">23 klik dalam 14 hari terakhir</span>
+                <div className="au-rk-bars">
+                  {[0, 1, 0, 2, 1, 0, 3, 1, 2, 0, 4, 2, 1, 6].map((v, n) => (
+                    <i key={n} style={{ height: v ? 6 + v * 14 : 3 }} />
+                  ))}
                 </div>
-              ))}
-              <div className="lp-foot">Dibuat di isengin.site</div>
+              </div>
             </div>
           </div>
         </div>
@@ -75,7 +76,7 @@ export default function Masuk() {
           <form className="au-form" onSubmit={submit}>
             <label htmlFor="u">Nama pengguna atau email</label>
             <div className="au-field">
-              <input id="u" placeholder="rani atau nama@email.com" value={username} maxLength={120} autoComplete="username" spellCheck={false}
+              <input id="u" value={username} maxLength={120} autoComplete="username" spellCheck={false}
                 onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
             </div>
             <label htmlFor="p">Sandi</label>

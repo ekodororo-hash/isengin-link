@@ -21,7 +21,7 @@ export default async function NotFound() {
       <div className="legal-box">
         {state === 'free' && (<>
           <p>Belum ada yang memakai nama ini. Ambil sekarang, gratis, sebelum keduluan.</p>
-          <a className="lp-btn nf-btn" href="/">Daftar dan klaim nama</a>
+          <a className="lp-btn nf-btn" href={`/daftar?u=${name}`}>Daftar dan klaim nama</a>
         </>)}
         {state === 'taken' && (<>
           <p>Halaman <b>{name}</b> sedang tidak tersedia. Pemiliknya mungkin menonaktifkannya sementara.</p>

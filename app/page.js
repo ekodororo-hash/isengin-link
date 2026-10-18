@@ -70,7 +70,7 @@ export default function Home() {
           <label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>
           <div className="lp-field">
             {mode === 'register' && <span>isengin.site/</span>}
-            <input id="u" placeholder={mode === 'register' ? 'rani' : 'rani atau nama@email.com'} value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete="username" spellCheck={false}
+            <input id="u" value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete="username" spellCheck={false}
               onChange={(e) => setU(e.target.value.toLowerCase().replace(mode === 'register' ? /[^a-z0-9_]/g : /[^a-z0-9_@.+-]/g, ''))} />
           </div>
           <label htmlFor="p">Sandi</label>
