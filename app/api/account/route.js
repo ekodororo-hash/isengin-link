@@ -24,8 +24,7 @@ export async function GET() {
   const r = await sql`select username from users where id=${id}`;
   if (!r.length) return needLogin();
   const e = await sql`select email from users where id=${id}`.catch(() => []);
-  const sm = await sql`select smart_links from users where id=${id}`.catch(() => []);
-  return Response.json({ username: r[0].username, email: e[0]?.email || '', smart: sm[0]?.smart_links !== false });
+  return Response.json({ username: r[0].username, email: e[0]?.email || '' });
 }
 
 // Simpan email (opsional) atau ganti sandi.
@@ -42,14 +41,6 @@ export async function PUT(req) {
     if (next === String(b.current)) return bad('Sandi baru harus berbeda dari sandi saat ini.');
     await sql`update users set password_hash=${await bcrypt.hash(next, 10)} where id=${id}`;
     return Response.json({ ok: true });
-  }
-  if (b.mode === 'smart') {
-    try { await sql`update users set smart_links=${b.smart === true} where id=${id}`; }
-    catch (e) {
-      console.error('Kolom smart_links belum ada (jalankan schema-update.sql):', e.message);
-      return bad('Belum bisa disimpan. Jalankan schema-update.sql di database.', 500);
-    }
-    return Response.json({ ok: true, smart: b.smart === true });
   }
   const email = String(b.email || '').trim().toLowerCase().slice(0, 120);
   if (email && !/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(email)) return bad('Format email belum benar.');
