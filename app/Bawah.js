@@ -73,13 +73,16 @@ export default function Bawah() {
                 <tr className="g"><th colSpan={3}>Dasar</th></tr>
                 <tr><td>Halaman, link, tema, dan statistik dasar</td><td><span className="ya">Ya</span></td><td><span className="ya">Ya</span></td></tr>
                 <tr><td>Statistik harian per link</td><td>7 hari</td><td>30 hari</td></tr>
+                <tr><td>Gambar di link</td><td>3 gambar</td><td>Tanpa batas</td></tr>
                 <tr className="g"><th colSpan={3}>Tampilan</th></tr>
-                <tr><td>Latar gambar dan warna kustom</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
+                <tr><td>Latar belakang gambar</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
+                <tr><td>Warna kustom</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
+                <tr><td>Tema selain Kobalt, Permen, Hutan</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
                 <tr><td>Pilihan font</td><td>2 font</td><td>5 font</td></tr>
                 <tr><td>Pilihan gaya tombol</td><td>2 gaya</td><td>5 gaya</td></tr>
                 <tr className="g"><th colSpan={3}>Domain dan branding</th></tr>
-                <tr><td>Domain sendiri (mis. link.tokokamu.com)</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
-                <tr><td>Tanpa branding isengin</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
+                <tr><td>Domain kustom (mis. link.tokokamu.com)</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
+                <tr><td>Tanpa branding isengin (tulisan “Dibuat di isengin.site”, tombol logo, dan popup ajakan daftar)</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
               </tbody>
             </table>
           </div>

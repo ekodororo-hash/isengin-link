@@ -507,3 +507,21 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-cmp td:nth-child(3){background:#fff6d6}
 .px-cmp .px-grp th{background:var(--navy);color:#fff;text-align:left;font-size:.72rem;padding:6px 8px}
 .px-no{color:var(--mut);font-weight:700}
+
+/* tabel paket: warna dan gaya disamakan dengan tabel di halaman depan */
+.px-main table.px-cmp{border-collapse:separate;border-spacing:0;border:3px solid var(--navy);border-radius:16px;overflow:hidden;background:var(--cream)}
+.px-main .px-cmp th,.px-main .px-cmp td{padding:11px 14px;border-bottom:2px solid var(--navy);font-weight:700;font-size:.93rem;text-align:left}
+.px-main .px-cmp thead th{font-family:Bungee,sans-serif;font-weight:400;font-size:.85rem;background:var(--cream)}
+.px-main .px-cmp th:nth-child(n+2),.px-main .px-cmp td:nth-child(n+2){text-align:center;width:1%;white-space:nowrap}
+.px-main .px-cmp td:nth-child(3),.px-main .px-cmp thead th:nth-child(3){background:#fff3b8}
+.px-main .px-cmp .px-grp th{background:var(--navy);color:#fff;font-family:Bungee,sans-serif;font-weight:400;font-size:.72rem;padding:7px 14px;text-align:left}
+.px-main .px-cmp tbody tr:last-child td{border-bottom:0}
+.px-main .px-cmp .px-tag{display:inline-block;margin:0;background:#c9f2c7;color:var(--navy);border:2px solid var(--navy);border-radius:99px;padding:1px 10px;font:inherit;font-weight:800;vertical-align:baseline}
+.px-main .px-cmp .px-no{color:var(--mut)}
+@media(max-width:600px){
+.px-main table.px-cmp{border-radius:14px}
+.px-main .px-cmp th,.px-main .px-cmp td{padding:9px 8px;font-size:.82rem;line-height:1.35}
+.px-main .px-cmp thead th{font-size:.68rem;padding:10px 8px}
+.px-main .px-cmp .px-grp th{font-size:.62rem;padding:6px 8px}
+.px-main .px-cmp .px-tag{padding:0 8px}
+}
