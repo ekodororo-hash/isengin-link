@@ -12,9 +12,10 @@ export async function GET() {
     const site = (process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site').replace(/\/$/, '');
     const rewarded = friends.filter((f) => f.rewarded).length;
     const [ready, bonus] = await Promise.all([pending(id), pendingBonus(id)]); // hadiah pengundang & bonus undangan yang siap diklaim
+    const siap = new Set(ready?.friends || []); // teman yang sudah memenuhi syarat dan hadiahnya siap diklaim
     return Response.json({
       url: `${site}/?ref=${me.username}`,
-      friends, invited: friends.length, rewarded, earnedDays: rewarded * REWARD_DAYS,
+      friends: friends.map((f) => ({ ...f, ready: !f.rewarded && siap.has(f.username) })), invited: friends.length, rewarded, earnedDays: rewarded * REWARD_DAYS,
       pending: ready ? { n: ready.n, days: ready.days, friends: ready.friends } : null,
       bonus: bonus ? { days: bonus.days, by: bonus.by } : null,
       pro: me.pro === true, until: me.plan_until || null,
