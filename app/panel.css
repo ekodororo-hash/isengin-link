@@ -179,7 +179,7 @@
 .px-sw2 input:focus-visible+.px-tg{outline:3px dashed var(--navy);outline-offset:3px}
 .px-lk.off{background:#ecebe0}
 .px-lk.off .px-lk-f input,.px-lk.off .px-th,.px-lk.off .px-lk-i{opacity:.6}
-.px-ph .l .t{width:28px;height:28px;border-radius:8px;object-fit:cover;flex:none}
+.px-ph .l .t{width:28px;height:28px;border-radius:50%;object-fit:cover;flex:none}
 @media(prefers-reduced-motion:reduce){.px-tg,.px-tg::after{transition:none}}
 /* pratinjau tema Neo dan Neon */
 .px-ph[data-t="neo"] .l{border:3px solid var(--pi);box-shadow:3px 3px 0 var(--pi)}
@@ -249,7 +249,6 @@
 .px-ph[data-b="kotak"] .l{border-radius:4px}
 .px-ph[data-b="garis"] .l{background:transparent;border:2px solid var(--pi)}
 .px-ph[data-b="timbul"] .l{border:2px solid var(--pi);border-radius:8px;box-shadow:3px 3px 0 var(--pi)}
-.px-ph[data-b="pil"] .l .t{border-radius:50%}
 
 /* seret dan lepas, katalog produk di editor link */
 .px-grip{box-sizing:border-box;flex:none;width:28px;height:36px;display:grid;place-items:center;padding:0;border:0;background:none;color:var(--mut);cursor:grab;touch-action:none;border-radius:8px}
