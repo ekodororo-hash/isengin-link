@@ -162,3 +162,8 @@ body:has(.legal-wrap){background:#ffd23f}
 .lx-foot{border-top:3px solid var(--navy);padding:22px 0 34px;text-align:center;font-weight:700;font-size:.9rem;background:var(--yel)}
 .lx-foot a{color:var(--navy)}
 @media(prefers-reduced-motion:reduce){.lx-btn{transition:none}}
+
+/* layar pertama (nav + hero) setinggi layar, supaya bagian krem di bawahnya baru muncul saat di-scroll */
+.lp-first{min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+.lp-first>*{width:100%}
+.lp-first>.lp-wrap{flex:1}

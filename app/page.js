@@ -55,6 +55,7 @@ export default function Home() {
   }
 
   return (<>
+    <div className="lp-first">
     <header className="lp-nav">
       <Link className="lp-brand" href="/">ISENGIN.SITE</Link>
       <nav className="lp-nbtn" aria-label="Akun">
@@ -108,6 +109,7 @@ export default function Home() {
         </div>
       </section>
     </main>
+    </div>
     <Bawah />
   </>);
 }
