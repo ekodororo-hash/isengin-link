@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { sql } from '@/lib/db';
-import { themeStyle, bgStyle } from '@/lib/themes';
+import { themeStyle, bgStyle, themeWith, cleanBg } from '@/lib/themes';
 import { socialList } from '@/lib/socials';
 import { detectSource } from '@/lib/source';
 import { fmtPrice, labelText, cleanLabel } from '@/lib/catalog';
@@ -56,8 +56,12 @@ export default async function Profile({ params, searchParams }) {
   const name = u.display_name || u.username;
   // Fitur Pro (tema Neo/Neon, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
   const eff = effectiveLook({ theme: u.theme, font_key: cleanFont(look.font_key), btn_style: cleanBtn(look.btn_style), colors: extra.colors, bg: more.bg }, pro);
+  // Warna tepi halaman (juga di belakang bilah navigasi HP) mengikuti latar halaman, bukan biru bawaan situs.
+  const eb = cleanBg(eff.bg);
+  const edge = eb.t === 'gradient' ? eb.c2 : themeWith(eff.theme, eff.colors).bg;
   return (
     <div className="stage" style={themeStyle(eff.theme, eff.colors)}>
+    <style>{`html,body{background:${edge}}`}</style>
     <div className="phone" data-t={eff.theme} data-b={eff.btn_style} data-f={eff.font_key} style={{ ...themeStyle(eff.theme, eff.colors), ...bgStyle(eff.bg, eff.theme, eff.colors), '--pfont': fontCss(eff.font_key) }}>
       <main className="pub">
         <ViewBeacon username={u.username} />
