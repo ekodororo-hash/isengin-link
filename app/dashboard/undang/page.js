@@ -39,7 +39,7 @@ export default function Undang() {
           <li>Temanmu daftar lewat link di atas.</li>
           <li>Setelah akunnya berumur {r.hours} jam dan punya minimal 1 link yang tampil, hadiah dibayarkan otomatis.</li>
           <li>Kamu dapat +{r.reward} hari Pro, temanmu dapat +{r.bonus} hari Pro.</li>
-          <li>Maksimal {r.max} teman yang berhadiah per akun. Hadiah dihitung saat kamu membuka halaman ini atau halaman Paket.</li>
+          <li>Maksimal {r.max} teman yang berhadiah per akun. Hadiah dihitung otomatis tiap kali kamu login.</li>
         </ul>
       </section>
       <section className="px-sec">
