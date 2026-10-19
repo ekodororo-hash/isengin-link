@@ -1,6 +1,6 @@
-import { put } from '@vercel/blob';
 import { getUserId } from '@/lib/auth';
 import { sql } from '@/lib/db';
+import { putFile, storageReady } from '@/lib/blob';
 export async function POST(req) {
   const id = await getUserId();
   if (!id) return Response.json({ error: 'Belum masuk.' }, { status: 401 });
@@ -13,13 +13,15 @@ export async function POST(req) {
   const dir = { thumb: 'thumbs', bg: 'backgrounds' }[form.get('kind')] || 'avatars';
   if (!f || !f.type?.startsWith('image/') || f.size > 2000000)
     return Response.json({ error: 'Pilih gambar, maksimal 2 MB.' }, { status: 400 });
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.error('BLOB_READ_WRITE_TOKEN belum ada: sambungkan Vercel Blob ke project lalu Redeploy.');
+  if (!storageReady()) {
+    console.error('SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY belum diisi: isi di environment variable lalu Redeploy.');
     return Response.json({ error: 'Penyimpanan foto belum siap. Hubungi pemilik situs.' }, { status: 503 });
   }
   try {
-    const b = await put(`${dir}/${id}-${Date.now()}`, f, { access: 'public', contentType: f.type });
-    return Response.json({ url: b.url });
+    const ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' }[f.type] || 'jpg';
+    const rand = Math.random().toString(36).slice(2, 8);
+    const url = await putFile(`${dir}/${id}-${Date.now()}-${rand}.${ext}`, f, f.type);
+    return Response.json({ url });
   } catch (e) {
     console.error('Unggah foto gagal:', e.message);
     return Response.json({ error: 'Foto gagal disimpan. Coba lagi nanti.' }, { status: 500 });

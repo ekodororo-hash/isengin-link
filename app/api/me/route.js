@@ -52,10 +52,10 @@ export async function PUT(req) {
   if (!id) return Response.json({ error: 'Belum masuk.' }, { status: 401 });
   const b = await req.json();
   // File Blob yang dipakai sebelum simpan. Dipakai dua kali: hanya alamat milik sendiri (atau yang memang
-  // sudah tersimpan di akun ini) yang diterima, dan selisihnya dengan keadaan sesudah simpan dihapus dari Blob.
+  // sudah tersimpan di akun ini) yang diterima, dan selisihnya dengan keadaan sesudah simpan dihapus dari penyimpanan.
   const before = await userBlobs(id);
   const allowed = (u) => ownBlob(u, id) || before.includes(u);
-  // Gambar hanya boleh berasal dari penyimpanan Vercel Blob (hasil unggahan lewat /api/upload).
+  // Gambar hanya boleh berasal dari penyimpanan Supabase (hasil unggahan lewat /api/upload).
   const okThumb = (u) => {
     try {
       const x = new URL(String(u || ''));
@@ -157,9 +157,9 @@ export async function PUT(req) {
     return Response.json({ error: 'Gagal menyimpan, tidak ada yang berubah. Pastikan schema-update.sql sudah dijalankan, lalu coba lagi.' }, { status: 500 });
   }
 
-  // Hapus dari Blob file yang tadinya dipakai tapi sekarang tidak (foto/gambar diganti atau dihapus, link dihapus).
+  // Hapus dari penyimpanan file yang tadinya dipakai tapi sekarang tidak (foto/gambar diganti atau dihapus, link dihapus).
   try {
-    const after = new Set(await userBlobs(id));
+    const after = new Set(await userBlobs(id, true)); // strict: bila gagal membaca, jangan hapus apa pun
     await dropBlobs(before.filter((u) => !after.has(u)), id);
   } catch (e) {
     console.error('Pembersihan file lama gagal:', e.message);
