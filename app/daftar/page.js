@@ -110,19 +110,19 @@ export default function Daftar() {
           <form className="au-form" onSubmit={submit}>
             {refShown && refFull && <p className="au-note">Undangan dari <b>@{ref}</b> sudah penuh (maksimal {refMax} teman). Kamu tetap bisa daftar, tapi tanpa bonus undangan.</p>}
             {refShown && !refFull && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
-            <div className="un-row"><label htmlFor="u">Alamat halamanmu</label><UnHint cek={cek} /></div>
-            <div className="au-field">
-              <span>isengin.site/</span>
-              <input id="u" value={username} maxLength={20} autoComplete="off" spellCheck={false}
-                onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
-            </div>
             <div className="au-ugroup">
               {err && <p className="au-err" role="alert">{err}</p>}
-              <label htmlFor="p">Sandi</label>
+              <div className="un-row"><label htmlFor="u">Alamat halamanmu</label><UnHint cek={cek} /></div>
               <div className="au-field">
-                <input id="p" type={show ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={password} autoComplete="new-password" onChange={(e) => setP(e.target.value)} />
-                <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
+                <span>isengin.site/</span>
+                <input id="u" value={username} maxLength={20} autoComplete="off" spellCheck={false}
+                  onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
               </div>
+            </div>
+            <label htmlFor="p">Sandi</label>
+            <div className="au-field">
+              <input id="p" type={show ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={password} autoComplete="new-password" onChange={(e) => setP(e.target.value)} />
+              <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
             </div>
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Klaim nama'}</button>
           </form>

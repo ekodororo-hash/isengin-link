@@ -88,18 +88,18 @@ export default function Masuk() {
             <Link href="/daftar">Daftar</Link>
           </nav>
           <form className="au-form" onSubmit={submit}>
-            <label htmlFor="u">Nama pengguna atau email</label>
-            <div className="au-field">
-              <input id="u" value={username} maxLength={120} autoComplete="username" spellCheck={false}
-                onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
-            </div>
             <div className="au-ugroup">
               {err && <p className="au-err" role="alert">{err}</p>}
-              <label htmlFor="p">Sandi</label>
+              <label htmlFor="u">Nama pengguna atau email</label>
               <div className="au-field">
-                <input id="p" type={show ? 'text' : 'password'} value={password} autoComplete="current-password" onChange={(e) => setP(e.target.value)} />
-                <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
+                <input id="u" value={username} maxLength={120} autoComplete="username" spellCheck={false}
+                  onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
               </div>
+            </div>
+            <label htmlFor="p">Sandi</label>
+            <div className="au-field">
+              <input id="p" type={show ? 'text' : 'password'} value={password} autoComplete="current-password" onChange={(e) => setP(e.target.value)} />
+              <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
             </div>
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Masuk'}</button>
           </form>
