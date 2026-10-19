@@ -15,7 +15,9 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .themes button[aria-pressed="true"]{background:#111;color:#fff;border-color:#111}
 .small{font-size:.8rem;color:#666}
 .phone{font-family:var(--pfont,inherit);--pbg:#fff;--ink:#111;--pbtn:#f1f1f6;--accent:#2b3cff;min-height:100vh;background:var(--pbg);color:var(--ink);padding:40px 20px;display:flex;flex-direction:column;align-items:center}
-.pub{width:100%;max-width:420px}
+.pub{width:100%;max-width:420px;display:flex;flex-direction:column;flex:1 0 auto}
+.pub-top{flex:none}
+.pub-bottom{margin-top:auto;flex:none}
 .ava{width:96px;height:96px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;background:var(--accent);color:var(--pbg);font-weight:800;font-size:2.2rem;object-fit:cover}
 .name{text-align:center;font-weight:800;font-size:1.4rem;margin:0}
 .bio{text-align:center;opacity:.8;margin:4px 0 22px}
