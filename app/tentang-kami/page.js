@@ -68,7 +68,7 @@ export default function TentangKami() {
           <section aria-labelledby="cerita">
             <h2 id="cerita">Kenapa isengin.site dibuat</h2>
             <p className="ft-sub" style={{ maxWidth: '640px' }}>
-              isengin.site dibuat untuk satu kebutuhan sederhana: menyatukan link media sosial, toko online, portofolio, dan kontak di satu halaman yang rapi. Kami percaya siapa pun, baik pribadi maupun pemilik usaha, berhak punya etalase digital yang mudah diatur dan mencerminkan dirinya.
+              isengin.site dibuat untuk menyatukan link media sosial, toko online, portofolio, dan kontak di satu halaman yang rapi. Kami percaya siapa pun, baik pribadi maupun pemilik usaha, berhak punya etalase digital yang mudah diatur dan mencerminkan dirinya.
             </p>
           </section>
 
