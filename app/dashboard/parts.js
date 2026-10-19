@@ -44,6 +44,8 @@ export function Phone({ trial }) {
       {soc.length > 0 && <div className="so">{soc.map((x) => <span className="s" key={x.key}><NamedIcon name={x.key} size={14} /></span>)}</div>}
       {vis.map((l, i) => {
         if (l.kind === 'header') return <div className="hd" key={l.id || l._k || i}><span>{l.title || 'Judul pembatas'}</span></div>;
+        if (l.kind === 'embed') return <div className="l" key={l.id || l._k || i}><span>▶ {l.title || 'Video / musik'}</span></div>;
+        if (l.kind === 'qris') return <div className="l" key={l.id || l._k || i}><span>{l.title || 'QRIS'} · QRIS</span></div>;
         const price = fmtPrice(l.price), old = fmtPrice(l.old_price);
         const th = thumbOk(vis, i, m.pro) ? l.thumb : '';
         return (
@@ -116,7 +118,7 @@ export function LinkRank() {
   const [pm, setPm] = useState(null);
   const [range, setRange] = useState('all');
   const [open, setOpen] = useState(null);
-  const links = m.links.filter((l) => l.kind !== 'header');
+  const links = m.links.filter((l) => (l.kind || 'link') === 'link');
   const n = range === 'all' ? 0 : range;
   const chartDays = lastDays(n || m.stat_days || 7);
   const byLink = {};

@@ -5,7 +5,7 @@ import { useDash } from './DashContext';
 // Daftar langkah awal. Semua status dihitung dari data akun, jadi tidak ada yang perlu disimpan; hilang sendiri kalau sudah lengkap.
 export default function Langkah() {
   const { m } = useDash();
-  const shown = m.links.filter((l) => !l.hidden && l.kind !== 'header').length;
+  const shown = m.links.filter((l) => !l.hidden && (l.kind || 'link') === 'link').length;
   const steps = [
     ['Pasang foto profil', 'Halaman dengan foto lebih dipercaya pengunjung.', '/dashboard/profil', !!m.photo_url],
     ['Tulis bio singkat', 'Minimal 10 karakter, ceritakan kamu atau tokomu.', '/dashboard/profil', (m.bio || '').trim().length >= 10],

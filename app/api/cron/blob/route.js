@@ -17,6 +17,7 @@ export async function GET(req) {
     const used = new Set();
     for (const r of await sql`select photo_url from users where photo_url is not null`) used.add(objPath(r.photo_url));
     for (const r of await sql`select thumb from links where thumb is not null and thumb <> ''`) used.add(objPath(r.thumb));
+    for (const r of await sql`select url from links where kind = 'qris'`) used.add(objPath(r.url)); // gambar QRIS ada di kolom url
     for (const r of await sql`select bg from users where bg is not null and bg <> ''`) {
       try { const o = JSON.parse(r.bg); if (o?.url) used.add(objPath(o.url)); } catch {}
     }

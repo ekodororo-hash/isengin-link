@@ -215,3 +215,20 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 }
 
 .stage,.phone{min-height:100vh;min-height:100dvh}
+
+/* Embed video/musik dan tombol QRIS di halaman publik */
+.pemb{position:relative;width:100%;margin-bottom:10px;border-radius:16px;overflow:hidden;background:#000}
+.pemb iframe{display:block;width:100%;height:100%;border:0}
+.pemb.spotify,.pemb.soundcloud{background:transparent}
+.pemb-go{position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;margin:0;cursor:pointer;background:#111;color:#fff;font:inherit;display:grid;place-items:center;overflow:hidden}
+.pemb-go img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85}
+.pemb-play{position:relative;width:60px;height:60px;border-radius:50%;background:var(--accent,#2b3cff);color:var(--pbg,#fff);display:grid;place-items:center;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+.pemb-nm{position:absolute;left:12px;right:12px;bottom:10px;text-align:left;font-weight:700;font-size:.85rem;text-shadow:0 1px 4px rgba(0,0,0,.7);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pemb-go:focus-visible{outline:3px solid var(--accent,#2b3cff);outline-offset:-3px}
+.phone[data-b="pil"] .pemb{border-radius:22px}.phone[data-b="kotak"] .pemb{border-radius:4px}.phone[data-b="timbul"] .pemb{border-radius:10px}
+.phone[data-t="neo"] .pemb{border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.phone[data-t="neon"] .pemb{border:2px solid var(--accent);box-shadow:0 0 10px var(--accent)}
+button.plink-main{background:none;border:0;padding:0;font:inherit;text-align:inherit;cursor:pointer}
+.qr-box{background:#fff;border:3px solid var(--navy);border-radius:18px;box-shadow:5px 5px 0 var(--navy);padding:12px;margin:0 5px 16px 0;display:grid;place-items:center}
+.qr-box img{display:block;width:100%;max-width:320px;height:auto}
+.shm .qr-t{text-align:center;margin:0 0 6px}.shm .qr-d{text-align:center}

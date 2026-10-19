@@ -14,7 +14,7 @@ export default function Ringkasan() {
     <Langkah />
     <div className="px-grid">
       <div className="px-card px-stat"><b>{tot}</b><span>Total klik</span></div>
-      <div className="px-card px-stat"><b>{m.links.filter((l) => !l.hidden && l.kind !== 'header').length}</b><span>Link tampil</span></div>
+      <div className="px-card px-stat"><b>{m.links.filter((l) => !l.hidden && (l.kind || 'link') === 'link').length}</b><span>Link tampil</span></div>
       <div className="px-card px-stat"><b>{m.views || 0}</b><span>Kunjungan</span></div>
     </div>
     <DailyChart daily={m.daily} />

@@ -10,7 +10,7 @@ export async function POST(req) {
     const p = (await sql`select (plan_until > now()) as pro from users where id=${id}`.catch(() => []))[0];
     if (p?.pro !== true) return Response.json({ error: 'Latar gambar khusus paket Pro. Lihat halaman Paket.' }, { status: 403 });
   }
-  const dir = { thumb: 'thumbs', bg: 'backgrounds' }[form.get('kind')] || 'avatars';
+  const dir = { thumb: 'thumbs', bg: 'backgrounds', qris: 'qris' }[form.get('kind')] || 'avatars';
   if (!f || !f.type?.startsWith('image/') || f.size > 2000000)
     return Response.json({ error: 'Pilih gambar, maksimal 2 MB.' }, { status: 400 });
   if (!storageReady()) {

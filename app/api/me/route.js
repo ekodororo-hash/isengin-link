@@ -9,6 +9,7 @@ import { PRO_THEMES, PRO_FONTS, PRO_BTNS, FREE_THUMBS } from '@/lib/pro';
 import { cleanGuard, hashPass, PASS_MIN, PASS_MAX } from '@/lib/linkguard';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
 import { pending, pendingBonus } from '@/lib/referral';
+import { kindOf, embedOf } from '@/lib/embed';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
   const [u, links, daily, sources, extra, look, more, plan] = await Promise.all([
@@ -37,7 +38,7 @@ async function load(id) {
       from link_stats ls join links l on l.id=ls.link_id
       where l.user_id=${id} and ls.day >= ((now() at time zone 'Asia/Jakarta')::date - ${pro ? 29 : 6}::int)
       order by ls.day`.catch((e) => { console.error('Statistik per link gagal (sudah jalankan schema-update.sql?):', e.message); return []; });
-  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: l.kind === 'header' ? 'header' : 'link', featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, stat_days: pro ? 30 : 7, link_days: linkDays, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
+  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: kindOf(l.kind), featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, stat_days: pro ? 30 : 7, link_days: linkDays, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
 }
 export async function GET() {
   const id = await getUserId();
@@ -67,13 +68,17 @@ export async function PUT(req) {
   let bg = cleanBg(b.bg);
   if (bg.t === 'image' && !allowed(bg.url)) bg = {};
 
-  // Pembatas cukup punya judul; link biasa wajib punya judul dan alamat.
-  const links = (b.links || []).filter((l) => (l.kind === 'header' ? l.title?.trim() : l.title?.trim() && l.url?.trim())).slice(0, 30);
+  // Pembatas cukup punya judul; embed cukup punya alamat; link biasa dan QRIS wajib punya judul dan alamat (QRIS: alamat gambar).
+  const links = (b.links || []).filter((l) => { const k = kindOf(l.kind); return k === 'header' ? l.title?.trim() : k === 'embed' ? l.url?.trim() : l.title?.trim() && l.url?.trim(); }).slice(0, 30);
   // Keamanan: tolak alamat yang tidak aman, dan (bila SAFE_BROWSING_KEY diisi) alamat baru yang ditandai berbahaya oleh Google.
   const have = new Set((await sql`select url from links where user_id=${id}`.catch(() => [])).map((r) => r.url));
   const urls = [];
   for (const l of links) {
-    if (l.kind === 'header') continue;
+    const k = kindOf(l.kind);
+    if (k === 'header') continue;
+    // Embed: hanya YouTube, Spotify, SoundCloud, TikTok. QRIS: harus gambar hasil unggahan akun ini.
+    if (k === 'embed') { if (!embedOf(fix(l.url))) return Response.json({ error: 'Embed ditolak: hanya link YouTube, Spotify, SoundCloud, atau TikTok (video) yang didukung.' }, { status: 400 }); continue; }
+    if (k === 'qris') { if (!okThumb(l.url)) return Response.json({ error: `QRIS “${String(l.title || '').trim().slice(0, 40)}”: unggah gambar QRIS dulu.` }, { status: 400 }); continue; }
     const u = fix(l.url);
     const why = urlProblem(u);
     if (why) return Response.json({ error: `Link “${l.title.trim().slice(0, 40)}” ditolak: ${why}` }, { status: 400 });
@@ -82,7 +87,7 @@ export async function PUT(req) {
   // Link bersandi: sandi baru minimal PASS_MIN karakter; kalau dikosongkan, sandi lama dipertahankan (harus sudah ada).
   const oldHash = new Map((await sql`select id, pass_hash from links where user_id=${id}`.catch(() => [])).map((r) => [Number(r.id), r.pass_hash || '']));
   for (const l of links) {
-    if (l.kind === 'header' || cleanGuard(l.guard) !== 'pass') continue;
+    if (kindOf(l.kind) !== 'link' || cleanGuard(l.guard) !== 'pass') continue;
     const np = typeof l.pass === 'string' ? l.pass : '';
     const label = `Link “${l.title.trim().slice(0, 40)}”`;
     if (np && (np.length < PASS_MIN || np.length > PASS_MAX)) return Response.json({ error: `${label}: sandi harus ${PASS_MIN}-${PASS_MAX} karakter.` }, { status: 400 });
@@ -95,19 +100,19 @@ export async function PUT(req) {
   const old = cols(), fresh = cols();
   let feat = 0; // paling banyak 2 link sorotan
   links.forEach((l, i) => {
-    const head = l.kind === 'header', c = l.id ? old : fresh;
+    const k = kindOf(l.kind), head = k === 'header', ext = k === 'embed' || k === 'qris', c = l.id ? old : fresh;
     if (l.id) c.id.push(Number(l.id));
-    c.title.push(l.title.trim().slice(0, 60));
-    c.url.push(head ? '' : fix(l.url));
+    c.title.push(String(l.title || '').trim().slice(0, 60));
+    c.url.push(head ? '' : k === 'qris' ? okThumb(l.url) : k === 'embed' ? fix(l.url).slice(0, 300) : fix(l.url));
     c.position.push(i);
-    c.thumb.push(head ? '' : okThumb(l.thumb));
+    c.thumb.push(head || ext ? '' : okThumb(l.thumb));
     c.hidden.push(l.hidden === true);
-    c.price.push(head ? '' : cleanPrice(l.price));
-    c.old_price.push(head ? '' : cleanPrice(l.old_price));
-    c.label.push(head ? '' : cleanLabel(l.label));
-    c.kind.push(head ? 'header' : 'link');
-    const g = head ? '' : cleanGuard(l.guard);
-    c.featured.push(!head && l.featured === true && !l.hidden && ++feat <= 2);
+    c.price.push(head || ext ? '' : cleanPrice(l.price));
+    c.old_price.push(head || ext ? '' : cleanPrice(l.old_price));
+    c.label.push(head || ext ? '' : cleanLabel(l.label));
+    c.kind.push(k);
+    const g = head || ext ? '' : cleanGuard(l.guard);
+    c.featured.push(!head && !ext && l.featured === true && !l.hidden && ++feat <= 2);
     c.guard.push(g);
     c.pass_hash.push(g !== 'pass' ? '' : (typeof l.pass === 'string' && l.pass ? hashPass(l.pass) : (l.id ? oldHash.get(Number(l.id)) || '' : '')));
   });

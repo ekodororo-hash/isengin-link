@@ -648,3 +648,6 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-chk .fi{display:inline-grid;place-items:center;width:24px;height:24px;padding:3px;border-radius:50%;border:3px solid var(--navy);color:var(--navy);flex:none}
 .px-chk .fi svg{width:100%;height:100%}
 .px-chk .fi.w{background:#fff}.px-chk .fi.r{background:var(--yel)}.px-chk .fi.d{background:var(--navy);color:var(--cream)}
+
+/* Editor embed dan QRIS */
+.px-qr-prev{display:block;max-width:160px;width:100%;height:auto;background:#fff;border:2px solid #1f2255;border-radius:10px;margin:8px 0}

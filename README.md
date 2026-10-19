@@ -161,3 +161,11 @@ Jalankan `schema-update.sql` dulu (menambah `users.email_verified_at`, `users.pw
 - **Lupa sandi** (`/lupa`, `POST /api/auth` mode `forgot` dan `reset`): kode 6 angka dikirim ke email yang sudah terverifikasi. Langkah pertama memberi tahu bila email tidak terdaftar atau belum diverifikasi, jadi email bisa ditebak; karena itu dibatasi 8 percobaan per jam per IP dan 3 per jam per email. Setelah sandi baru dipasang, `users.pw_changed_at` diisi sehingga semua sesi login lama tidak berlaku (dicek di `lib/auth.js`), dan pengguna langsung masuk.
 - **Reset manual oleh admin** (`/admin/pengguna`, Kelola, Reset sandi): untuk akun tanpa email terverifikasi. Server membuat sandi sementara yang ditampilkan ke admin untuk dikirim ke pemilik akun.
 - Email lama yang tersimpan sebelum fitur ini tetap bisa dipakai untuk masuk, tapi baru bisa dipakai reset sandi setelah diverifikasi lewat Pengaturan.
+
+## Embed video/musik dan QRIS
+
+Tanpa perubahan skema: dua jenis item baru memakai kolom `links.kind` (`embed`, `qris`) yang sudah ada.
+
+- **Embed** (Link, "Tambah embed"): tempel link YouTube (video, Shorts, playlist), Spotify (lagu, album, playlist, episode), SoundCloud, atau TikTok (video, bukan link pendek `vm.tiktok.com`). `lib/embed.js` (`embedOf`) memvalidasi dan membuat alamat iframe dari ID, jadi alamat lain ditolak (400 di `PUT /api/me`) dan pengguna tidak bisa menyisipkan iframe sembarang. YouTube dan TikTok tampil sebagai sampul dulu (`app/[username]/EmbedBox.js`) dan iframe baru dimuat setelah ditekan; Spotify dan SoundCloud dimuat malas. YouTube memakai `youtube-nocookie.com`. Embed tidak punya klik, harga, atau pengaman, dan tidak masuk Peringkat link.
+- **QRIS** (Link, "Tambah QRIS"): pengguna mengunggah gambar QRIS statis (`/api/upload` dengan `kind=qris`, folder `qris/<id>-`, tidak dipotong, PNG). Alamat gambar disimpan di kolom `url`. Di halaman publik berupa tombol yang membuka jendela berisi gambar QRIS (`QrisButton.js`). **Gambar ini ikut dihitung sebagai file terpakai** di `userBlobs` (`lib/blob.js`) dan di cron `/api/cron/blob`; tanpa itu cron akan menghapusnya setelah 24 jam. Isengin hanya menampilkan gambar, tidak memproses uangnya.
+- Embed dan QRIS tidak dihitung sebagai "link" untuk syarat centang, hadiah referral, dan langkah awal (sudah memakai `kind = 'link'`).

@@ -11,6 +11,9 @@ import Verified from '../Verified';
 import Report from './Report';
 import { cleanGuard } from '@/lib/linkguard';
 import LinkRow from './LinkRow';
+import EmbedBox from './EmbedBox';
+import QrisButton from './QrisButton';
+import { embedOf } from '@/lib/embed';
 import HomePromo from './HomePromo';
 import ViewBeacon from './ViewBeacon';
 import { effectiveLook, thumbOk } from '@/lib/pro';
@@ -78,6 +81,8 @@ export default async function Profile({ params, searchParams }) {
         )}
         {links.map((l, i) => {
           if (l.kind === 'header') return <h2 key={l.id} className="phead"><span>{l.title}</span></h2>;
+          if (l.kind === 'embed') { const e = embedOf(l.url); return e ? <EmbedBox key={l.id} {...e} title={l.title} /> : null; }
+          if (l.kind === 'qris') return l.url ? <QrisButton key={l.id} title={l.title || 'QRIS'} img={l.url} /> : null;
           const price = fmtPrice(l.price), old = fmtPrice(l.old_price), lab = cleanLabel(l.label);
           const th = thumbOk(links, i, pro) ? l.thumb : '';
           const cat = !!(price || old); // rata kiri hanya untuk link berharga; label saja tetap rata tengah

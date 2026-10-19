@@ -7,6 +7,7 @@ import ProModal from '../ProModal';
 import { FREE_THUMBS } from '@/lib/pro';
 import { LinkIcon } from '../../icons';
 import { LABELS, fmtPrice, labelText } from '@/lib/catalog';
+import { embedOf, EMBED_NAMES } from '@/lib/embed';
 
 const S = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, focusable: 'false' };
 const Pencil = () => (<svg {...S}><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4z" /><path d="M13.5 6.5l4 4" /></svg>);
@@ -17,10 +18,12 @@ const Trash = () => (<svg {...S}><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M
 const Head = () => (<svg {...S}><path d="M5 7V5h14v2M12 5v14M9 19h6" /></svg>);
 const Img = () => (<svg {...S}><rect x="3.5" y="5" width="17" height="14" rx="2.5" /><circle cx="9" cy="10.5" r="1.5" /><path d="M4 17l5-4.5 3.5 3L15.5 13 20 17" /></svg>);
 const Badge = () => (<svg className="px-ok" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="#2fb344" stroke="#1f2255" strokeWidth="1.6" /><path d="M4.6 8.3l2.3 2.3 4.5-4.7" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>);
+const Play = () => (<svg {...S}><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M10 9.5v5l4.5-2.5z" /></svg>);
+const Qr = () => (<svg {...S}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></svg>);
 const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" /></svg>);
 
 export default function LinkPage() {
-  const { m, setL, addLink, addHeader, delLink, move, reorder, upThumb } = useDash();
+  const { m, setL, addLink, addHeader, addEmbed, addQris, delLink, move, reorder, upThumb, upQris } = useDash();
   const n = m.links.length;
   const thumbs = m.links.filter((l) => l.kind !== 'header' && l.thumb).length;
   const feats = m.links.filter((l) => l.kind !== 'header' && l.featured).length; // maksimal 2 link sorotan
@@ -42,7 +45,7 @@ export default function LinkPage() {
     const v = open[key];
     if (v !== undefined) return v;
     if (autoOpen.current.has(key)) return true;
-    if (!l.title && !l.url) { autoOpen.current.add(key); return true; }
+    if ((!l.title || l.kind === 'qris') && !l.url) { autoOpen.current.add(key); return true; }
     return false;
   };
   const toggle = (l, i) => setOpen((o) => ({ ...o, [keyOf(l, i)]: !isOpen(l, i) }));
@@ -161,6 +164,55 @@ export default function LinkPage() {
       <div ref={listRef}>
         {m.links.map((l, i) => {
           const k = keyOf(l, i);
+          if (l.kind === 'embed' || l.kind === 'qris') {
+            const q = l.kind === 'qris', ed = isOpen(l, i), emb = q ? null : embedOf(l.url);
+            return (
+              <div className={'px-lk' + (l.hidden ? ' off' : '') + (ed ? ' ed' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
+                <div className="px-lk-r">
+                  <button className="px-grip" aria-label={`Seret untuk memindahkan item ${i + 1}`} title="Seret untuk mengurutkan" onPointerDown={(e) => down(e, k)}><Grip /></button>
+                  <span className="px-lk-no">{i + 1}</span>
+                  {q && l.url ? <img className="px-th" src={l.url} alt="" /> : <span className="px-th e" aria-hidden="true">{q ? <Qr /> : <Play />}</span>}
+                  <div className="px-lk-i">
+                    <strong>{l.title || <em>{q ? 'Tanpa judul' : emb ? EMBED_NAMES[emb.provider] : 'Embed'}</em>}<span className="px-tag">{q ? 'QRIS' : 'Embed'}</span></strong>
+                    <span>{q ? (l.url ? 'Gambar QRIS terpasang' : 'Belum ada gambar QRIS') : (l.url || 'Belum ada alamat')}</span>
+                  </div>
+                  <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
+                    <input type="checkbox" role="switch" className="px-sr" aria-label={`Tampilkan item ${i + 1}`} checked={!l.hidden} onChange={(e) => setL(i, 'hidden', !e.target.checked)} />
+                    <span className="px-tg" aria-hidden="true" />
+                  </label>
+                  <div className="px-lk-b">
+                    <button className="px-ib" aria-label={`Naikkan item ${i + 1}`} title="Naikkan" disabled={i === 0} onClick={() => move(i, -1)}><Up /></button>
+                    <button className="px-ib" aria-label={`Turunkan item ${i + 1}`} title="Turunkan" disabled={i === n - 1} onClick={() => move(i, 1)}><Down /></button>
+                    <button className={'px-ib' + (ed ? ' on' : '')} aria-label={ed ? `Selesai mengedit item ${i + 1}` : `Edit item ${i + 1}`} aria-expanded={ed} title={ed ? 'Selesai' : 'Edit'} onClick={() => toggle(l, i)}>{ed ? <Check /> : <Pencil />}</button>
+                    <button className="px-ib d" aria-label={`Hapus item ${i + 1}`} title="Hapus" onClick={() => delLink(i)}><Trash /></button>
+                  </div>
+                </div>
+                {ed && (
+                  <div className="px-lk-e">
+                    {q ? (<>
+                      <div className="px-lk-f">
+                        <input aria-label={`Judul QRIS ${i + 1}`} placeholder="Judul, mis. Traktir kopi" value={l.title} maxLength={60} onChange={(e) => setL(i, 'title', e.target.value)} />
+                      </div>
+                      <div className="px-lk-t">
+                        <label className="px-btn g sm px-fl">{l.url ? 'Ganti gambar QRIS' : 'Unggah gambar QRIS'}
+                          <input type="file" accept="image/*" className="px-sr" aria-label={`Unggah gambar QRIS ${i + 1}`} onChange={(e) => upQris(l.id || l._k, e)} />
+                        </label>
+                      </div>
+                      {l.url && <img className="px-qr-prev" src={l.url} alt="Pratinjau QRIS" />}
+                      <p className="px-hint">Unggah gambar QRIS statis dari bank atau e-wallet-mu (nominal diisi sendiri oleh pembayar). Pakai gambar yang hanya berisi kode QR, jangan sertakan tangkapan layar aplikasi. Setelah itu klik Simpan.</p>
+                    </>) : (<>
+                      <div className="px-lk-f">
+                        <input aria-label={`Judul embed ${i + 1}`} placeholder="Judul (opsional)" value={l.title} maxLength={60} onChange={(e) => setL(i, 'title', e.target.value)} />
+                        <input aria-label={`Alamat embed ${i + 1}`} placeholder="Tempel link YouTube, Spotify, SoundCloud, atau TikTok" value={l.url} onChange={(e) => setL(i, 'url', e.target.value)} />
+                      </div>
+                      {l.url && !emb && <p className="px-warn" role="alert">Link ini belum didukung, jadi tidak akan disimpan. Pakai link video YouTube atau TikTok, atau lagu, album, dan playlist Spotify atau SoundCloud.</p>}
+                      {emb && <p className="px-hint">Terbaca sebagai {EMBED_NAMES[emb.provider]}. {emb.facade ? 'Pengunjung melihat sampul dulu; videonya dimuat setelah ditekan.' : 'Pemutarnya tampil langsung di halamanmu.'}</p>}
+                    </>)}
+                  </div>
+                )}
+              </div>
+            );
+          }
           const hed = l.kind === 'header' && isOpen(l, i);
           if (l.kind === 'header') return (
             <div className={'px-lk px-hd' + (l.hidden ? ' off' : '') + (drag === k ? ' drag' : '')} key={k} data-k={k}>
@@ -262,6 +314,8 @@ export default function LinkPage() {
         <SaveBar>
           <button className="px-btn g" onClick={addLink}>Tambah link</button>
           <button className="px-btn g" onClick={addHeader}>Tambah pembatas</button>
+          <button className="px-btn g" onClick={addEmbed}>Tambah embed</button>
+          <button className="px-btn g" onClick={addQris}>Tambah QRIS</button>
         </SaveBar>
       </div>
     </div>

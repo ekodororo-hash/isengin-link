@@ -17,13 +17,13 @@ const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/link', 'Link'], ['/dashb
 // Bagian yang bisa diubah pengguna, dipisah per halaman dashboard supaya kelihatan halaman mana yang berubah.
 const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];
 const parts = (x) => ({
-  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true, l.price || '', l.old_price || '', l.label || '', l.kind === 'header' ? 'h' : ''])),
+  link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true, l.price || '', l.old_price || '', l.label || '', l.kind === 'header' ? 'h' : l.kind === 'embed' ? 'e' : l.kind === 'qris' ? 'q' : ''])),
   profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim())]),
   tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || ''), x.btn_style || 'bulat', x.font_key || 'standar', x.bg || {}]),
 });
 
 // Perkecil foto di peramban (maks 640px, JPEG) supaya unggahan kecil dan selalu lolos batas ukuran.
-async function shrink(file, max = 640, square = false) {
+async function shrink(file, max = 640, square = false, png = false) {
   const bmp = await createImageBitmap(file);
   const c = document.createElement('canvas');
   if (square) {
@@ -37,7 +37,7 @@ async function shrink(file, max = 640, square = false) {
     c.height = Math.max(1, Math.round(bmp.height * s));
     c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
   }
-  const blob = await new Promise((res) => c.toBlob(res, 'image/jpeg', 0.86));
+  const blob = await new Promise((res) => c.toBlob(res, png ? 'image/png' : 'image/jpeg', 0.86));
   if (!blob) throw new Error('toBlob');
   return blob;
 }
@@ -95,6 +95,9 @@ export function DashProvider({ children }) {
   const addLink = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), title: '', url: '' }]);
   // Pembatas: judul seksi tanpa alamat, untuk mengelompokkan link.
   const addHeader = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), kind: 'header', title: '', url: '' }]);
+  // Embed video/musik dan QRIS: dua jenis item baru selain link dan pembatas.
+  const addEmbed = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), kind: 'embed', title: '', url: '' }]);
+  const addQris = () => set('links', [...m.links, { _k: Math.random().toString(36).slice(2), kind: 'qris', title: 'Traktir aku', url: '' }]);
   const delLink = (i) => set('links', m.links.filter((_, j) => j !== i));
   const move = (i, d) => {
     const j = i + d;
@@ -154,6 +157,25 @@ export function DashProvider({ children }) {
       } else setMsg(d.error || 'Gambar gagal diunggah.');
     } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
   }
+  // Unggah gambar QRIS ke item QRIS. Tidak dipotong (QR harus utuh) dan dikirim sebagai PNG supaya tetap tajam.
+  async function upQris(key, e) {
+    const input = e.target;
+    const f = input.files[0];
+    input.value = '';
+    if (!f) return;
+    setMsg('Mengunggah gambar QRIS…');
+    let blob;
+    try { blob = await shrink(f, 1000, false, true); if (blob.size > 1800000) blob = await shrink(f, 1000); } catch { setMsg('Format gambar tidak didukung. Pakai JPG atau PNG.'); return; }
+    const fd = new FormData(); fd.append('file', blob, 'qris.png'); fd.append('kind', 'qris');
+    try {
+      const r = await fetch('/api/upload', { method: 'POST', body: fd });
+      const d = await r.json().catch(() => ({}));
+      if (r.ok) {
+        setM((x) => ({ ...x, links: x.links.map((l) => ((l.id || l._k) === key ? { ...l, url: d.url } : l)) }));
+        setMsg('Gambar QRIS terunggah. Klik Simpan agar tersimpan.');
+      } else setMsg(d.error || 'Gambar gagal diunggah.');
+    } catch { setMsg('Gambar gagal diunggah. Periksa koneksi.'); }
+  }
   // Unggah gambar latar halaman publik (maks 1280px). Pengaturan lain di bg (pudar) dipertahankan.
   async function upBg(e) {
     const input = e.target;
@@ -191,7 +213,7 @@ export function DashProvider({ children }) {
     location.href = '/';
   }
   return (
-    <Ctx.Provider value={{ m, set, setTheme, upThumb, upBg, setL, addLink, addHeader, delLink, move, reorder, save, up, msg, busy, dirty }}>
+    <Ctx.Provider value={{ m, set, setTheme, upThumb, upBg, upQris, setL, addLink, addHeader, addEmbed, addQris, delLink, move, reorder, save, up, msg, busy, dirty }}>
       <PreCtx.Provider value={pre}>
         <Shell title="isengin.site" menu={MENU.map(([h, l]) => (h === '/dashboard/undang' && (m.ref_gift || m.ref_bonus) ? [h, l, true] : [h, l]))} out={out}>
           <Banners />
