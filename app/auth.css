@@ -29,7 +29,7 @@ body:has(.au-wrap){background:#fffbe8}
 .au-show{flex:none;border:0;background:none;padding:6px 0 6px 6px;font:inherit;font-size:.82rem;font-weight:800;color:var(--navy);cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .au-note{margin:0 0 8px;font-size:.88rem;font-weight:600}
 .au-ugroup{position:relative;display:grid;gap:6px}
-.au-err{position:absolute;left:0;right:0;bottom:calc(100% + 6px);z-index:20;pointer-events:none;margin:0;display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fffbe8;color:#1f2255;border:3px solid #1f2255;border-radius:14px;box-shadow:4px 4px 0 #1f2255;font-weight:700;font-size:.9rem;line-height:1.3;animation:toast-life 4.5s ease forwards}
+.au-err{position:absolute;left:0;right:0;top:-15px;z-index:20;pointer-events:none;margin:0;display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fffbe8;color:#1f2255;border:3px solid #1f2255;border-radius:14px;box-shadow:4px 4px 0 #1f2255;font-weight:700;font-size:.9rem;line-height:1.3;animation:toast-life 4.5s ease forwards}
 .au-err::before{content:"";flex:none;width:18px;height:18px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='%23a00018' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='10' cy='10' r='8'/%3E%3Cpath d='M10 5.8v5M10 14.2v.01'/%3E%3C/svg%3E") center/contain no-repeat}
 @keyframes toast-life{0%{opacity:0;transform:translateY(-6px)}6%{opacity:1;transform:none}90%{opacity:1}100%{opacity:0}}
 @media(prefers-reduced-motion:reduce){.au-err{animation:none}}

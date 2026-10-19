@@ -72,20 +72,20 @@ export default function Home() {
         <p className="lp-lead">Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman. Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
         <div className="lp-claim">
           {refShown && mode === 'register' && <p className="lp-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
-          <div className="lp-ugroup">
-          {err && <p className="lp-err" role="alert">{err}</p>}
           <div className="un-row"><label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>{mode === 'register' && <UnHint cek={cek} />}</div>
           <div className="lp-field">
             {mode === 'register' && <span>isengin.site/</span>}
             <input id="u" value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete={mode === 'register' ? 'off' : 'username'} spellCheck={false}
               onChange={(e) => setU(e.target.value.toLowerCase().replace(mode === 'register' ? /[^a-z0-9_]/g : /[^a-z0-9_@.+-]/g, ''))} />
           </div>
-          </div>
+          <div className="lp-ugroup">
+          {err && <p className="lp-err" role="alert">{err}</p>}
           <label htmlFor="p">Sandi</label>
           <div className="lp-field">
             <input id="p" type={show ? 'text' : 'password'} placeholder={mode === 'register' ? 'Minimal 6 karakter' : ''} value={password} onChange={(e) => setP(e.target.value)}
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'} />
             <button type="button" className="lp-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
+          </div>
           </div>
           <button className="lp-btn" onClick={go} disabled={busy}>{busy ? 'Memproses...' : (mode === 'register' ? 'Klaim nama' : 'Masuk')}</button>
           <button className="lp-btn alt" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setErr(''); }}>
