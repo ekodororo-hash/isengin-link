@@ -93,7 +93,7 @@ export default function Lupa() {
             </>
           ) : (
             <>
-              <p className="au-sub">Kalau {email} terdaftar dan sudah terverifikasi, kode 6 angka sudah dikirim. Cek folder Spam juga. Kode berlaku 10 menit.</p>
+              <p className="au-sub">Kode 6 angka sudah dikirim ke <b>{email}</b>. Cek folder Spam juga. Kode berlaku 10 menit.</p>
               <form className="au-form" onSubmit={reset}>
                 <div className="au-ugroup">
                   {err && <p className="au-err" role="alert">{err}</p>}

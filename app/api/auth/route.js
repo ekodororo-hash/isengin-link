@@ -11,8 +11,9 @@ const bad = (error, status = 400) => Response.json({ error }, { status });
 export async function POST(req) {
   const { mode, username = '', password = '', ref = '', email = '', code = '' } = await req.json();
   if (mode === 'logout') { clearSession(); return Response.json({ ok: true }); }
-  // Lupa sandi, langkah 1: kirim kode 6 angka ke email yang sudah diverifikasi. Jawabannya selalu sama
-  // supaya tidak bisa dipakai menebak email mana yang terdaftar.
+  // Lupa sandi, langkah 1: kirim kode 6 angka ke email yang sudah diverifikasi.
+  // Sengaja memberi tahu bila email tidak terdaftar atau belum diverifikasi (lebih jelas bagi pengguna).
+  // Konsekuensinya email bisa ditebak, jadi percobaan dibatasi ketat per IP dan per email.
   if (mode === 'forgot') {
     const em = String(email).trim().toLowerCase().slice(0, 120);
     const ip = ipOf(req);
@@ -22,12 +23,18 @@ export async function POST(req) {
     const byMail = await hit(`forgot:e:${em}`, 3, 3600);
     if (byMail.over) return tooMany(byMail);
     try {
-      const u = (await sql`select id from users where email=${em} and email_verified_at is not null and active is not false`)[0];
-      if (u) {
-        const c = await issueCode(u.id, 'reset', em);
-        await sendMail({ to: em, ...codeMail(c, 'reset') });
+      const u = (await sql`select id, email_verified_at from users where email=${em} and active is not false`)[0];
+      if (!u) return bad('Email tidak terdaftar.', 404);
+      if (!u.email_verified_at) return bad('Email ini belum diverifikasi, jadi belum bisa dipakai reset sandi. Hubungi admin.', 403);
+      const c = await issueCode(u.id, 'reset', em);
+      if (!(await sendMail({ to: em, ...codeMail(c, 'reset') }))) {
+        await dropCodes(u.id, 'reset');
+        return bad('Email belum bisa dikirim. Coba lagi sebentar lagi.', 502);
       }
-    } catch (e) { console.error('Kirim kode reset gagal (sudah jalankan schema-update.sql?):', e.message); }
+    } catch (e) {
+      console.error('Kirim kode reset gagal (sudah jalankan schema-update.sql?):', e.message);
+      return bad('Reset sandi belum bisa dipakai. Coba lagi nanti.', 500);
+    }
     return Response.json({ ok: true });
   }
   // Lupa sandi, langkah 2: cek kode, pasang sandi baru, tutup sesi lama, lalu langsung masuk.
