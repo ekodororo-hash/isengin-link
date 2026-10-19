@@ -41,7 +41,7 @@ export async function POST(req) {
   if (byUser.over) return tooMany(byUser);
   const r = byEmail ? await sql`select id,password_hash from users where email=${u}`.catch(() => []) : await sql`select id,password_hash from users where username=${u}`;
   if (!r.length || !(await bcrypt.compare(password, r[0].password_hash)))
-    return Response.json({ error: 'Nama/email atau sandi salah.' }, { status: 401 });
+    return Response.json({ error: 'Nama, email, atau sandi salah.' }, { status: 401 });
   await clear(`login:u:${u}`);
   await setSession(r[0].id);
   return Response.json({ ok: true });
