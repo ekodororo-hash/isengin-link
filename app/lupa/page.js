@@ -3,6 +3,7 @@ import '../landing.css';
 import '../auth.css';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { themeStyle } from '@/lib/themes';
 
 const lnk = { background: 'none', border: 0, padding: 0, font: 'inherit', fontWeight: 700, textDecoration: 'underline', color: 'inherit', cursor: 'pointer' };
 
@@ -66,6 +67,42 @@ export default function Lupa() {
     <div className="au-wrap">
       <aside className="au-side">
         <Link className="au-logo" href="/">ISENGIN.SITE</Link>
+        <div className="au-demo" aria-hidden="true">
+          <div className="lp-iph">
+            <div className="lp-phone au-rk" data-t="neo" style={themeStyle('neo')}>
+              <div className="lp-isl" />
+              <div className="au-rk-top">
+                <span className="au-rk-brand">ISENGIN.SITE</span>
+                <span className="au-rk-burger"><i /><i /><i /></span>
+              </div>
+              <h2 className="au-rk-h">Ringkasan</h2>
+              <p className="au-rk-u">isengin.site/david</p>
+              <div className="au-rk-grid">
+                <div className="au-rk-card au-rk-stat"><b>23</b><span>Total klik</span></div>
+                <div className="au-rk-card au-rk-stat"><b>4</b><span>Link tampil</span></div>
+                <div className="au-rk-card au-rk-stat au-rk-w"><b>87</b><span>Kunjungan</span></div>
+              </div>
+              <div className="au-rk-card">
+                <b className="au-rk-ct">Per hari</b>
+                <div className="au-rk-seg"><span className="on">Klik</span><span>Kunjungan</span></div>
+                <div className="au-rk-seg"><span>7 hari</span><span className="on">14 hari</span><span>30 hari</span></div>
+                <p className="au-rk-sum">23 klik dalam 14 hari terakhir</p>
+                <div className="au-rk-chart">
+                  {[0, 1, 0, 2, 1, 0, 3, 1, 2, 0, 4, 2, 1, 6].map((v, n) => (
+                    <div key={n} className="au-rk-col">
+                      <span className="au-rk-val">{v || ''}</span>
+                      <i style={{ height: `calc((100% - 18px) * ${v / 6})` }} />
+                    </div>
+                  ))}
+                </div>
+                <div className="au-rk-axis"><span>5 Okt</span><span>18 Okt</span></div>
+              </div>
+              <div className="au-rk-card au-rk-mt">
+                <b className="au-rk-ct">Peringkat link</b>
+              </div>
+            </div>
+          </div>
+        </div>
         <p className="au-tag">Lupa sandi? Tenang, kami kirim kode ke emailmu.</p>
       </aside>
       <main className="au-main">
