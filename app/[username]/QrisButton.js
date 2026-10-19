@@ -1,10 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { NamedIcon } from '../icons';
+import ShareLink from './ShareLink';
 
 // Tombol QRIS di halaman publik: membuka jendela berisi gambar QRIS milik pemilik halaman.
-export default function QrisButton({ title, img }) {
+export default function QrisButton({ title, img, pageUsername, pageName }) {
   const [open, setOpen] = useState(false);
+  const [share, setShare] = useState(false);
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => e.key === 'Escape' && setOpen(false);
@@ -21,7 +23,12 @@ export default function QrisButton({ title, img }) {
           <span className="pt">{title}</span>
           <span className="psp" aria-hidden="true" />
         </button>
+        <button type="button" className="plink-dots" aria-label={`Opsi untuk tautan ${title}`} onClick={() => setShare(true)}>
+          <NamedIcon name="dots" size={18} />
+        </button>
       </div>
+      {/* Yang dibagikan adalah halaman pemiliknya (bukan gambar QRIS). window aman dipakai: hanya dirender setelah klik. */}
+      {share && <ShareLink title={title} url={window.location.origin + '/' + pageUsername} path={'/' + pageUsername} pageUsername={pageUsername} pageName={pageName} onClose={() => setShare(false)} />}
       {open && (
         <div className="shm-ov" role="dialog" aria-modal="true" aria-label={`QRIS: ${title}`} onClick={() => setOpen(false)}>
           <div className="shm" onClick={(e) => e.stopPropagation()}>
