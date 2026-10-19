@@ -38,6 +38,8 @@ body:has(.au-wrap){background:#fffbe8}
 .au-btn:disabled{opacity:.6;cursor:wait}
 .au-btn:focus-visible,.au-tabs a:focus-visible,.au-back:focus-visible,.au-show:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
 .au-legal{text-align:center;font-size:.78rem;margin:24px 0 0;opacity:.75}
+.au-foot{text-align:center;font-size:.78rem;padding:16px 0 4px;opacity:.75}
+.au-foot a{color:inherit}
 .au-legal a{color:inherit}
 @media(max-width:860px){
 .au-wrap{grid-template-columns:1fr}

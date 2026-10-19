@@ -126,8 +126,8 @@ export default function Daftar() {
             </div>
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Klaim nama'}</button>
           </form>
-          <p className="au-legal"><Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
         </div>
+        <footer className="au-foot"><Link href="/fitur">Fitur</Link> · <Link href="/tentang-kami">Tentang Kami</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></footer>
       </main>
     </div>
   );
