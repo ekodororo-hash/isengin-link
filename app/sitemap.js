@@ -29,6 +29,6 @@ export default async function sitemap() {
         and exists (select 1 from links l where l.user_id=u.id)
       order by u.id limit 49000`.catch(() => []);
   }
-  const users = rows.map((r) => ({ url: `${SITE}/${r.username}`, lastModified: now, priority: 0.6 }));
+  const users = rows.map((r) => ({ url: `${SITE}/${r.username}`, priority: 0.6 }));
   return [...pages, ...users];
 }
