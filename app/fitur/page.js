@@ -28,7 +28,7 @@ const FEATURES = [
 const ROWS = [
   ['Dasar'],
   ['Halaman, link, tema, dan statistik dasar', 'Ya', 'Ya'],
-  ['Rentang statistik', '7 dan 30 hari', '90 hari, semua, dan pilih tanggal'],
+  ['Rentang statistik', '30 hari', 'Semua data'],
   ['Gambar di link', '3 gambar', 'Tanpa batas'],
   ['Tampilan'],
   ['Latar belakang gambar', 'Tidak', 'Ya'],
