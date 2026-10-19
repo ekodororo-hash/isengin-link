@@ -54,7 +54,7 @@ export default async function Profile({ params, searchParams }) {
   const pro = (await sql`select (plan_until > now()) as pro from users where id=${u.id}`.catch(() => []))[0]?.pro === true;
   const look = (await sql`select btn_style,font_key from users where id=${u.id}`.catch(() => []))[0] || {};
   const name = u.display_name || u.username;
-  // Fitur Pro (tema Neo/Neon, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
+  // Fitur Pro (tema Neon dan tema berwarna lain, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
   const eff = effectiveLook({ theme: u.theme, font_key: cleanFont(look.font_key), btn_style: cleanBtn(look.btn_style), colors: extra.colors, bg: more.bg }, pro);
   // Warna tepi halaman (juga di belakang bilah navigasi HP) mengikuti latar halaman, bukan biru bawaan situs.
   const eb = cleanBg(eff.bg);

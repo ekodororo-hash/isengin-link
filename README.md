@@ -1,6 +1,6 @@
 # isengin.site link-in-bio
 
-Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpanan foto Vercel Blob.
+Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpanan foto Supabase Storage.
 
 ## Halaman
 
@@ -25,8 +25,10 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | `AUTH_SECRET` | Teks acak panjang, mis. hasil `openssl rand -base64 32`. Rahasia, jangan di-commit |
 | `ADMIN_USER` | Nama login untuk `/admin` (terpisah dari akun pengguna) |
 | `ADMIN_PASS` | Sandi login untuk `/admin`. Pakai yang kuat |
-| `BLOB_READ_WRITE_TOKEN` | Terisi otomatis saat Vercel Blob disambungkan ke project |
-| `CRON_SECRET` | Teks acak panjang. Dipakai Vercel Cron untuk memanggil `/api/cron/blob` (pembersih file Blob yatim). Tanpa ini endpoint menolak semua permintaan |
+| `SUPABASE_URL` | Alamat project Supabase, mis. `https://xxxx.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Secret key (`sb_secret_...`) atau `service_role` dari Project Settings → API Keys. Rahasia, hanya di server |
+| `SUPABASE_BUCKET` | Nama bucket Public untuk foto (bawaan: `isengin`) |
+| `CRON_SECRET` | Teks acak panjang. Dipakai Vercel Cron untuk memanggil `/api/cron/blob` (pembersih file yatim). Tanpa ini endpoint menolak semua permintaan |
 | `MIDTRANS_SERVER_KEY` | Server key Midtrans (Settings > Access Keys). Tanpa ini tombol bayar menolak |
 | `MIDTRANS_IS_PRODUCTION` | `true` untuk produksi; selain itu memakai sandbox |
 | `PRO_PRICE_MONTH`, `PRO_PRICE_YEAR` | Harga Pro dalam rupiah (bawaan 29000 dan 290000) |
@@ -39,7 +41,7 @@ Setelah mengubah environment variable di Vercel, lakukan **Redeploy**.
 
 1. **Neon**: buat project, buka SQL Editor, jalankan `schema.sql`, lalu `schema-update.sql` (kolom `active` dan `views`, tabel `daily_stats` untuk statistik harian, dan `rate_limits` untuk batas percobaan login). Kalau database sudah jalan, cukup jalankan `schema-update.sql` lagi. Aman diulang, dan **harus dijalankan sebelum deploy versi ini**.
 2. **GitHub**: push proyek ini ke repo.
-3. **Vercel**: import repo. Di Storage, buat **Blob** dan sambungkan ke project. Isi semua environment variable di atas.
+3. **Vercel**: import repo. Di Supabase, buka Storage, buat bucket **Public** bernama `isengin`. Isi semua environment variable di atas.
 4. **Deploy**, lalu di Settings, Domains, tambahkan `isengin.site` dan ikuti petunjuk DNS.
 
 ## Jalankan lokal
@@ -78,7 +80,7 @@ schema.sql, schema-update.sql skema database
 ## Catatan
 
 - Di HP (lebar di bawah 860px), sidebar berubah jadi bilah atas dengan tombol hamburger yang membuka menu; tombol Escape atau pindah halaman menutupnya.
-- Halaman publik pengguna memakai tema pilihan penggunanya (kobalt, permen, hutan).
+- Halaman publik pengguna memakai tema pilihan penggunanya (kobalt, permen, hutan, neo untuk paket gratis).
 - Menonaktifkan pengguna di admin hanya menyembunyikan halaman publiknya; orangnya masih bisa login.
 - Nama yang dilarang (`api`, `dashboard`, `login`, `admin`, `go`) dan batas 30 link per pengguna diatur di kode.
 
@@ -89,7 +91,7 @@ schema.sql, schema-update.sql skema database
 - **Asal klik** dicatat per hari di tabel `click_sources` dan tampil di Ringkasan (30 hari terakhir). Asal ditebak dari parameter `?src=` (atau `utm_source`), lalu domain referer, lalu aplikasi pembuka. WhatsApp dan beberapa aplikasi tidak mengirim asal, jadi tercatat "Langsung / tidak diketahui" kecuali linknya diberi `?src=whatsapp`. Hanya nama yang dikenal (lihat `lib/source.js`) yang dicatat.
 - **Ikon sosial media** (Instagram, WhatsApp, TikTok, YouTube, Facebook, X, Telegram, email) diatur di Profil dan tampil di bawah bio. Kliknya langsung ke tujuan, tidak lewat `/go`, jadi tidak masuk hitungan klik.
 - **Warna kustom** (latar, teks, tombol, aksen) diatur di Tampilan dan menimpa warna tema. Memilih tema lain mengosongkan warna kustom. Dashboard memberi peringatan bila kontras teks terlalu rendah.
-- **Gambar di link**: tiap link bisa diberi gambar kecil persegi (dipotong dari tengah, diperkecil di peramban, diunggah ke Vercel Blob lewat `/api/upload` dengan `kind=thumb`). Gambar lama tidak otomatis dihapus dari Blob saat diganti atau dihapus. Server hanya menerima alamat gambar dari domain `*.blob.vercel-storage.com`.
+- **Gambar di link**: tiap link bisa diberi gambar kecil persegi (dipotong dari tengah, diperkecil di peramban, diunggah ke Supabase Storage lewat `/api/upload` dengan `kind=thumb`). Gambar lama tidak otomatis dihapus dari penyimpanan saat diganti atau dihapus. Server hanya menerima alamat gambar dari bucket Supabase milik situs ini (alamat lama `*.blob.vercel-storage.com` masih diterima).
 - **Sembunyikan link**: toggle di tiap link. Link tersembunyi tidak tampil di halaman publik, tidak dihitung kliknya, dan alamat `/go/<id>`-nya mengarah ke beranda. Statistik lama link itu tetap tersimpan.
 - Ikon sosial dan warna kustom disimpan di kolom `socials` dan `colors` (JSON teks) pada tabel `users`. Gambar link dan sembunyikan link memakai kolom `thumb` dan `hidden` pada tabel `links`. Jalankan `schema-update.sql` sebelum memakai fitur-fitur ini.
 - **Batas percobaan**: login 8 kali per akun dan 30 kali per alamat IP per 15 menit; daftar 5 kali per IP per jam; login admin 8 kali per IP per 15 menit.
@@ -102,9 +104,9 @@ schema.sql, schema-update.sql skema database
 - **Pengaturan** (`/dashboard/pengaturan`, API `/api/account`): email opsional, ganti sandi (sandi baru minimal 8 karakter, ada meter kekuatan), dan hapus akun (konfirmasi nama pengguna dan sandi). Kolom `email` pada tabel `users`.
 - Jalankan `schema-update.sql` lagi sebelum memakai semua fitur di atas.
 
-## Pembersihan Blob, pembatas, latar belakang, verifikasi
+## Pembersihan file, pembatas, latar belakang, verifikasi
 
-- **Pembersihan Blob**: saat Simpan, file yang tidak lagi dipakai (foto profil, gambar link, gambar latar, atau gambar milik link yang dihapus) langsung dihapus dari Vercel Blob. Hapus akun (oleh pengguna maupun admin) ikut menghapus semua filenya. Hanya file milik pengguna itu (nama diawali `avatars/<id>-`, `thumbs/<id>-`, atau `backgrounds/<id>-`) yang bisa dihapus, dan server menolak alamat Blob milik pengguna lain saat menyimpan. Unggahan yang tidak jadi disimpan disapu cron harian (`vercel.json`, 03.00 WIB, `/api/cron/blob`) setelah lewat 24 jam. Isi `CRON_SECRET` di Vercel lalu Redeploy.
+- **Pembersihan file**: saat Simpan, file yang tidak lagi dipakai (foto profil, gambar link, gambar latar, atau gambar milik link yang dihapus) langsung dihapus dari Supabase Storage. Hapus akun (oleh pengguna maupun admin) ikut menghapus semua filenya. Hanya file milik pengguna itu (nama diawali `avatars/<id>-`, `thumbs/<id>-`, atau `backgrounds/<id>-`) yang bisa dihapus, dan server menolak alamat file milik pengguna lain saat menyimpan. Unggahan yang tidak jadi disimpan disapu cron harian (`vercel.json`, 03.00 WIB, `/api/cron/blob`) setelah lewat 24 jam. Isi `CRON_SECRET` di Vercel lalu Redeploy.
 - **Pembatas antar link**: di Link, tombol “Tambah pembatas” membuat judul seksi tanpa alamat (kolom `kind = 'header'` pada tabel `links`). Pembatas bisa diseret, disembunyikan, dan dihapus seperti link, tapi tidak punya klik, harga, atau gambar. Dihitung dalam batas 30 item.
 - **Latar belakang**: di Tampilan, pilih warna tema, gradasi dua warna (3 arah), atau gambar (dipudarkan ke warna latar tema, 0–90%). Disimpan sebagai JSON di kolom `users.bg`; gambar diunggah dengan `kind=bg` ke folder `backgrounds/`. Gradasi ikut tampil di gambar preview saat link dibagikan; gambar latar tidak.
 - **Verified badge**: admin memberi atau mencabut centang di `/admin/pengguna` (kolom `users.verified`). Pengguna tidak bisa mengubahnya sendiri. Centang tampil di samping nama di halaman publik dan pratinjau dashboard.
@@ -145,7 +147,7 @@ schema.sql, schema-update.sql skema database
 
 Aturannya ada di satu tempat, `lib/pro.js` (daftar `PRO_THEMES`, `PRO_FONTS`, `PRO_BTNS`, `FREE_THUMBS`). Menambah atau mengubah pilihan Pro cukup di sana.
 
-- **Khusus Pro**: latar belakang gambar, warna kustom, tema Neo dan Neon, font Serif/Mono/Tebal, gaya tombol Kotak/Garis/Timbul. **Gratis**: gradasi dua warna, 8 tema lain, font Standar/Jakarta, gaya Bulat/Pil, dan 3 gambar link.
+- **Khusus Pro**: latar belakang gambar, warna kustom, tema Neon dan beberapa tema warna lain, font Serif/Mono/Tebal, gaya tombol Kotak/Garis/Timbul. **Gratis**: gradasi dua warna, tema Kobalt, Permen, Hutan, dan Neo, font Standar/Jakarta, gaya Bulat/Pil, dan 3 gambar link.
 - **Server menegakkan aturannya**: `PUT /api/me` menolak (403) pengguna gratis yang memilih atau mengubah ke pilihan Pro, dan `/api/upload` menolak unggahan latar gambar. Tombol terkunci di dashboard hanya tampilan.
 - **Tidak ada data yang dihapus**: pilihan Pro yang sudah tersimpan tetap ada saat Pro habis, hanya tidak tampil di halaman publik, pratinjau, dan gambar preview (WhatsApp dll). Memperpanjang Pro langsung memulihkannya. Untuk gambar link, paket gratis hanya menampilkan 3 gambar pertama yang tampil.
 - Pengguna gratis yang sebelumnya sudah memakai fitur ini diberi tahu di halaman Tampilan.

@@ -44,7 +44,7 @@ const FITUR = {
   },
   tema: {
     judul: 'Suka tema ini?',
-    teks: () => 'Tema selain Kobalt, Permen, dan Hutan khusus Pro. Kamu masih bisa mencobanya di pratinjau.',
+    teks: () => 'Tema selain Kobalt, Permen, Hutan, dan Neo khusus Pro. Kamu masih bisa mencobanya di pratinjau.',
     kedua: 'Lanjut mencoba',
     isi: () => (
       <div className="pm-sws" aria-hidden="true">
