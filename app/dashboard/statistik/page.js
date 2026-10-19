@@ -59,7 +59,7 @@ export default function Statistik() {
   return (<>
     <ProModal fitur={pm} onClose={() => setPm(null)} />
     <h1>Statistik</h1>
-    <p className="px-sub">Klik, kunjungan, peringkat link, dan asal klik untuk rentang waktu pilihanmu.</p>
+    <p className="px-sub">Klik, kunjungan, peringkat link, dan asal klik pada rentang waktu yang dipilih.</p>
     <div className="px-card px-chartcard">
       <div className="px-ch-head">
         <b>Rentang waktu</b>
@@ -74,7 +74,7 @@ export default function Statistik() {
           <button className="px-btn" onClick={apply} disabled={busy}>Terapkan</button>
         </div>
       )}
-      {!m.pro && <p className="px-ch-sum">Gratis: 7 dan 30 hari. Pro menambah 90 hari, semua data, dan pilih tanggal sendiri.</p>}
+      {!m.pro && <p className="px-ch-sum">Paket Gratis mencakup 7 dan 30 hari. Paket Pro membuka 90 hari, seluruh data, dan rentang tanggal kustom.</p>}
       {d && ['all', 'custom'].includes(req.range) && <p className="px-ch-sum">Statistik harian tercatat sejak {tgl(d.min_day)}. Rentang tanggal paling lama 1 tahun.</p>}
       {err && <p className="px-warn" role="alert">{err}</p>}
     </div>

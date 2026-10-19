@@ -657,3 +657,15 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 /* ringkasan: teks kecil di kartu angka, dan kartu berisi teks (bukan angka) */
 .px-stat small{display:block;margin-top:2px;color:var(--mut);font-weight:600;font-size:.78rem}
 .px-stat.px-txt b{font-size:1.15rem;line-height:1.3;font-family:inherit;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Ringkasan: 4 kartu angka utama + 1 kartu rincian */
+.px-stat small{display:block;font-size:.78rem;font-weight:600;color:var(--mut)}
+.px-det{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 24px;padding:20px;margin-bottom:22px}
+.px-it{min-width:0}
+.px-it span{display:block;font-size:.82rem;font-weight:700;color:var(--mut)}
+.px-it b{display:block;font-weight:800;font-size:1.05rem;overflow-wrap:anywhere}
+.px-it small{display:block;font-size:.78rem;font-weight:600;color:var(--mut)}
+@media(max-width:700px){.px-det{grid-template-columns:1fr 1fr;gap:16px}}
+@media(max-width:420px){.px-det{grid-template-columns:1fr}}
+.px-grid.px-g3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:700px){.px-grid.px-g3{grid-template-columns:1fr 1fr}}
