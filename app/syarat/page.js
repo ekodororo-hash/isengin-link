@@ -104,7 +104,7 @@ export default function Syarat() {
         ))}
       </div>
       <p className="legal-foot">
-        Lihat juga <a href="/privasi">Kebijakan Privasi</a> kami. · <a href="/fitur">Fitur</a> · <a href="/">Kembali ke beranda</a>
+        Lihat juga <a href="/privasi">Kebijakan Privasi</a> kami. · <a href="/fitur">Fitur</a> · <a href="/tentang-kami">Tentang Kami</a> · <a href="/">Kembali ke beranda</a>
       </p>
     </main>
   );

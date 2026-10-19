@@ -134,7 +134,7 @@ export default async function Fitur() {
         </div>
       </main>
       <footer className="ft-foot">
-        <Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link><br />© 2026 isengin.site
+        <Link href="/fitur">Fitur</Link> · <Link href="/tentang-kami">Tentang Kami</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link><br />© 2026 isengin.site
       </footer>
     </div>
   );
