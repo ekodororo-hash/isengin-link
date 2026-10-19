@@ -15,11 +15,13 @@ body:has(.lp-wrap){background:#ffd23f}
 .lp-btn:active,.lp-theme button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--navy)}
 .lp-btn:focus-visible,.lp-theme button:focus-visible,.lp-link:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
 .lp-err{flex:1 1 100%;margin:0;color:#a00018;font-weight:700}
-.un-row{flex:1 1 100%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.un-row label{flex:0 1 auto!important}
-.un-hint{display:inline-flex;align-items:center;gap:5px;font-size:.85rem;font-weight:800}
+.lp-field{min-width:0}
+.un-row{flex:1 1 100%;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap;min-width:0}
+.un-row label{flex:none!important;white-space:nowrap}
+.un-hint{flex:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-size:.82rem;font-weight:800}
 .un-hint.ok{color:#0a6b2d}
 .un-hint.bad{color:#a00018}
+@media(max-width:350px){.un-row label{font-size:.88rem}.un-hint{font-size:.75rem;gap:3px}}
 .lp-theme{display:flex;gap:8px;margin-top:30px;align-items:center;flex-wrap:wrap}
 .lp-theme button{border:3px solid var(--navy);background:#fff;color:var(--navy);font-family:Bungee,sans-serif;font-size:.8rem;border-radius:999px;box-shadow:3px 3px 0 var(--navy);padding:6px 14px;cursor:pointer}
 .lp-theme button[aria-pressed="true"]{background:var(--red);color:#fff}

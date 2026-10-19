@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 const MSG = {
   ok: ['ok', 'Tersedia'],
   taken: ['bad', 'Sudah dipakai'],
-  reserved: ['bad', 'Tidak boleh dipakai'],
+  reserved: ['bad', 'Tidak boleh'],
 };
 
 // Cek ketersediaan nama pengguna otomatis (jeda 400 ms setelah berhenti mengetik). Mengembalikan { cls, text } atau null.
