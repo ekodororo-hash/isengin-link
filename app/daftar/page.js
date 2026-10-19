@@ -58,6 +58,7 @@ export default function Daftar() {
 
   async function submit(e) {
     e.preventDefault();
+    if (!username.trim() || !password) { setErr('Isi nama atau sandi terlebih dahulu.'); return; }
     setErr(''); setBusy(true);
     try {
       const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'register', username, password, ref: refFull ? '' : ref }) });
@@ -109,18 +110,20 @@ export default function Daftar() {
           <form className="au-form" onSubmit={submit}>
             {refShown && refFull && <p className="au-note">Undangan dari <b>@{ref}</b> sudah penuh (maksimal {refMax} teman). Kamu tetap bisa daftar, tapi tanpa bonus undangan.</p>}
             {refShown && !refFull && <p className="au-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
-            <div className="un-row"><label htmlFor="u">Alamat halamanmu</label><UnHint cek={cek} /></div>
-            <div className="au-field">
-              <span>isengin.site/</span>
-              <input id="u" value={username} maxLength={20} autoComplete="off" spellCheck={false}
-                onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
+            <div className="au-ugroup">
+              {err && <p className="au-err" role="alert">{err}</p>}
+              <div className="un-row"><label htmlFor="u">Alamat halamanmu</label><UnHint cek={cek} /></div>
+              <div className="au-field">
+                <span>isengin.site/</span>
+                <input id="u" value={username} maxLength={20} autoComplete="off" spellCheck={false}
+                  onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
+              </div>
             </div>
             <label htmlFor="p">Sandi</label>
             <div className="au-field">
               <input id="p" type={show ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={password} autoComplete="new-password" onChange={(e) => setP(e.target.value)} />
               <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
             </div>
-            {err && <p className="au-err" role="alert">{err}</p>}
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Klaim nama'}</button>
           </form>
           <p className="au-legal"><Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>

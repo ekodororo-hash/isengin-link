@@ -21,6 +21,7 @@ export default function Masuk() {
 
   async function submit(e) {
     e.preventDefault();
+    if (!username.trim() || !password) { setErr('Isi nama atau sandi terlebih dahulu.'); return; }
     setErr(''); setBusy(true);
     try {
       const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'login', username, password }) });
@@ -87,17 +88,19 @@ export default function Masuk() {
             <Link href="/daftar">Daftar</Link>
           </nav>
           <form className="au-form" onSubmit={submit}>
-            <label htmlFor="u">Nama pengguna atau email</label>
-            <div className="au-field">
-              <input id="u" value={username} maxLength={120} autoComplete="username" spellCheck={false}
-                onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
+            <div className="au-ugroup">
+              {err && <p className="au-err" role="alert">{err}</p>}
+              <label htmlFor="u">Nama pengguna atau email</label>
+              <div className="au-field">
+                <input id="u" value={username} maxLength={120} autoComplete="username" spellCheck={false}
+                  onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_@.+-]/g, ''))} />
+              </div>
             </div>
             <label htmlFor="p">Sandi</label>
             <div className="au-field">
               <input id="p" type={show ? 'text' : 'password'} value={password} autoComplete="current-password" onChange={(e) => setP(e.target.value)} />
               <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
             </div>
-            {err && <p className="au-err" role="alert">{err}</p>}
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Masuk'}</button>
           </form>
           <p className="au-legal"><Link href="/fitur">Fitur</Link> · <Link href="/privasi">Kebijakan Privasi</Link> · <Link href="/syarat">Syarat Layanan</Link></p>
