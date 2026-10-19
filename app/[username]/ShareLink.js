@@ -35,7 +35,7 @@ function hostOf(u = '') {
 
 // Modal "Bagikan tautan" per-link, terbuka di atas halaman publik. Komponen ini hanya pernah
 // dirender di peramban (dipicu klik), jadi aman memakai window langsung tanpa cek SSR.
-export default function ShareLink({ title, url, path, pageUsername, pageName, onClose }) {
+export default function ShareLink({ title, url, path, pageUsername, pageName, isPage, onClose }) {
   const [copied, setCopied] = useState(false);
   const [repOpen, setRepOpen] = useState(false);
   const [reason, setReason] = useState('penipuan');
@@ -43,7 +43,8 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, on
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
   const [sent, setSent] = useState(false);
-  const abs = window.location.origin + path;
+  // Mode halaman: bagikan alamat yang sedang dibuka (di domain kustom pun benar), bukan tautan /go/ milik satu link.
+  const abs = isPage ? window.location.origin + window.location.pathname : window.location.origin + path;
 
   useEffect(() => {
     const onKey = (e) => e.key === 'Escape' && onClose();
@@ -69,17 +70,17 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, on
   }
 
   return (
-    <div className="shm-ov" role="dialog" aria-modal="true" aria-label="Bagikan tautan" onClick={onClose}>
+    <div className="shm-ov" role="dialog" aria-modal="true" aria-label={isPage ? 'Bagikan halaman' : 'Bagikan tautan'} onClick={onClose}>
       <div className="shm" onClick={(e) => e.stopPropagation()}>
         <div className="shm-top">
-          <h2>Bagikan tautan</h2>
+          <h2>{isPage ? 'Bagikan halaman' : 'Bagikan tautan'}</h2>
           <button type="button" className="shm-x" onClick={onClose} aria-label="Tutup"><NamedIcon name="close" size={16} /></button>
         </div>
 
         <div className="shm-prev">
-          <div className="shm-ic" aria-hidden="true"><LinkIcon url={url} size={24} /></div>
+          <div className="shm-ic" aria-hidden="true">{isPage ? <NamedIcon name="link" size={24} /> : <LinkIcon url={url} size={24} />}</div>
           <p className="shm-t">{title}</p>
-          <p className="shm-u">{hostOf(url)}</p>
+          <p className="shm-u">{isPage ? hostOf(abs) + window.location.pathname.replace(/^\/$/, '') : hostOf(url)}</p>
         </div>
 
         <div className="shm-row">
@@ -101,7 +102,7 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, on
           <a className="shm-reg" href={`/?ref=${pageUsername}`}>Daftar gratis</a>
         </div>
 
-        {sent ? (
+        {isPage ? null : sent ? (
           <p className="shm-ok" role="status">Terima kasih, laporanmu sudah kami terima.</p>
         ) : repOpen ? (
           <form className="shm-rf" onSubmit={sendReport}>

@@ -1,11 +1,13 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
+import ShareLink from './ShareLink';
 const REASONS = [['penipuan', 'Penipuan atau phishing'], ['dewasa', 'Konten dewasa'], ['kekerasan', 'Kekerasan atau kebencian'], ['tiruan', 'Menyamar sebagai orang lain'], ['spam', 'Spam'], ['lainnya', 'Lainnya']];
 
 // Titik tiga polos di kanan atas halaman publik. Diketuk membuka menu kecil "Laporkan halaman ini",
 // lalu formulir laporan tampil di kartu tengah layar. Pengunjung tidak perlu masuk akun.
-export default function Report({ username }) {
+export default function Report({ username, name }) {
   const [menu, setMenu] = useState(false);
+  const [share, setShare] = useState(false);
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('penipuan');
   const [detail, setDetail] = useState('');
@@ -55,10 +57,12 @@ export default function Report({ username }) {
         </button>
         {menu && (
           <div className="rep-menu" role="menu">
+            <button type="button" role="menuitem" onClick={() => { setMenu(false); setShare(true); }}>Bagikan halaman</button>
             <button type="button" role="menuitem" onClick={() => { setMenu(false); setOpen(true); }}>Laporkan halaman ini</button>
           </div>
         )}
       </div>
+      {share && <ShareLink isPage title={name || username} url="" path="" pageUsername={username} pageName={name} onClose={() => setShare(false)} />}
       {open && (
         <div className="rep-ov" onClick={close}>
           <div className="rep-card" role="dialog" aria-modal="true" aria-labelledby="rep-t" onClick={(e) => e.stopPropagation()}>

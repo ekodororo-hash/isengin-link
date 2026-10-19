@@ -44,6 +44,14 @@ export default function Profil() {
             })}
           </div>
         </section>
+        <section className="px-sec">
+          <h2>Alamat toko</h2>
+          <p className="px-hint">Untuk usaha lokal. Tampil sebagai kartu alamat di bawah link, lengkap dengan tombol “Buka peta” ke Google Maps. Kosongkan alamat untuk menyembunyikannya.</p>
+          <label htmlFor="sn">Nama toko <span className="px-hint-i">opsional</span></label>
+          <input id="sn" value={m.store_name || ''} maxLength={60} placeholder="mis. Warung Bu Tini" onChange={(e) => set('store_name', e.target.value)} />
+          <label htmlFor="sa">Alamat <span className="px-hint-i">{(m.store_addr || '').length}/200</span></label>
+          <textarea id="sa" rows={3} maxLength={200} placeholder="Jl. Jenderal Sudirman No. 10, Purbalingga, Jawa Tengah" value={m.store_addr || ''} onChange={(e) => set('store_addr', e.target.value)} />
+        </section>
         <SaveBar />
       </div>
       <PreviewDock low><Phone /></PreviewDock>

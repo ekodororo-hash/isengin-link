@@ -147,3 +147,9 @@ create table if not exists email_codes(
   expires_at timestamptz not null,
   created_at timestamptz default now());
 create unique index if not exists email_codes_uniq on email_codes (user_id, purpose);
+
+-- Jadwal tayang link (tampil mulai show_at, hilang sejak hide_at; kosong = tanpa batas) dan alamat usaha/toko di profil
+alter table links add column if not exists show_at timestamptz;
+alter table links add column if not exists hide_at timestamptz;
+alter table users add column if not exists store_name text default '';
+alter table users add column if not exists store_addr text default '';

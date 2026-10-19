@@ -56,6 +56,7 @@ export function Phone({ trial }) {
           </div>
         );
       })}
+      {(m.store_addr || '').trim() && <div className="l pv-store"><span>📍 {m.store_name ? m.store_name + ' · ' : ''}{m.store_addr}</span></div>}
     </div>
   );
 }

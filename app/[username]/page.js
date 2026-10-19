@@ -39,7 +39,9 @@ export default async function Profile({ params, searchParams }) {
   const u = await find(params.username);
   if (!u || u.active === false) notFound();
   // Kunjungan dihitung dari browser lewat <ViewBeacon /> (1 per pengunjung per hari), bukan di sini.
-  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true order by position,id`
+  // Jadwal tayang: link muncul mulai show_at dan hilang sejak hide_at (kosong = tanpa batas).
+  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true and (show_at is null or show_at <= now()) and (hide_at is null or hide_at > now()) order by position,id`
+    .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb from links where user_id=${u.id} and hidden is not true order by position,id`)
@@ -56,6 +58,8 @@ export default async function Profile({ params, searchParams }) {
   const more = (await sql`select bg,verified from users where id=${u.id}`.catch(() => []))[0] || {};
   const pro = (await sql`select (plan_until > now()) as pro from users where id=${u.id}`.catch(() => []))[0]?.pro === true;
   const look = (await sql`select btn_style,font_key from users where id=${u.id}`.catch(() => []))[0] || {};
+  const store = (await sql`select store_name, store_addr from users where id=${u.id}`.catch(() => []))[0] || {};
+  const storeAddr = String(store.store_addr || '').trim();
   const name = u.display_name || u.username;
   // Fitur Pro (tema Neon dan tema berwarna lain, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
   const eff = effectiveLook({ theme: u.theme, font_key: cleanFont(look.font_key), btn_style: cleanBtn(look.btn_style), colors: extra.colors, bg: more.bg }, pro);
@@ -70,7 +74,7 @@ export default async function Profile({ params, searchParams }) {
         <div className="pub-top">
         <ViewBeacon username={u.username} />
         {!pro && <HomePromo pageUsername={u.username} pageName={name} />}
-        <Report username={u.username} />
+        <Report username={u.username} name={name} />
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
         {u.bio && <p className="bio">{u.bio}</p>}
@@ -106,6 +110,16 @@ export default async function Profile({ params, searchParams }) {
             />
           );
         })}
+        {storeAddr && (
+          <div className="pstore">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></svg>
+            <div className="pstore-t">
+              {store.store_name && <b>{store.store_name}</b>}
+              <span>{storeAddr}</span>
+            </div>
+            <a className="pstore-go" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([store.store_name, storeAddr].filter(Boolean).join(' '))}`} target="_blank" rel="noopener noreferrer">Buka peta</a>
+          </div>
+        )}
         </div>
         <div className="pub-bottom">
         {/* titik tiga lapor (kanan atas) selalu tampil, termasuk di akun Pro */}

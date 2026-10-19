@@ -22,6 +22,9 @@ async function run(req, { params }, opt = {}) {
     const askOk = guard === 'adult' && new URL(req.url).searchParams.get('ok') !== '1';
     if (guard === 'pass' || askOk) return page(guardHtml({ kind: guard, action, back: `/${g.username}` }));
   }
+  // Link terjadwal yang belum tayang atau sudah berakhir tidak diteruskan dan tidak dihitung kliknya.
+  const off = (await sql`select u.username from links l join users u on u.id=l.user_id where l.id=${id} and ((l.show_at is not null and l.show_at > now()) or (l.hide_at is not null and l.hide_at <= now()))`.catch(() => []))[0];
+  if (off) return new Response(null, { status: 303, headers: { Location: `/${off.username}`, 'Cache-Control': 'no-store' } });
   let r;
   // Satu pengunjung dihitung sekali per link per hari (cookie sampai 00.00 WIB); klik berikutnya tetap diteruskan.
   const ck = `lc_${id}`;

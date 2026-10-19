@@ -19,10 +19,13 @@ const Img = () => (<svg {...S}><rect x="3.5" y="5" width="17" height="14" rx="2.
 const Badge = () => (<svg className="px-ok" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="#2fb344" stroke="#1f2255" strokeWidth="1.6" /><path d="M4.6 8.3l2.3 2.3 4.5-4.7" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>);
 const Play = () => (<svg {...S}><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M10 9.5v5l4.5-2.5z" /></svg>);
 const Qr = () => (<svg {...S}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></svg>);
+// Waktu sekarang di WIB dalam format yang sama dengan isi kolom jadwal (YYYY-MM-DDTHH:mm), supaya bisa dibandingkan sebagai teks.
+const nowWib = () => new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 16);
+const schedState = (l) => { const n = nowWib(); return l.show_at && l.show_at > n ? 'Terjadwal' : l.hide_at && l.hide_at <= n ? 'Berakhir' : ''; };
 const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" /></svg>);
 
 export default function LinkPage() {
-  const { m, setL, addLink, addHeader, addEmbed, addQris, delLink, move, reorder, upThumb, upQris } = useDash();
+  const { m, set, setL, addLink, addHeader, addEmbed, addQris, delLink, move, reorder, upThumb, upQris } = useDash();
   const n = m.links.length;
   const thumbs = m.links.filter((l) => l.kind !== 'header' && l.thumb).length;
   const feats = m.links.filter((l) => l.kind !== 'header' && l.featured).length; // maksimal 2 link sorotan
@@ -245,7 +248,7 @@ export default function LinkPage() {
                 <span className="px-lk-no">{i + 1}</span>
                 {l.thumb ? <img className="px-th" src={l.thumb} alt="" /> : <span className="px-th e" aria-hidden="true"><LinkIcon url={l.url} size={20} /></span>}
                 <div className="px-lk-i">
-                  <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}{l.featured && <span className="px-tag sor">Sorotan</span>}{l.guard && <span className="px-tag kunci">{l.guard === 'pass' ? 'Terkunci' : '18+'}</span>}</strong>
+                  <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}{l.featured && <span className="px-tag sor">Sorotan</span>}{l.guard && <span className="px-tag kunci">{l.guard === 'pass' ? 'Terkunci' : '18+'}</span>}{schedState(l) && <span className="px-tag jdw">{schedState(l)}</span>}</strong>
                   <span>{price ? <b className="px-pr">{price}</b> : null}{price ? ' · ' : ''}{l.url || 'Belum ada alamat'}</span>
                 </div>
                 <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
@@ -297,6 +300,19 @@ export default function LinkPage() {
                       <p className="px-hint">Alamat link tidak tampil di halaman publik. Pengunjung harus memasukkan sandi dulu. Bagikan sandinya sendiri ke orang yang boleh membuka.</p>
                     </>)}
                     {l.guard === 'adult' && <p className="px-hint">Pengunjung melihat peringatan konten dewasa dulu dan harus memilih “Saya 18+” untuk lanjut.</p>}
+                  </fieldset>
+                  <fieldset className="px-cat px-sch">
+                    <legend>Jadwal tayang <span className="px-hint-i">opsional, waktu WIB</span></legend>
+                    <div className="px-lk-f">
+                      <label className="px-sch-l">Tampil mulai
+                        <input type="datetime-local" aria-label={`Tampil mulai link ${i + 1}`} value={l.show_at || ''} onChange={(e) => setL(i, 'show_at', e.target.value)} />
+                      </label>
+                      <label className="px-sch-l">Hilang pada
+                        <input type="datetime-local" aria-label={`Hilang pada link ${i + 1}`} value={l.hide_at || ''} min={l.show_at || undefined} onChange={(e) => setL(i, 'hide_at', e.target.value)} />
+                      </label>
+                    </div>
+                    {(l.show_at || l.hide_at) && <button type="button" className="px-btn g sm" onClick={() => set('links', m.links.map((x, j) => (j === i ? { ...x, show_at: '', hide_at: '' } : x)))}>Hapus jadwal</button>}
+                    <p className="px-hint">Cocok untuk promo atau flash sale: link muncul dan hilang otomatis dari halaman publik. Kosongkan untuk tampil terus.</p>
                   </fieldset>
                   <div className="px-lk-t">
                     {l.thumb && <button className="px-btn g sm" onClick={() => setL(i, 'thumb', '')}>Hapus gambar</button>}

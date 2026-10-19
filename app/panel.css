@@ -705,3 +705,8 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-bar b{font-weight:800}
 .px-ch-head .px-hint-i{display:block;line-height:1.4}
 }
+
+/* Jadwal tayang link */
+.px-tag.jdw{background:#ffd23f;color:var(--navy)}
+.px-sch-l{display:grid;gap:4px;font-weight:700;font-size:.8rem;flex:1;min-width:0}
+.px-sch-l input{width:100%}
