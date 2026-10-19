@@ -135,13 +135,12 @@ schema.sql, schema-update.sql skema database
 
 `/admin` (ringkasan), `/admin/pengguna` (cari, saring, lalu Kelola per akun: Pro, centang, status, hapus), `/admin/centang` (pengajuan centang dan daftar akun bercentang), `/admin/referral` (pengundang teratas dan undangan terbaru, API `/api/admin/referral`). Jumlah pengajuan yang menunggu tampil di menu.
 
-## Keamanan dan moderasi, impor Linktree, langkah awal
+## Keamanan dan moderasi, langkah awal
 
 **Jalankan `schema-update.sql` lagi sebelum deploy** (menambah tabel `reports`).
 
-- **Pemeriksaan alamat link** (`lib/safe.js`, dipakai `PUT /api/me` dan impor): hanya `http`, `https`, `mailto`; menolak alamat dengan nama pengguna/sandi di dalamnya (`https://bank.com@situs-lain.com`), alamat IP langsung, dan domain di env `BLOCKED_DOMAINS` (pisahkan dengan koma). Bila env `SAFE_BROWSING_KEY` (kunci API Google Safe Browsing) diisi, link yang baru ditambahkan ikut dicek ke Google; kalau layanannya gagal, link tetap diterima. `/go/<id>` juga tidak meneruskan alamat selain http/https/mailto.
+- **Pemeriksaan alamat link** (`lib/safe.js`, dipakai `PUT /api/me`): hanya `http`, `https`, `mailto`; menolak alamat dengan nama pengguna/sandi di dalamnya (`https://bank.com@situs-lain.com`), alamat IP langsung, dan domain di env `BLOCKED_DOMAINS` (pisahkan dengan koma). Bila env `SAFE_BROWSING_KEY` (kunci API Google Safe Browsing) diisi, link yang baru ditambahkan ikut dicek ke Google; kalau layanannya gagal, link tetap diterima. `/go/<id>` juga tidak meneruskan alamat selain http/https/mailto.
 - **Laporkan halaman**: tombol di kaki halaman publik (`app/[username]/Report.js`, API `POST /api/report`, tanpa login). Maks. 6 laporan per IP per jam dan 1 laporan per IP per halaman per hari. Admin menanganinya di `/admin/laporan` (API `/api/admin/laporan`): Nonaktifkan halaman atau Abaikan laporan. Jumlah halaman yang dilaporkan tampil di menu admin.
-- **Impor dari Linktree** (Link, bagian atas; API `POST /api/import`): server mengambil `https://linktr.ee/<nama>` (nama divalidasi ketat), membaca data JSON halamannya (`lib/linktree.js`), dan mengembalikan daftar link. Link ditambahkan ke daftar di layar dan baru tersimpan setelah Simpan. Maks. 6 impor per akun per jam. **Bergantung pada bentuk halaman Linktree; kalau Linktree mengubahnya, perbaiki `lib/linktree.js`.**
 - **Langkah awal** (Ringkasan dashboard, `app/dashboard/Langkah.js`): foto, bio, link pertama, tampilan, dan kunjungan pertama. Status dihitung dari data akun, tanpa kolom baru, dan kartunya hilang sendiri bila semua selesai.
 
 ## Fitur tampilan khusus Pro

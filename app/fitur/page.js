@@ -21,7 +21,6 @@ const FEATURES = [
   { h: 'Tampilan sesukamu', p: 'Pilih tema, font, dan gaya tombol. Di Pro: warna kustom dan gambar latar.', i: <><circle cx="12" cy="12" r="9" /><circle cx="8.5" cy="10" r="1" /><circle cx="12" cy="7.5" r="1" /><circle cx="15.5" cy="10" r="1" /><path d="M12 21a2.5 2.5 0 0 1 0-5h2a2 2 0 0 0 2-2" /></> },
   { h: 'Statistik klik', p: 'Lihat kunjungan dan klik tiap link. Riwayat harian 7 hari, 30 hari di Pro.', i: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> },
   { h: 'Kode QR', p: 'Unduh kode QR halamanmu untuk kartu nama, brosur, atau etalase tokomu.', i: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></> },
-  { h: 'Pindah dari tempat lain', p: 'Sudah punya halaman link di layanan lain? Impor, lalu rapikan di sini.', i: <path d="M12 3v12M7 10l5 5 5-5M5 21h14" /> },
   { h: 'Lencana verifikasi', p: 'Akun resmi bisa mengajukan lencana verifikasi di samping nama. Pengajuan ditinjau manual.', i: <path d="M12 3l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 21l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1zM8.5 12l2.5 2.5 4.5-5" /> },
   { h: 'Domain sendiri', pro: true, p: 'Pakai domain sendiri seperti link.tokokamu.com, tanpa branding isengin.', i: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></> },
 ];

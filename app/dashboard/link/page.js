@@ -2,7 +2,6 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useDash } from '../DashContext';
 import { Phone, PreviewDock, SaveBar } from '../parts';
-import Importer from '../Importer';
 import ProModal from '../ProModal';
 import { FREE_THUMBS } from '@/lib/pro';
 import { LinkIcon } from '../../icons';
@@ -157,7 +156,6 @@ export default function LinkPage() {
     <p className="px-sub">Atur urutan dengan menyeret ikon titik-titik atau tombol panah, sama seperti di halaman publikmu. Gunakan pembatas untuk mengelompokkan link. Klik Simpan setelah selesai.</p>
     <div className="px-two">
     <div className="px-lnkcol">
-    <Importer />
     {!m.pro && thumbs >= 2 && <p className="px-hint px-quota" role="status"><span>Gambar {Math.min(thumbs, FREE_THUMBS)}/{FREE_THUMBS}</span><button type="button" className="px-lnk" onClick={() => setPm('gambar')}>Pro: tanpa batas</button></p>}
     <div className="px-card">
       {n === 0 && <p className="px-empty">Belum ada link. Klik “Tambah link” untuk mulai.</p>}
