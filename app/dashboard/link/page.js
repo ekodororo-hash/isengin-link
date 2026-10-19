@@ -5,6 +5,7 @@ import { Phone, PreviewDock, SaveBar } from '../parts';
 import ProModal from '../ProModal';
 import { FREE_THUMBS } from '@/lib/pro';
 import { LinkIcon } from '../../icons';
+import { fmtLeft } from '../../countdown';
 import { LABELS, fmtPrice, labelText } from '@/lib/catalog';
 import { embedOf, EMBED_NAMES } from '@/lib/embed';
 
@@ -21,15 +22,6 @@ const Play = () => (<svg {...S}><rect x="3" y="5" width="18" height="14" rx="3" 
 const Qr = () => (<svg {...S}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></svg>);
 // Kolom jadwal berisi waktu WIB (YYYY-MM-DDTHH:mm); ubah ke epoch ms.
 const wibMs = (s) => new Date(s + ':00+07:00').getTime();
-// "2h 3j 15m" / "3j 15m 09d" / "42d": hitung mundur singkat, detik hanya tampil saat kurang dari sehari.
-const fmtLeft = (ms) => {
-  const t = Math.max(0, Math.floor(ms / 1000));
-  const d = Math.floor(t / 86400), h = Math.floor((t % 86400) / 3600), mnt = Math.floor((t % 3600) / 60), s = t % 60;
-  if (d > 0) return `${d}h ${h}j ${mnt}m`;
-  if (h > 0) return `${h}j ${mnt}m ${String(s).padStart(2, '0')}d`;
-  if (mnt > 0) return `${mnt}m ${String(s).padStart(2, '0')}d`;
-  return `${s}d`;
-};
 // Label jadwal dengan hitung mundur berjalan: "Tayang dalam ..." sebelum tayang, "Berakhir dalam ..." selagi tayang, "Berakhir" sesudahnya.
 function SchedTag({ l }) {
   const [now, setNow] = useState(() => Date.now());

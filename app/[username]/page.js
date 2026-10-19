@@ -11,6 +11,7 @@ import Verified from '../Verified';
 import Report from './Report';
 import { cleanGuard } from '@/lib/linkguard';
 import LinkRow from './LinkRow';
+import SoonRow from './SoonRow';
 import EmbedBox from './EmbedBox';
 import QrisButton from './QrisButton';
 import { embedOf } from '@/lib/embed';
@@ -40,7 +41,8 @@ export default async function Profile({ params, searchParams }) {
   if (!u || u.active === false) notFound();
   // Kunjungan dihitung dari browser lewat <ViewBeacon /> (1 per pengunjung per hari), bukan di sini.
   // Jadwal tayang: link muncul mulai show_at dan hilang sejak hide_at (kosong = tanpa batas).
-  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true and (show_at is null or show_at <= now()) and (hide_at is null or hide_at > now()) order by position,id`
+  // Link biasa yang belum tayang ditampilkan sebagai baris hitung mundur (tanpa URL, tidak bisa diklik).
+  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard,(show_at > now()) as soon,(extract(epoch from show_at)*1000)::bigint as show_ms from links where user_id=${u.id} and hidden is not true and (show_at is null or show_at <= now() or coalesce(kind,'link') not in ('header','embed','qris')) and (hide_at is null or hide_at > now()) order by position,id`
     .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`)
@@ -84,6 +86,7 @@ export default async function Profile({ params, searchParams }) {
           </div>
         )}
         {links.map((l, i) => {
+          if (l.soon === true && Number(l.show_ms) > 0) return <SoonRow key={l.id} title={l.title} showMs={Number(l.show_ms)} />;
           if (l.kind === 'header') return <h2 key={l.id} className="phead"><span>{l.title}</span></h2>;
           if (l.kind === 'embed') { const e = embedOf(l.url); return e ? <EmbedBox key={l.id} {...e} title={l.title} /> : null; }
           if (l.kind === 'qris') return l.url ? <QrisButton key={l.id} title={l.title || 'QRIS'} img={l.url} pageUsername={u.username} pageName={name} /> : null;
