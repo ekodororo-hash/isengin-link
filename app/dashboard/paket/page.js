@@ -85,7 +85,7 @@ export default function Paket() {
           <span className={'pk-badge' + (d.pro ? '' : ' free')}>{d.pro ? 'Pro aktif' : 'Gratis'}</span>
           <span className="pk-until">{d.pro ? `Berakhir ${tgl(d.until)} · sisa ${sisa} hari` : 'Upgrade atau klaim hadiah referral untuk membuka fitur Pro.'}</span>
         </div>
-        {(rf.paidDays > 0 || rf.refDays > 0) && (
+        {d.pro && (rf.paidDays > 0 || rf.refDays > 0) && (
           <ul className="pk-src">
             {rf.paidDays > 0 && <li><i className="pay" aria-hidden="true" />Pembelian paket<small>+{rf.paidDays} hari</small></li>}
             {rf.refDays > 0 && <li><i className="ref" aria-hidden="true" />Hadiah referral dan bonus undangan<small>+{rf.refDays} hari</small></li>}
