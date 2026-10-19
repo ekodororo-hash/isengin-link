@@ -15,7 +15,7 @@ export default function Masuk() {
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
   useEffect(() => {
     if (!err) return;
-    const id = setTimeout(() => setErr(''), 3000);
+    const id = setTimeout(() => setErr(''), 4500);
     return () => clearTimeout(id);
   }, [err]);
 

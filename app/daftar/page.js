@@ -25,7 +25,7 @@ export default function Daftar() {
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
   useEffect(() => {
     if (!err) return;
-    const id = setTimeout(() => setErr(''), 3000);
+    const id = setTimeout(() => setErr(''), 4500);
     return () => clearTimeout(id);
   }, [err]);
 
@@ -101,7 +101,7 @@ export default function Daftar() {
         <div className="au-box">
           <p className="au-kick">Selamat datang di isengin.site</p>
           <h1 className="au-h1">Buat halamanmu</h1>
-          <p className="au-sub">Pilih alamat dan mulai kumpulkan semua link di satu tempat.</p>
+          <p className="au-sub">Kumpulkan semua link kamu di satu tempat.</p>
           <nav className="au-tabs" aria-label="Masuk atau daftar">
             <Link href="/masuk">Masuk</Link>
             <Link href="/daftar" aria-current="page">Daftar</Link>
