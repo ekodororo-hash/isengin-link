@@ -78,7 +78,7 @@ export default function Lupa() {
           <h1 className="au-h1">Lupa sandi</h1>
           {step === 1 ? (
             <>
-              <p className="au-sub">Masukkan email atau nama pengguna akunmu. Kami kirim kode 6 angka ke email terverifikasi di akun itu untuk membuat sandi baru.</p>
+              <p className="au-sub">Masukkan email atau nama penggunamu. Kode 6 angka dikirim ke email terverifikasi akunmu.</p>
               <form className="au-form" onSubmit={sendCode}>
                 <div className="au-ugroup">
                   {err && <p className="au-err" role="alert">{err}</p>}
@@ -90,7 +90,7 @@ export default function Lupa() {
                 </div>
                 <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Mengirim...' : 'Kirim kode'}</button>
               </form>
-              <p className="au-note" style={{ marginTop: 14 }}>Lupa email mana yang kamu pakai? Isi nama penggunamu saja. Kode hanya dikirim ke email yang sudah diverifikasi di Pengaturan. Kalau akunmu belum punya email terverifikasi, <Link href="/tentang-kami" style={{ color: 'inherit' }}>hubungi admin</Link>.</p>
+              <p className="au-note" style={{ marginTop: 14 }}>Belum punya email terverifikasi? <Link href="/tentang-kami" style={{ color: 'inherit' }}>Hubungi admin</Link>.</p>
             </>
           ) : (
             <>
@@ -116,10 +116,11 @@ export default function Lupa() {
                 <p className="au-note">Minimal 8 karakter.</p>
                 <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Ganti sandi dan masuk'}</button>
               </form>
-              <p className="au-note" style={{ marginTop: 14, display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <p className="au-note" style={{ marginTop: 20, marginBottom: 0, display: 'flex', gap: 10, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', textAlign: 'center' }}>
                 <button type="button" style={{ ...lnk, opacity: wait > 0 ? 0.5 : 1, cursor: wait > 0 ? 'default' : 'pointer' }} disabled={wait > 0 || busy} onClick={sendCode}>
                   {wait > 0 ? `Kirim ulang kode (${wait} detik)` : 'Kirim ulang kode'}
                 </button>
+                <span aria-hidden="true">·</span>
                 <button type="button" style={lnk} onClick={() => { setStep(1); setErr(''); }}>Ganti akun</button>
               </p>
             </>
