@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Loader from '../../Loader';
 import { usePre } from '../../prefetch';
+import OkMark from '../../OkMark';
 // Ikon status teman: menunggu (titik tiga), siap diklaim (kado), sudah diklaim (centang).
 const IC = {
   w: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden="true" focusable="false"><circle cx="6" cy="12" r="1.2" /><circle cx="12" cy="12" r="1.2" /><circle cx="18" cy="12" r="1.2" /></svg>,
@@ -86,7 +87,7 @@ export default function Undang() {
             const k = f.rewarded ? 'd' : f.ready ? 'r' : 'w';
             return (
               <li key={f.username} className={k === 'w' ? 'no' : 'ok'}>
-                <span className={'fi ' + k} aria-hidden="true">{IC[k]}</span>@{f.username} <span className="px-hint-i">{f.rewarded ? 'sudah diklaim' : f.ready ? 'siap diklaim' : 'menunggu'}</span>
+                {k === 'd' ? <OkMark size={24} /> : <span className={'fi ' + k} aria-hidden="true">{IC[k]}</span>}@{f.username} <span className="px-hint-i">{f.rewarded ? 'sudah diklaim' : f.ready ? 'siap diklaim' : 'menunggu'}</span>
               </li>
             );
           })}</ul>

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import Verified from '../Verified';
+import OkMark from '../OkMark';
 import Loader from '../Loader';
 import { usePre } from '../prefetch';
 const tgl = (d) => (d ? new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '');
@@ -34,7 +34,7 @@ export default function VerifyBox() {
     <section className="px-sec">
       <h2>Verifikasi akun</h2>
       {d.verified ? (
-        <p className="px-hint"><Verified size={16} /> {d.verifiedAt ? `Terverifikasi sejak ${tgl(d.verifiedAt)}. ` : ''}Tanda terverifikasi tampil di samping namamu di halaman publik.</p>
+        <p className="px-hint"><OkMark style={{ marginRight: 5 }} />{d.verifiedAt ? `Terverifikasi sejak ${tgl(d.verifiedAt)}. ` : ''}Tanda terverifikasi tampil di samping namamu di halaman publik.</p>
       ) : req?.status === 'pending' ? (<>
         <p className="px-hint" role="status">Pengajuan verifikasimu terkirim pada {tgl(req.created_at)} dan sedang ditinjau.</p>
         <div className="px-actions"><button className="px-btn g" onClick={cancel} disabled={busy}>Batalkan pengajuan</button></div>

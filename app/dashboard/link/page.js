@@ -1,5 +1,5 @@
 'use client';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useDash } from '../DashContext';
 import { Phone, PreviewDock, SaveBar } from '../parts';
 import ProModal from '../ProModal';
@@ -19,9 +19,35 @@ const Img = () => (<svg {...S}><rect x="3.5" y="5" width="17" height="14" rx="2.
 const Badge = () => (<svg className="px-ok" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="#2fb344" stroke="#1f2255" strokeWidth="1.6" /><path d="M4.6 8.3l2.3 2.3 4.5-4.7" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>);
 const Play = () => (<svg {...S}><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M10 9.5v5l4.5-2.5z" /></svg>);
 const Qr = () => (<svg {...S}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></svg>);
-// Waktu sekarang di WIB dalam format yang sama dengan isi kolom jadwal (YYYY-MM-DDTHH:mm), supaya bisa dibandingkan sebagai teks.
-const nowWib = () => new Date(Date.now() + 7 * 3600e3).toISOString().slice(0, 16);
-const schedState = (l) => { const n = nowWib(); return l.show_at && l.show_at > n ? 'Terjadwal' : l.hide_at && l.hide_at <= n ? 'Berakhir' : ''; };
+// Kolom jadwal berisi waktu WIB (YYYY-MM-DDTHH:mm); ubah ke epoch ms.
+const wibMs = (s) => new Date(s + ':00+07:00').getTime();
+// "2h 3j 15m" / "3j 15m 09d" / "42d": hitung mundur singkat, detik hanya tampil saat kurang dari sehari.
+const fmtLeft = (ms) => {
+  const t = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(t / 86400), h = Math.floor((t % 86400) / 3600), mnt = Math.floor((t % 3600) / 60), s = t % 60;
+  if (d > 0) return `${d}h ${h}j ${mnt}m`;
+  if (h > 0) return `${h}j ${mnt}m ${String(s).padStart(2, '0')}d`;
+  if (mnt > 0) return `${mnt}m ${String(s).padStart(2, '0')}d`;
+  return `${s}d`;
+};
+// Label jadwal dengan hitung mundur berjalan: "Tayang dalam ..." sebelum tayang, "Berakhir dalam ..." selagi tayang, "Berakhir" sesudahnya.
+function SchedTag({ l }) {
+  const [now, setNow] = useState(() => Date.now());
+  const has = !!(l.show_at || l.hide_at);
+  useEffect(() => {
+    if (!has) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [has]);
+  const show = l.show_at ? wibMs(l.show_at) : null;
+  const hide = l.hide_at ? wibMs(l.hide_at) : null;
+  let t = '';
+  if (show && show > now) t = `Tayang dalam ${fmtLeft(show - now)}`;
+  else if (hide && hide <= now) t = 'Berakhir';
+  else if (hide) t = `Berakhir dalam ${fmtLeft(hide - now)}`;
+  if (!t || Number.isNaN(show) || Number.isNaN(hide)) return null;
+  return <span className="px-tag jdw" style={{ fontVariantNumeric: 'tabular-nums' }}>{t}</span>;
+}
 const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" /></svg>);
 
 export default function LinkPage() {
@@ -248,7 +274,7 @@ export default function LinkPage() {
                 <span className="px-lk-no">{i + 1}</span>
                 {l.thumb ? <img className="px-th" src={l.thumb} alt="" /> : <span className="px-th e" aria-hidden="true"><LinkIcon url={l.url} size={20} /></span>}
                 <div className="px-lk-i">
-                  <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}{l.featured && <span className="px-tag sor">Sorotan</span>}{l.guard && <span className="px-tag kunci">{l.guard === 'pass' ? 'Terkunci' : '18+'}</span>}{schedState(l) && <span className="px-tag jdw">{schedState(l)}</span>}</strong>
+                  <strong>{l.title || <em>Tanpa judul</em>}{l.label && <span className={'px-tag ' + l.label}>{labelText(l.label)}</span>}{l.featured && <span className="px-tag sor">Sorotan</span>}{l.guard && <span className="px-tag kunci">{l.guard === 'pass' ? 'Terkunci' : '18+'}</span>}<SchedTag l={l} /></strong>
                   <span>{price ? <b className="px-pr">{price}</b> : null}{price ? ' · ' : ''}{l.url || 'Belum ada alamat'}</span>
                 </div>
                 <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>

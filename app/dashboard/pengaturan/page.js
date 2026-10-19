@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import VerifyBox from '../VerifyBox';
 import Loader from '../../Loader';
+import OkMark from '../../OkMark';
 import { usePre } from '../../prefetch';
 
 // Kekuatan sandi: 0 sampai 4. Panjang paling berpengaruh, lalu ragam jenis karakter.
@@ -126,7 +127,7 @@ export default function Pengaturan() {
           <p className="px-hint">Alamat halamanmu: isengin.site/{acc.username}. Tidak bisa diubah.</p>
           <label htmlFor="e">Email <span className="px-hint-i">opsional, tapi perlu kalau lupa sandi</span></label>
           <input id="e" type="email" autoComplete="email" placeholder="nama@email.com" value={email} maxLength={120} readOnly={locked} onChange={(e) => setEmail(e.target.value)} />
-          {acc.email && <p className="px-hint">{acc.verified ? <><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ color: 'var(--navy)', verticalAlign: '-3px', marginRight: 5 }}><circle cx="10" cy="10" r="8.4" fill="#b8f06a" /><path d="M6.2 10.4l2.5 2.5 5.1-5.3" /></svg><b>Terverifikasi.</b> Bisa dipakai untuk masuk dan reset sandi.</> : <><b>Belum diverifikasi.</b> Kirim kode supaya email ini bisa dipakai untuk reset sandi.</>}</p>}
+          {acc.email && <p className="px-hint">{acc.verified ? <><OkMark style={{ marginRight: 5 }} /><b>Terverifikasi.</b> Bisa dipakai untuk masuk dan reset sandi.</> : <><b>Belum diverifikasi.</b> Kirim kode supaya email ini bisa dipakai untuk reset sandi.</>}</p>}
           {editing && acc.verified && <p className="px-hint">Email lama tetap dipakai sampai email baru terverifikasi.</p>}
           {!acc.email && <p className="px-hint">Kami kirim kode 6 angka untuk memastikan email ini milikmu. Setelah itu kamu bisa masuk dengan email atau nama pengguna, dan reset sandi sendiri kalau lupa.</p>}
           {locked ? (
