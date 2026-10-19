@@ -47,6 +47,7 @@ export default function Pengaturan() {
   const [email, setEmail] = useState(p?.ok ? p.data?.email || '' : '');
   const [em, setEm] = useState(null);
   const [code, setCode] = useState('');
+  const [editing, setEditing] = useState(false);
   const [cur, setCur] = useState(''), [nw, setNw] = useState(''), [again, setAgain] = useState('');
   const [show, setShow] = useState(false), [dshow, setDshow] = useState(false);
   const [pm, setPm] = useState(null);
@@ -58,6 +59,8 @@ export default function Pengaturan() {
   const cleaned = email.trim().toLowerCase();
   // Tidak ada yang perlu dikirim: email kosong tanpa email tersimpan, atau sama dengan email yang sudah terverifikasi.
   const unchanged = cleaned === (acc?.email || '') && (acc?.verified || !cleaned);
+  // Email yang sudah terverifikasi terkunci (hanya baca) sampai pengguna menekan Ubah email.
+  const locked = !!acc?.email && !!acc?.verified && !editing;
 
   useEffect(() => {
     if (p) return;
@@ -70,20 +73,28 @@ export default function Pengaturan() {
     const { ok, d } = await call('PUT', { email });
     if (!ok) setEm({ t: d.error || 'Gagal mengirim kode.', err: true });
     else if (d.pending) { setAcc((a) => ({ ...a, pending: d.pending })); setCode(''); setEm({ t: `Kode dikirim ke ${d.pending}.` }); }
-    else { setEmail(d.email || ''); setAcc((a) => ({ ...a, email: d.email || '', verified: !!d.verified, pending: '' })); setEm({ t: d.email ? 'Email sudah terverifikasi.' : 'Email dihapus.' }); }
+    else { setEmail(d.email || ''); setEditing(false); setAcc((a) => ({ ...a, email: d.email || '', verified: !!d.verified, pending: '' })); setEm({ t: d.email ? 'Email sudah terverifikasi.' : 'Email dihapus.' }); }
     setBusy('');
   }
   // Langkah 2: cocokkan kode 6 angka.
   async function confirmCode(e) {
     e.preventDefault(); setBusy('code'); setEm(null);
     const { ok, d } = await call('PUT', { mode: 'verify', code });
-    if (ok) { setEmail(d.email); setAcc((a) => ({ ...a, email: d.email, verified: true, pending: '' })); setCode(''); setEm({ t: 'Email terverifikasi.' }); }
+    if (ok) { setEmail(d.email); setEditing(false); setAcc((a) => ({ ...a, email: d.email, verified: true, pending: '' })); setCode(''); setEm({ t: 'Email terverifikasi.' }); }
     else setEm({ t: d.error || 'Gagal memverifikasi.', err: true });
     setBusy('');
   }
+  // Batalkan kode yang menunggu. Kalau akun sudah punya email terverifikasi, kembali ke tampilan terkunci.
   async function cancelCode() {
     await call('PUT', { mode: 'cancel' });
     setAcc((a) => ({ ...a, pending: '' })); setCode(''); setEm(null);
+    if (acc.verified) { setEditing(false); setEmail(acc.email || ''); }
+  }
+  // Batal mengubah email.
+  async function stopEdit() {
+    if (acc.pending) await call('PUT', { mode: 'cancel' });
+    setAcc((a) => ({ ...a, pending: '' })); setCode(''); setEm(null);
+    setEditing(false); setEmail(acc.email || '');
   }
   async function savePass(e) {
     e.preventDefault(); setPm(null);
@@ -114,12 +125,19 @@ export default function Pengaturan() {
           <input id="u" value={acc.username} readOnly />
           <p className="px-hint">Alamat halamanmu: isengin.site/{acc.username}. Tidak bisa diubah.</p>
           <label htmlFor="e">Email <span className="px-hint-i">opsional, tapi perlu kalau lupa sandi</span></label>
-          <input id="e" type="email" autoComplete="email" placeholder="nama@email.com" value={email} maxLength={120} onChange={(e) => setEmail(e.target.value)} />
+          <input id="e" type="email" autoComplete="email" placeholder="nama@email.com" value={email} maxLength={120} readOnly={locked} onChange={(e) => setEmail(e.target.value)} />
           {acc.email && <p className="px-hint">{acc.verified ? <><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ color: 'var(--navy)', verticalAlign: '-3px', marginRight: 5 }}><circle cx="10" cy="10" r="8.4" fill="#b8f06a" /><path d="M6.2 10.4l2.5 2.5 5.1-5.3" /></svg><b>Terverifikasi.</b> Bisa dipakai untuk masuk dan reset sandi.</> : <><b>Belum diverifikasi.</b> Kirim kode supaya email ini bisa dipakai untuk reset sandi.</>}</p>}
+          {editing && acc.verified && <p className="px-hint">Email lama tetap dipakai sampai email baru terverifikasi.</p>}
           {!acc.email && <p className="px-hint">Kami kirim kode 6 angka untuk memastikan email ini milikmu. Setelah itu kamu bisa masuk dengan email atau nama pengguna, dan reset sandi sendiri kalau lupa.</p>}
-          {(!unchanged || (em && !acc.pending)) && (
+          {locked ? (
+            <div className="px-actions">
+              <button type="button" className="px-btn g" onClick={() => { setEm(null); setEditing(true); }}>Ubah email</button>
+              {!acc.pending && <Msg m={em} />}
+            </div>
+          ) : (!unchanged || editing || (em && !acc.pending)) && (
             <div className="px-actions">
               {!unchanged && <button className="px-btn" disabled={busy === 'email'}>{busy === 'email' ? 'Memproses…' : !cleaned ? 'Hapus email' : 'Kirim kode verifikasi'}</button>}
+              {editing && <button type="button" className="px-btn g" onClick={stopEdit}>Batal</button>}
               {!acc.pending && <Msg m={em} />}
             </div>
           )}
