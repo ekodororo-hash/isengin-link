@@ -717,3 +717,15 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-tag.jdw.done{background:#8a8a94;color:#fff}
 .px-sch-l{display:grid;gap:4px;font-weight:700;font-size:.8rem;flex:1;min-width:0}
 .px-sch-l input{width:100%}
+
+/* Bagian opsional di editor link (katalog, sorotan, jadwal): bisa dibuka-tutup */
+.px-acc{padding:0}
+.px-acc>*:not(.px-acc-h){margin-left:12px;margin-right:12px}
+.px-acc.open>.px-acc-h~*:last-child{margin-bottom:12px}
+.px-acc-h{display:flex;align-items:center;gap:8px;width:100%;margin:0;padding:11px 12px;background:none;border:0;border-radius:11px;box-shadow:none;color:var(--navy);font:inherit;font-weight:800;font-size:.85rem;text-align:left;cursor:pointer}
+.px-acc-t{flex:1;min-width:0}
+.px-acc-on{flex:none;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding:2px 8px;border-radius:99px;background:var(--navy);color:var(--yel)}
+.px-acc-c{flex:none;transition:transform .15s}
+.px-acc.open .px-acc-c{transform:rotate(180deg)}
+.px-acc.open>.px-acc-h{padding-bottom:4px}
+.px-app .px-acc-h:active{transform:none}
