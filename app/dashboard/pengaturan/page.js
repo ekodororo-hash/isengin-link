@@ -46,6 +46,7 @@ export default function Pengaturan() {
   const [acc, setAcc] = useState(p?.ok ? p.data : null);
   const [email, setEmail] = useState(p?.ok ? p.data?.email || '' : '');
   const [em, setEm] = useState(null);
+  const [code, setCode] = useState('');
   const [cur, setCur] = useState(''), [nw, setNw] = useState(''), [again, setAgain] = useState('');
   const [show, setShow] = useState(false), [dshow, setDshow] = useState(false);
   const [pm, setPm] = useState(null);
@@ -54,18 +55,33 @@ export default function Pengaturan() {
   const [dm, setDm] = useState(null);
   const [busy, setBusy] = useState('');
   const st = strength(nw);
+  const cleaned = email.trim().toLowerCase();
 
   useEffect(() => {
     if (p) return;
     fetch('/api/account').then((r) => (r.ok ? r.json() : null)).then((d) => { if (d) { setAcc(d); setEmail(d.email || ''); } });
   }, []);
 
+  // Langkah 1: kirim kode ke email (atau hapus email bila kolomnya dikosongkan).
   async function saveEmail(e) {
     e.preventDefault(); setBusy('email'); setEm(null);
     const { ok, d } = await call('PUT', { email });
-    setEm({ t: ok ? (d.email ? 'Email tersimpan.' : 'Email dihapus.') : d.error || 'Gagal menyimpan.', err: !ok });
-    if (ok) { setEmail(d.email); setAcc((a) => ({ ...a, email: d.email })); }
+    if (!ok) setEm({ t: d.error || 'Gagal mengirim kode.', err: true });
+    else if (d.pending) { setAcc((a) => ({ ...a, pending: d.pending })); setCode(''); setEm({ t: `Kode dikirim ke ${d.pending}.` }); }
+    else { setEmail(d.email || ''); setAcc((a) => ({ ...a, email: d.email || '', verified: !!d.verified, pending: '' })); setEm({ t: d.email ? 'Email sudah terverifikasi.' : 'Email dihapus.' }); }
     setBusy('');
+  }
+  // Langkah 2: cocokkan kode 6 angka.
+  async function confirmCode(e) {
+    e.preventDefault(); setBusy('code'); setEm(null);
+    const { ok, d } = await call('PUT', { mode: 'verify', code });
+    if (ok) { setEmail(d.email); setAcc((a) => ({ ...a, email: d.email, verified: true, pending: '' })); setCode(''); setEm({ t: 'Email terverifikasi.' }); }
+    else setEm({ t: d.error || 'Gagal memverifikasi.', err: true });
+    setBusy('');
+  }
+  async function cancelCode() {
+    await call('PUT', { mode: 'cancel' });
+    setAcc((a) => ({ ...a, pending: '' })); setCode(''); setEm(null);
   }
   async function savePass(e) {
     e.preventDefault(); setPm(null);
@@ -87,7 +103,7 @@ export default function Pengaturan() {
   if (!acc) return (<><h1>Pengaturan</h1><Loader inline /></>);
   return (<>
     <h1>Pengaturan</h1>
-    <p className="px-sub">Akun, sandi, dan penghapusan akun.</p>
+    <p className="px-sub">Akun, email, sandi, dan penghapusan akun.</p>
     <div className="px-card">
       <section className="px-sec">
         <h2>Akun</h2>
@@ -95,14 +111,28 @@ export default function Pengaturan() {
           <label htmlFor="u">Nama pengguna</label>
           <input id="u" value={acc.username} readOnly />
           <p className="px-hint">Alamat halamanmu: isengin.site/{acc.username}. Tidak bisa diubah.</p>
-          <label htmlFor="e">Email <span className="px-hint-i">opsional</span></label>
+          <label htmlFor="e">Email <span className="px-hint-i">opsional, tapi perlu kalau lupa sandi</span></label>
           <input id="e" type="email" autoComplete="email" placeholder="nama@email.com" value={email} maxLength={120} onChange={(e) => setEmail(e.target.value)} />
-          <p className="px-hint">Setelah disimpan, kamu bisa masuk memakai email ini atau nama pengguna, dengan sandi yang sama.</p>
+          {acc.email && <p className="px-hint">{acc.verified ? <><b>✓ Terverifikasi.</b> Bisa dipakai untuk masuk dan reset sandi.</> : <><b>Belum diverifikasi.</b> Kirim kode supaya email ini bisa dipakai untuk reset sandi.</>}</p>}
+          {!acc.email && <p className="px-hint">Kami kirim kode 6 angka untuk memastikan email ini milikmu. Setelah itu kamu bisa masuk dengan email atau nama pengguna, dan reset sandi sendiri kalau lupa.</p>}
           <div className="px-actions">
-            <button className="px-btn" disabled={busy === 'email' || email.trim().toLowerCase() === (acc.email || '')}>{busy === 'email' ? 'Menyimpan…' : 'Simpan email'}</button>
-            <Msg m={em} />
+            <button className="px-btn" disabled={busy === 'email' || (cleaned === (acc.email || '') && (acc.verified || !cleaned))}>{busy === 'email' ? 'Memproses…' : !cleaned ? 'Hapus email' : 'Kirim kode verifikasi'}</button>
+            {!acc.pending && <Msg m={em} />}
           </div>
         </form>
+        {acc.pending && (
+          <form onSubmit={confirmCode} className="px-code">
+            <label htmlFor="ec">Kode verifikasi</label>
+            <input id="ec" inputMode="numeric" autoComplete="one-time-code" placeholder="6 angka" maxLength={6} value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} />
+            <p className="px-hint">Kode dikirim ke <b>{acc.pending}</b> dan berlaku 10 menit. Belum masuk? Cek folder Spam, atau klik Kirim kode verifikasi lagi.</p>
+            <div className="px-actions">
+              <button className="px-btn" disabled={busy === 'code' || code.length !== 6}>{busy === 'code' ? 'Memeriksa…' : 'Verifikasi'}</button>
+              <button type="button" className="px-btn g" onClick={cancelCode}>Batal</button>
+              <Msg m={em} />
+            </div>
+          </form>
+        )}
       </section>
 
       <VerifyBox />

@@ -101,6 +101,7 @@ export default function Masuk() {
               <input id="p" type={show ? 'text' : 'password'} value={password} autoComplete="current-password" onChange={(e) => setP(e.target.value)} />
               <button type="button" className="au-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
             </div>
+            <p style={{ textAlign: 'right', margin: '0 0 4px', fontSize: '.85rem', fontWeight: 700 }}><Link href="/lupa" style={{ color: 'inherit' }}>Lupa sandi?</Link></p>
             <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Memproses...' : 'Masuk'}</button>
           </form>
         </div>

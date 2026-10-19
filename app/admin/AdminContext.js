@@ -56,6 +56,13 @@ export function AdminProvider({ children }) {
     if (!r.ok) alert((await r.json().catch(() => ({}))).error || 'Gagal mengubah paket.');
     load();
   }
+  // Reset sandi manual: server membuat sandi sementara, admin menyalinnya dan mengirimnya ke pemilik akun.
+  async function resetPass(id, name) {
+    const r = await fetch('/api/admin', { method: 'PATCH', headers: J, body: JSON.stringify({ id, resetPass: true }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { alert(j.error || 'Gagal mereset sandi.'); return; }
+    prompt(`Sandi sementara untuk @${name} (salin, kirim ke pemiliknya, lalu minta dia menggantinya di Pengaturan):`, j.temp);
+  }
   async function del(id) {
     await fetch('/api/admin', { method: 'DELETE', headers: J, body: JSON.stringify({ id }) });
     load();
@@ -72,7 +79,7 @@ export function AdminProvider({ children }) {
     </main></div>
   );
   return (
-    <Ctx.Provider value={{ d, tog, verify, pro, del, decide }}>
+    <Ctx.Provider value={{ d, tog, verify, pro, del, decide, resetPass }}>
       <PreCtx.Provider value={pre}>
         <Shell title="Admin" menu={menu((d.requests || []).length, d.reports || 0)} out={out}>{children}</Shell>
       </PreCtx.Provider>

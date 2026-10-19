@@ -4,9 +4,58 @@ import { setSession, clearSession } from '@/lib/auth';
 import { hit, clear, ipOf, tooMany } from '@/lib/limit';
 import { MAX_REWARDED } from '@/lib/referral';
 import { RESERVED } from '@/lib/reserved';
+import { issueCode, checkCode, dropCodes } from '@/lib/codes';
+import { sendMail, codeMail } from '@/lib/mail';
+const EMAIL_RE = /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/;
+const bad = (error, status = 400) => Response.json({ error }, { status });
 export async function POST(req) {
-  const { mode, username = '', password = '', ref = '' } = await req.json();
+  const { mode, username = '', password = '', ref = '', email = '', code = '' } = await req.json();
   if (mode === 'logout') { clearSession(); return Response.json({ ok: true }); }
+  // Lupa sandi, langkah 1: kirim kode 6 angka ke email yang sudah diverifikasi. Jawabannya selalu sama
+  // supaya tidak bisa dipakai menebak email mana yang terdaftar.
+  if (mode === 'forgot') {
+    const em = String(email).trim().toLowerCase().slice(0, 120);
+    const ip = ipOf(req);
+    const byIp = await hit(`forgot:ip:${ip}`, 8, 3600);
+    if (byIp.over) return tooMany(byIp);
+    if (!EMAIL_RE.test(em)) return bad('Format email belum benar.');
+    const byMail = await hit(`forgot:e:${em}`, 3, 3600);
+    if (byMail.over) return tooMany(byMail);
+    try {
+      const u = (await sql`select id from users where email=${em} and email_verified_at is not null and active is not false`)[0];
+      if (u) {
+        const c = await issueCode(u.id, 'reset', em);
+        await sendMail({ to: em, ...codeMail(c, 'reset') });
+      }
+    } catch (e) { console.error('Kirim kode reset gagal (sudah jalankan schema-update.sql?):', e.message); }
+    return Response.json({ ok: true });
+  }
+  // Lupa sandi, langkah 2: cek kode, pasang sandi baru, tutup sesi lama, lalu langsung masuk.
+  if (mode === 'reset') {
+    const em = String(email).trim().toLowerCase().slice(0, 120);
+    const pw = String(password);
+    const byIp = await hit(`reset:ip:${ipOf(req)}`, 20, 3600);
+    if (byIp.over) return tooMany(byIp);
+    if (pw.length < 8) return bad('Sandi baru minimal 8 karakter.');
+    if (pw.length > 100) return bad('Sandi baru terlalu panjang.');
+    const WRONG = 'Kode salah atau sudah kedaluwarsa. Minta kode baru.';
+    if (!EMAIL_RE.test(em)) return bad(WRONG);
+    try {
+      const u = (await sql`select id, username from users where email=${em} and email_verified_at is not null and active is not false`)[0];
+      if (!u) return bad(WRONG);
+      const c = await checkCode(u.id, 'reset', code);
+      if (c.error) return bad(c.error);
+      if (c.email !== em) return bad(WRONG);
+      await sql`update users set password_hash=${await bcrypt.hash(pw, 10)}, pw_changed_at=now() where id=${u.id}`;
+      await dropCodes(u.id);
+      await clear(`login:u:${u.username}`);
+      await setSession(u.id);
+      return Response.json({ ok: true });
+    } catch (e) {
+      console.error('Reset sandi gagal (sudah jalankan schema-update.sql?):', e.message);
+      return bad('Reset sandi belum bisa dipakai. Coba lagi nanti.', 500);
+    }
+  }
   const u = String(username).trim().toLowerCase();
   // Saat masuk, kolom nama boleh berisi email yang sudah disimpan di Pengaturan.
   const byEmail = mode !== 'register' && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(u) && u.length <= 120;

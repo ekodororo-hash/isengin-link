@@ -9,7 +9,7 @@ const MATCH = {
 };
 
 export default function Pengguna() {
-  const { d, tog, verify, pro, del } = useAdmin();
+  const { d, tog, verify, pro, del, resetPass } = useAdmin();
   const [q, setQ] = useState('');
   const [f, setF] = useState('semua');
   const [open, setOpen] = useState(null);
@@ -55,6 +55,7 @@ export default function Pengguna() {
                   </div>
                   <div className="adm-grp"><b>Akun</b>
                     <button className="px-btn g sm" onClick={() => tog(x.id, !x.active)}>{x.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
+                    <button className="px-btn g sm" onClick={() => { if (confirm(`Reset sandi @${x.username}? Sandi lamanya langsung tidak berlaku dan semua sesi login-nya keluar. Lakukan hanya setelah memastikan pemiliknya.`)) resetPass(x.id, x.username); }}>Reset sandi</button>
                     <button className="px-btn d sm" onClick={() => { if (confirm(`Hapus ${x.username} beserta semua link dan statistiknya? Ini tidak bisa dibatalkan.`)) { del(x.id); setOpen(null); } }}>Hapus</button>
                   </div>
                 </td></tr>

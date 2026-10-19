@@ -1,8 +1,12 @@
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/db';
 import { userBlobs, dropBlobs } from '@/lib/blob';
 import { removeDomain } from '@/lib/vercel';
 import { setAdmin, clearAdmin, isAdmin } from '@/lib/auth';
 import { hit, clear, ipOf, tooMany } from '@/lib/limit';
+// Sandi sementara 12 karakter tanpa huruf/angka yang mirip (0/O, 1/l/I).
+const tempPass = () => Array.from({ length: 12 }, () => 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'[crypto.randomInt(0, 56)]).join('');
 const no = () => Response.json({ error: 'Belum masuk.' }, { status: 401 });
 export async function POST(req) {
   const { mode, username, password } = await req.json();
@@ -30,7 +34,7 @@ export async function GET() {
 }
 export async function PATCH(req) {
   if (!(await isAdmin())) return no();
-  const { id, active, verified, proDays, decide, reason } = await req.json();
+  const { id, active, verified, proDays, decide, reason, resetPass } = await req.json();
   // Keputusan atas pengajuan centang dari pengguna.
   if (decide === 'approve' || decide === 'reject') {
     try {
@@ -45,6 +49,18 @@ export async function PATCH(req) {
       return Response.json({ error: 'Gagal. Jalankan schema-update.sql di database.' }, { status: 500 });
     }
     return Response.json({ ok: true });
+  }
+  // Reset sandi manual untuk pengguna yang tidak bisa memakai email: buat sandi sementara, semua sesi lamanya ikut tidak berlaku.
+  if (resetPass === true) {
+    const tmp = tempPass();
+    try {
+      await sql`update users set password_hash=${await bcrypt.hash(tmp, 10)}, pw_changed_at=now() where id=${Number(id)}`;
+    } catch (e) {
+      console.error('Reset sandi manual gagal (sudah jalankan schema-update.sql?):', e.message);
+      return Response.json({ error: 'Gagal. Jalankan schema-update.sql di database.' }, { status: 500 });
+    }
+    await sql`delete from email_codes where user_id=${Number(id)}`.catch(() => {});
+    return Response.json({ ok: true, temp: tmp });
   }
   // Centang verifikasi hanya bisa diubah dari sini (pengguna tidak punya akses lewat /api/me).
   if (typeof verified === 'boolean') {

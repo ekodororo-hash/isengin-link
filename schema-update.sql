@@ -131,3 +131,19 @@ do $$ begin
     update users set ref_bonus_at = ref_rewarded_at where ref_rewarded_at is not null;
   end if;
 end $$;
+
+-- Verifikasi email dan reset sandi lewat kode 6 angka (dikirim lewat Resend).
+-- email_verified_at: email akun sudah dibuktikan milik pengguna. pw_changed_at: sesi login yang lebih lama dari ini tidak berlaku lagi.
+alter table users add column if not exists email_verified_at timestamptz;
+alter table users add column if not exists pw_changed_at timestamptz;
+-- Satu kode aktif per pengguna per keperluan ('verify' = email baru di Pengaturan, 'reset' = lupa sandi). Yang disimpan hanya hash-nya.
+create table if not exists email_codes(
+  id serial primary key,
+  user_id int references users(id) on delete cascade,
+  purpose text not null,
+  email text not null,
+  code_hash text not null,
+  attempts int not null default 0,
+  expires_at timestamptz not null,
+  created_at timestamptz default now());
+create unique index if not exists email_codes_uniq on email_codes (user_id, purpose);

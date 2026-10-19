@@ -33,6 +33,7 @@ Halaman link-in-bio (mirip Linktree) dengan Next.js, database Neon, dan penyimpa
 | `MIDTRANS_IS_PRODUCTION` | `true` untuk produksi; selain itu memakai sandbox |
 | `PRO_PRICE_MONTH`, `PRO_PRICE_YEAR` | Harga Pro dalam rupiah (bawaan 29000 dan 290000) |
 | `VERCEL_API_TOKEN`, `VERCEL_PROJECT_ID`, `VERCEL_TEAM_ID` | Untuk mendaftarkan domain kustom ke project lewat API Vercel. Team ID hanya bila project ada di Team |
+| `RESEND_API_KEY`, `MAIL_FROM`, `MAIL_REPLY_TO` | Kirim email kode verifikasi dan reset sandi lewat Resend. `MAIL_FROM` harus memakai domain yang sudah Verified di Resend, mis. `isengin <noreply@isengin.site>`. `MAIL_REPLY_TO` opsional |
 | `NEXT_PUBLIC_SITE_URL` | Alamat situs, mis. `https://isengin.site`. Dipakai untuk kode QR dan gambar preview saat link dibagikan |
 
 Setelah mengubah environment variable di Vercel, lakukan **Redeploy**.
@@ -151,3 +152,12 @@ Aturannya ada di satu tempat, `lib/pro.js` (daftar `PRO_THEMES`, `PRO_FONTS`, `P
 - **Server menegakkan aturannya**: `PUT /api/me` menolak (403) pengguna gratis yang memilih atau mengubah ke pilihan Pro, dan `/api/upload` menolak unggahan latar gambar. Tombol terkunci di dashboard hanya tampilan.
 - **Tidak ada data yang dihapus**: pilihan Pro yang sudah tersimpan tetap ada saat Pro habis, hanya tidak tampil di halaman publik, pratinjau, dan gambar preview (WhatsApp dll). Memperpanjang Pro langsung memulihkannya. Untuk gambar link, paket gratis hanya menampilkan 3 gambar pertama yang tampil.
 - Pengguna gratis yang sebelumnya sudah memakai fitur ini diberi tahu di halaman Tampilan.
+
+## Verifikasi email dan lupa sandi
+
+Jalankan `schema-update.sql` dulu (menambah `users.email_verified_at`, `users.pw_changed_at`, dan tabel `email_codes`), isi env `RESEND_API_KEY` dan `MAIL_FROM`, lalu Redeploy.
+
+- **Verifikasi email** (`/dashboard/pengaturan`, `PUT /api/account`): email baru tidak langsung dipasang. Server mengirim kode 6 angka (`lib/mail.js`, `lib/codes.js`); email baru masuk ke `users.email` dan ditandai terverifikasi setelah kodenya benar. Batas: kode berlaku 10 menit, 5 kali salah hangus, kirim ulang 3 kali per jam per akun.
+- **Lupa sandi** (`/lupa`, `POST /api/auth` mode `forgot` dan `reset`): kode 6 angka dikirim ke email yang sudah terverifikasi. Jawaban langkah pertama selalu sama supaya email terdaftar tidak bisa ditebak. Setelah sandi baru dipasang, `users.pw_changed_at` diisi sehingga semua sesi login lama tidak berlaku (dicek di `lib/auth.js`), dan pengguna langsung masuk.
+- **Reset manual oleh admin** (`/admin/pengguna`, Kelola, Reset sandi): untuk akun tanpa email terverifikasi. Server membuat sandi sementara yang ditampilkan ke admin untuk dikirim ke pemilik akun.
+- Email lama yang tersimpan sebelum fitur ini tetap bisa dipakai untuk masuk, tapi baru bisa dipakai reset sandi setelah diverifikasi lewat Pengaturan.
