@@ -1,6 +1,6 @@
 import { sql } from '@/lib/db';
 import { getUserId } from '@/lib/auth';
-import { THEME_KEYS, cleanColors, cleanBg } from '@/lib/themes';
+import { THEME_KEYS, DEFAULT_THEME, cleanColors, cleanBg } from '@/lib/themes';
 import { cleanSocials, parseSocials } from '@/lib/socials';
 import { cleanPrice, cleanLabel } from '@/lib/catalog';
 import { cleanBtn, cleanFont } from '@/lib/style';
@@ -62,7 +62,7 @@ export async function PUT(req) {
       return isBlobUrl(x.href) && x.href.length <= 500 && allowed(x.href) ? x.href : '';
     } catch { return ''; }
   };
-  const theme = THEME_KEYS.includes(b.theme) ? b.theme : 'kobalt';
+  const theme = THEME_KEYS.includes(b.theme) ? b.theme : DEFAULT_THEME;
   const photo = b.photo_url && allowed(b.photo_url) ? b.photo_url : null;
   let bg = cleanBg(b.bg);
   if (bg.t === 'image' && !allowed(bg.url)) bg = {};
