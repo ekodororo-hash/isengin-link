@@ -67,6 +67,7 @@ export default async function Profile({ params, searchParams }) {
         <div className="pub-top">
         <ViewBeacon username={u.username} />
         {!pro && <HomePromo pageUsername={u.username} pageName={name} />}
+        <Report username={u.username} />
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
         {u.bio && <p className="bio">{u.bio}</p>}
@@ -102,10 +103,10 @@ export default async function Profile({ params, searchParams }) {
         })}
         </div>
         <div className="pub-bottom">
-        {/* tombol lapor selalu tampil, termasuk di akun Pro */}
+        {/* titik tiga lapor (kanan atas) selalu tampil, termasuk di akun Pro */}
         {!pro && <div className="foot">Dibuat di <a href={`${(process.env.NEXT_PUBLIC_SITE_URL || 'https://isengin.site').replace(/\/$/, '')}/?ref=${u.username}`}>isengin.site</a></div>}
         <div className="foot legal-links">
-          <Report username={u.username} inline /> · <a href="/fitur">Fitur</a> · <a href="/tentang-kami">Tentang Kami</a> · <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
+          <a href="/fitur">Fitur</a> · <a href="/tentang-kami">Tentang Kami</a> · <a href="/privasi">Kebijakan Privasi</a> · <a href="/syarat">Syarat Layanan</a>
         </div>
         </div>
       </main>

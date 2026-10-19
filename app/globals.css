@@ -121,6 +121,18 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phead span{max-width:80%;text-align:center;overflow-wrap:anywhere}
 .vb{display:inline-block;vertical-align:-.18em;margin-left:.3em;color:var(--accent)}
 /* lapor halaman (halaman publik) */
+.rep-corner{position:absolute;top:16px;right:16px;z-index:5}
+.rep-dots{display:flex;align-items:center;justify-content:center;width:46px;height:46px;padding:0;border:0;background:none;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.rep-dots svg{width:28px;height:28px;fill:currentColor}
+.rep-dots:focus{outline:0}
+.rep-dots:focus-visible{outline:2px dashed currentColor;outline-offset:-4px;border-radius:12px}
+.rep-menu{position:absolute;top:50px;right:0;min-width:190px;background:var(--pbg);color:var(--ink);border:2px solid var(--ink);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.18);padding:6px}
+.rep-menu button{display:block;width:100%;text-align:left;background:none;border:0;color:inherit;font:inherit;font-size:.85rem;font-weight:700;padding:10px 12px;border-radius:8px;cursor:pointer}
+.rep-menu button:hover,.rep-menu button:focus-visible{background:var(--pbtn);outline:0}
+.rep-ov{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+.rep-card{width:100%;max-width:400px;background:var(--pbg);color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:20px}
+.rep-t{margin:0 0 4px;font-size:1.05rem;font-weight:800;text-align:left}
+.rep-card .rep{margin:0;padding:0;background:none;border-radius:0}
 .rep-open{display:block;margin:10px auto 0;background:none;border:0;color:inherit;font:inherit;font-size:.75rem;opacity:.6;text-decoration:underline;cursor:pointer;padding:4px}
 .rep-open:hover,.rep-open:focus-visible{opacity:1}
 .rep-ok{text-align:center;font-size:.8rem;opacity:.8;margin:12px 0 0}
