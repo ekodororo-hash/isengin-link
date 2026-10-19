@@ -95,7 +95,7 @@ export default function Tampilan() {
           {mode === 'image' && (<>
             <p className="px-hint">Gambar dipudarkan ke warna latar tema supaya teks tetap terbaca. Ukurannya diperkecil otomatis di peramban.</p>
             <div className="px-actions">
-              <label className="px-btn g sm px-fl">{bg.url ? 'Ganti gambar' : 'Unggah gambar'}
+              <label className="px-btn g sm px-fl" onClick={pro ? undefined : (e) => { e.preventDefault(); setPm('latar'); }}>{bg.url ? 'Ganti gambar' : 'Unggah gambar'}
                 <input type="file" accept="image/*" className="px-sr" onChange={pro ? upBg : upTrialBg} />
               </label>
               {bg.url && <button className="px-btn g sm" onClick={() => setBg({ t: 'image', url: '', dim })}>Hapus gambar</button>}
