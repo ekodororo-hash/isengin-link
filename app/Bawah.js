@@ -72,7 +72,7 @@ export default function Bawah() {
               <tbody>
                 <tr className="g"><th colSpan={3}>Dasar</th></tr>
                 <tr><td>Halaman, link, tema, dan statistik dasar</td><td><span className="ya">Ya</span></td><td><span className="ya">Ya</span></td></tr>
-                <tr><td>Rentang statistik</td><td>7 dan 30 hari</td><td>90 hari, semua, dan pilih tanggal</td></tr>
+                <tr><td>Rentang statistik</td><td>30 hari</td><td>Semua data</td></tr>
                 <tr><td>Gambar di link</td><td>3 gambar</td><td>Tanpa batas</td></tr>
                 <tr className="g"><th colSpan={3}>Tampilan</th></tr>
                 <tr><td>Latar belakang gambar</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
