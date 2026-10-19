@@ -42,7 +42,7 @@ export default async function Profile({ params, searchParams }) {
   // Kunjungan dihitung dari browser lewat <ViewBeacon /> (1 per pengunjung per hari), bukan di sini.
   // Jadwal tayang: link muncul mulai show_at dan hilang sejak hide_at (kosong = tanpa batas).
   // Link biasa yang belum tayang ditampilkan sebagai baris hitung mundur (tanpa URL, tidak bisa diklik).
-  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard,(show_at > now()) as soon,(extract(epoch from show_at)*1000)::bigint as show_ms from links where user_id=${u.id} and hidden is not true and (show_at is null or show_at <= now() or coalesce(kind,'link') not in ('header','embed','qris')) and (hide_at is null or hide_at > now()) order by position,id`
+  const links = await sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard,(show_at > now()) as soon,(extract(epoch from show_at)*1000)::bigint as show_ms,(extract(epoch from hide_at)*1000)::bigint as hide_ms from links where user_id=${u.id} and hidden is not true and (show_at is null or show_at <= now() or coalesce(kind,'link') not in ('header','embed','qris')) and (hide_at is null or hide_at > now()) order by position,id`
     .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind,featured,guard from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label,kind from links where user_id=${u.id} and hidden is not true order by position,id`)
     .catch(() => sql`select id,title,url,thumb,price,old_price,label from links where user_id=${u.id} and hidden is not true order by position,id`)
@@ -108,6 +108,7 @@ export default async function Profile({ params, searchParams }) {
               price={price}
               old={old}
               href={`/go/${l.id}?s=${src}`}
+              hideMs={Number(l.hide_ms) > 0 ? Number(l.hide_ms) : 0}
               pageUsername={u.username}
               pageName={name}
             />

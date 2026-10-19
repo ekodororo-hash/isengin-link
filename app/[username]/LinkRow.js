@@ -2,11 +2,12 @@
 import { useState } from 'react';
 import { LinkIcon, NamedIcon } from '../icons';
 import ShareLink from './ShareLink';
+import EndCount from './EndCount';
 
 // Satu baris tautan di halaman publik: area klik utama (buka tautan) + tombol titik tiga
 // yang membuka modal "Bagikan tautan". Keduanya elemen bersebelahan (bukan bersarang)
 // supaya tombol tidak ikut ter-klik saat yang ditekan adalah tautannya, atau sebaliknya.
-export default function LinkRow({ title, url, th, cat, soldout, labelKey, labelDisplay, price, old, feat, guard, href, pageUsername, pageName }) {
+export default function LinkRow({ title, url, th, cat, soldout, labelKey, labelDisplay, price, old, feat, guard, href, hideMs, pageUsername, pageName }) {
   const [open, setOpen] = useState(false);
   return (
     <div className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (soldout ? ' soldout' : '') + (feat ? ' feat' : '') + ((feat || guard) ? ' has-ind' : '') + ((feat && guard) ? ' ind2' : '')}>
@@ -15,6 +16,7 @@ export default function LinkRow({ title, url, th, cat, soldout, labelKey, labelD
         <span className="pt">
           {title}
           {(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}
+          {hideMs > 0 && <EndCount hideMs={hideMs} />}
         </span>
         {labelKey && <span className={'pbd ' + labelKey}>{labelDisplay}</span>}
         <span className="psp" aria-hidden="true" />
