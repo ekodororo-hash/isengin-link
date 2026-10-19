@@ -11,7 +11,7 @@ export async function POST(req) {
   // Saat masuk, kolom nama boleh berisi email yang sudah disimpan di Pengaturan.
   const byEmail = mode !== 'register' && /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(u) && u.length <= 120;
   if (!byEmail && (!/^[a-z0-9_]{3,20}$/.test(u) || RESERVED.includes(u)) || String(password).length < 6)
-    return Response.json({ error: 'Nama 3-20 huruf/angka/_ (bukan kata terlarang), sandi minimal 6 karakter.' }, { status: 400 });
+    return Response.json({ error: 'Nama minimal 3 huruf, sandi minimal 6 karakter.' }, { status: 400 });
   const ip = ipOf(req);
   if (mode === 'register') {
     const lim = await hit(`reg:${ip}`, 5, 3600);
