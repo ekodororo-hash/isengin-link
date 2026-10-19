@@ -651,3 +651,5 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 
 /* Editor embed dan QRIS */
 .px-qr-prev{display:block;max-width:160px;width:100%;height:auto;background:#fff;border:2px solid #1f2255;border-radius:10px;margin:8px 0}
+/* Tag jenis item (QRIS/Embed): dua kelas supaya warnanya tidak dikalahkan .px-lk-i span */
+.px-tag.ext{background:var(--navy);color:#fff}

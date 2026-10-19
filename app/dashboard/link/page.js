@@ -173,7 +173,7 @@ export default function LinkPage() {
                   <span className="px-lk-no">{i + 1}</span>
                   {q && l.url ? <img className="px-th" src={l.url} alt="" /> : <span className="px-th e" aria-hidden="true">{q ? <Qr /> : <Play />}</span>}
                   <div className="px-lk-i">
-                    <strong>{l.title || <em>{q ? 'Tanpa judul' : emb ? EMBED_NAMES[emb.provider] : 'Embed'}</em>}<span className="px-tag">{q ? 'QRIS' : 'Embed'}</span></strong>
+                    <strong>{l.title || <em>{q ? 'Tanpa judul' : emb ? EMBED_NAMES[emb.provider] : 'Embed'}</em>}<span className="px-tag ext">{q ? 'QRIS' : 'Embed'}</span></strong>
                     <span>{q ? (l.url ? 'Gambar QRIS terpasang' : 'Belum ada gambar QRIS') : (l.url || 'Belum ada alamat')}</span>
                   </div>
                   <label className="px-sw2" title={l.hidden ? 'Disembunyikan' : 'Tampil'}>
