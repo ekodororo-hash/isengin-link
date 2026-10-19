@@ -410,7 +410,7 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-ph .l{position:relative}
 .px-ph .l .pbd{position:absolute;top:-6px;right:10px;font-size:.5rem;padding:1px 6px;line-height:1.4;box-shadow:0 0 0 2px var(--pbg)}
 /* Pratinjau: hitung mundur jadwal tayang/berakhir di bawah judul, sama seperti halaman publik */
-.px-ph .l .pend{display:block;width:fit-content;margin-top:3px;font-size:.58rem;font-weight:800;letter-spacing:.02em;padding:2px 8px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.px-ph .l .pend{display:block;width:fit-content;margin:3px auto 0;font-size:.58rem;font-weight:800;letter-spacing:.02em;padding:2px 8px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .px-ph .l .pend.soon{background:var(--yel);color:var(--navy)}
 .px-ph .l .pend.end{background:var(--red);color:#fff}
 
