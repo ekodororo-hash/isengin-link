@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useDash } from '../DashContext';
 import { DailyChart, LinkRank } from '../parts';
 import ProModal from '../ProModal';
@@ -13,42 +13,78 @@ const OPTS = [['7', '7 hari', false], ['30', '30 hari', false], ['90', '90 hari'
 
 export default function Statistik() {
   const { m } = useDash();
-  const [req, setReq] = useState({ range: '30' });
-  const [d, setD] = useState(null);
+  // 7, 30, 90 hari: data diambil sekali saat halaman dibuka (Pro 90 hari, Gratis 30 hari), lalu dipotong di browser.
+  // Hanya "Semua" dan "Pilih tanggal" yang memanggil /api/statistik lagi.
+  const [sel, setSel] = useState({ range: '30' });
+  const [base, setBase] = useState(null);
+  const [ext, setExt] = useState(null);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
   const [pm, setPm] = useState(null);
   const [cf, setCf] = useState('');
   const [ct, setCt] = useState('');
+  const [tick, setTick] = useState(0);
   const seq = useRef(0);
+  const baseRange = m.pro ? '90' : '30';
+  const fixed = ['7', '30', '90'].includes(sel.range);
 
+  // Sekali per kunjungan: data dasar untuk 7/30/90 hari.
+  useEffect(() => {
+    let off = false;
+    setErr('');
+    fetch('/api/statistik?range=' + baseRange)
+      .then(async (r) => ({ ok: r.ok, j: await r.json().catch(() => ({})) }))
+      .then(({ ok, j }) => { if (off) return; if (ok) setBase(j); else setErr(j.error || 'Gagal memuat statistik.'); })
+      .catch(() => { if (!off) setErr('Gagal memuat. Periksa koneksi, lalu coba lagi.'); });
+    return () => { off = true; };
+  }, [baseRange, tick]);
+
+  // Hanya untuk "Semua" dan tanggal kustom.
   useEffect(() => {
     const n = ++seq.current;
+    if (fixed) { setBusy(false); return; }
     setBusy(true); setErr('');
-    const qs = new URLSearchParams({ range: req.range, ...(req.range === 'custom' ? { from: req.from, to: req.to } : {}) });
+    const qs = new URLSearchParams({ range: sel.range, ...(sel.range === 'custom' ? { from: sel.from, to: sel.to } : {}) });
     fetch('/api/statistik?' + qs)
       .then(async (r) => ({ ok: r.ok, j: await r.json().catch(() => ({})) }))
-      .then(({ ok, j }) => { if (n !== seq.current) return; if (ok) setD(j); else setErr(j.error || 'Gagal memuat statistik.'); })
+      .then(({ ok, j }) => { if (n !== seq.current) return; if (ok) setExt(j); else setErr(j.error || 'Gagal memuat statistik.'); })
       .catch(() => { if (n === seq.current) setErr('Gagal memuat. Periksa koneksi, lalu coba lagi.'); })
       .finally(() => { if (n === seq.current) setBusy(false); });
-  }, [req]);
+  }, [sel, fixed]);
 
   const pick = (v) => {
     if (v !== '7' && v !== '30' && !m.pro) { setPm('stat'); return; }
-    if (v === 'custom') {
-      const to = d?.today || '';
-      const from = to ? (back(to, 29) < d.min_day ? d.min_day : back(to, 29)) : '';
-      setCf(from); setCt(to);
-      setReq({ range: 'custom', from, to });
+    setErr('');
+    if (['7', '30', '90'].includes(v)) {
+      if (!base) setTick((t) => t + 1); // data dasar belum ada (mis. gagal dimuat tadi): coba lagi
+      setSel({ range: v });
       return;
     }
-    setReq({ range: v });
+    if (v === 'all') { if (sel.range !== 'all') setSel({ range: 'all' }); return; }
+    const meta = base || ext;
+    const to = meta?.today || '';
+    const from = to ? (back(to, 29) < meta.min_day ? meta.min_day : back(to, 29)) : '';
+    setCf(from); setCt(to);
+    setSel({ range: 'custom', from, to });
   };
   const apply = () => {
     if (!cf || !ct) { setErr('Isi tanggal mulai dan tanggal akhir.'); return; }
     if (cf > ct) { setErr('Tanggal mulai harus sebelum tanggal akhir.'); return; }
-    setReq({ range: 'custom', from: cf, to: ct });
+    setSel({ range: 'custom', from: cf, to: ct });
   };
+
+  // Data yang ditampilkan: untuk 7/30/90 dipotong dari data dasar, untuk Semua/kustom langsung dari server.
+  const d = useMemo(() => {
+    const b = fixed ? base : ext;
+    if (!b) return null;
+    const daily = fixed ? b.daily.slice(-Math.min(+sel.range, b.daily.length)) : b.daily;
+    const from = daily[0]?.day || b.from;
+    const link_days = (b.link_days || []).filter((r) => r.day >= from);
+    const bySrc = {};
+    for (const r of b.source_days || []) if (r.day >= from) bySrc[r.src] = (bySrc[r.src] || 0) + r.clicks;
+    const sources = Object.entries(bySrc).map(([src, clicks]) => ({ src, clicks })).sort((a, c) => c.clicks - a.clicks);
+    return { ...b, range: fixed ? sel.range : b.range, from, daily, link_days, sources };
+  }, [fixed, base, ext, sel.range]);
 
   const daily = d?.daily || [];
   const days = daily.map((r) => r.day);
@@ -64,18 +100,17 @@ export default function Statistik() {
       <div className="px-ch-head">
         <b>Rentang waktu</b>
         <div className="px-seg" role="group" aria-label="Rentang waktu">
-          {OPTS.map(([v, t, onlyPro]) => <button key={v} aria-pressed={req.range === v} onClick={() => pick(v)}>{onlyPro && !m.pro ? `${t} · Pro` : t}</button>)}
+          {OPTS.map(([v, t, onlyPro]) => <button key={v} aria-pressed={sel.range === v} onClick={() => pick(v)}>{onlyPro && !m.pro ? `${t} · Pro` : t}</button>)}
         </div>
       </div>
-      {req.range === 'custom' && (
+      {sel.range === 'custom' && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'flex-end', marginTop: 14 }}>
           <div><label htmlFor="st-from">Dari</label><input id="st-from" type="date" value={cf} min={d?.min_day} max={ct || d?.today} onChange={(e) => setCf(e.target.value)} /></div>
           <div><label htmlFor="st-to">Sampai</label><input id="st-to" type="date" value={ct} min={cf || d?.min_day} max={d?.today} onChange={(e) => setCt(e.target.value)} /></div>
           <button className="px-btn" onClick={apply} disabled={busy}>Terapkan</button>
         </div>
       )}
-      {!m.pro && <p className="px-ch-sum">Paket Gratis mencakup 7 dan 30 hari. Paket Pro membuka 90 hari, seluruh data, dan rentang tanggal kustom.</p>}
-      {d && ['all', 'custom'].includes(req.range) && <p className="px-ch-sum">Statistik harian tercatat sejak {tgl(d.min_day)}. Rentang tanggal paling lama 1 tahun.</p>}
+      {d && ['all', 'custom'].includes(sel.range) && <p className="px-ch-sum">Statistik harian tercatat sejak {tgl(d.min_day)}. Rentang tanggal paling lama 1 tahun.</p>}
       {err && <p className="px-warn" role="alert">{err}</p>}
     </div>
     {!d && !err && <p className="px-empty" role="status">Memuat…</p>}

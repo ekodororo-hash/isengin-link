@@ -2,6 +2,7 @@ import { sql } from '@/lib/db';
 import { getUserId } from '@/lib/auth';
 
 // Statistik rentang waktu. Gratis: 7 dan 30 hari. Pro: ditambah 90 hari, Semua (yang tercatat harian), dan tanggal sendiri (maks 1 tahun).
+// Asal klik dikirim per hari (source_days) supaya halaman Statistik bisa memotong 7/30/90 hari tanpa memanggil ulang. Gratis memakai range=30, Pro range=90.
 // Semua tanggal memakai zona Jakarta, sama dengan yang dicatat di daily_stats, click_sources, dan link_stats.
 const MAX_CUSTOM = 366;
 const DAY = 86400000;
@@ -37,18 +38,18 @@ export async function GET(req) {
     if ((ms(to) - ms(from)) / DAY + 1 > MAX_CUSTOM) return bad('Rentang tanggal paling lama 1 tahun.');
   } else from = iso(ms(today) - (Number(range) - 1) * DAY);
 
-  const [daily, sources, linkDays] = await Promise.all([
+  const [daily, sourceDays, linkDays] = await Promise.all([
     sql`select to_char(d,'YYYY-MM-DD') as day, coalesce(s.views,0)::int as views, coalesce(s.clicks,0)::int as clicks
         from generate_series(${from}::date, ${to}::date, interval '1 day') d
         left join daily_stats s on s.user_id=${id} and s.day=d::date order by d`,
-    sql`select src, sum(clicks)::int as clicks from click_sources
+    sql`select to_char(day,'YYYY-MM-DD') as day, src, clicks::int as clicks from click_sources
         where user_id=${id} and day between ${from}::date and ${to}::date
-        group by src order by 2 desc`,
+        order by day`,
     sql`select ls.link_id, to_char(ls.day,'YYYY-MM-DD') as day, ls.clicks
         from link_stats ls join links l on l.id=ls.link_id
         where l.user_id=${id} and ls.day between ${from}::date and ${to}::date
         order by ls.day`,
   ]).catch((e) => { console.error('Statistik gagal (sudah jalankan schema-update.sql?):', e.message); return [null, null, null]; });
   if (!daily) return bad('Statistik belum bisa dimuat. Coba lagi.', 500);
-  return Response.json({ pro, range, from, to, today, min_day: minDay, daily, sources, link_days: linkDays });
+  return Response.json({ pro, range, from, to, today, min_day: minDay, daily, source_days: sourceDays, link_days: linkDays });
 }

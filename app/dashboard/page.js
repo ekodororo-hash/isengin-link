@@ -24,9 +24,9 @@ export default function Ringkasan() {
     <p className="px-sub"><a href={`/${m.username}`} target="_blank">isengin.site/{m.username}</a></p>
     <Langkah />
     <div className="px-grid px-g3">
-      <Stat n="Total klik" v={tot} sub="sejak awal" />
-      <Stat n="Total kunjungan" v={views} sub="sejak awal" />
       <Stat n="Klik hari ini" v={t.clicks} sub={sel(t.clicks, y.clicks)} />
+      <Stat n="Kunjungan hari ini" v={t.views} sub={sel(t.views, y.views)} />
+      <Stat n="Klik kemarin" v={y.clicks} sub={`${y.views} kunjungan`} />
     </div>
     <section className="px-card px-det" aria-label="Rincian">
       <Item n="Klik 30 hari terakhir" v={c30} />
