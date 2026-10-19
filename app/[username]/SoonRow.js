@@ -22,7 +22,7 @@ export default function SoonRow({ title, showMs }) {
         <svg className="lico" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
         <span className="pt">
           {title}
-          <span className="pend" aria-live="off">{left == null ? 'Segera' : left > 0 ? `Tayang dalam ${fmtLeft(left)}` : 'Memuat…'}</span>
+          <span className="pend soon" aria-live="off">{left == null ? 'Segera' : left > 0 ? `Tayang dalam ${fmtLeft(left)}` : 'Memuat…'}</span>
         </span>
         <span className="psp" aria-hidden="true" />
       </div>

@@ -155,7 +155,9 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 
 /* Label (Promo, Stok terbatas, dll) kecil di pojok kanan atas; judul tetap rata tengah */
 .plink{position:relative}
-.plink .pend{display:block;margin-top:1px;font-size:.72rem;font-weight:700;opacity:.7;font-variant-numeric:tabular-nums}
+.plink .pend{display:block;width:fit-content;margin-top:3px;font-size:.66rem;font-weight:800;letter-spacing:.02em;padding:3px 9px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.plink .pend.soon{background:#ffd23f;color:#1f2255}
+.plink .pend.end{background:#ff5a43;color:#fff}
 .plink.soon{opacity:.85;border-style:dashed;cursor:default}
 .plink.soon .plink-main{cursor:default}
 .phone[data-b="garis"] .plink.soon{border-style:dashed}

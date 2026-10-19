@@ -25,11 +25,11 @@ function SchedNote({ l }) {
   if (!has) return null;
   const show = l.show_at ? wibMs(l.show_at) : null;
   const hide = l.hide_at ? wibMs(l.hide_at) : null;
-  let t = '';
-  if (show && show > now) t = `Tayang dalam ${fmtLeft(show - now)}`;
-  else if (hide && hide > now) t = `Berakhir dalam ${fmtLeft(hide - now)}`;
+  let t = '', cls = '';
+  if (show && show > now) { t = `Tayang dalam ${fmtLeft(show - now)}`; cls = 'soon'; }
+  else if (hide && hide > now) { t = `Berakhir dalam ${fmtLeft(hide - now)}`; cls = 'end'; }
   if (!t) return null;
-  return <span className="pend">{t}</span>;
+  return <span className={'pend ' + cls}>{t}</span>;
 }
 
 // Pratinjau: di desktop tampil di samping form. Di HP berupa tombol melayang "Pratinjau" yang membuka lembar pratinjau, jadi tidak perlu scroll ke bawah.

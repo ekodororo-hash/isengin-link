@@ -410,7 +410,9 @@ a.px-stat{display:block;text-decoration:none;color:inherit}
 .px-ph .l{position:relative}
 .px-ph .l .pbd{position:absolute;top:-6px;right:10px;font-size:.5rem;padding:1px 6px;line-height:1.4;box-shadow:0 0 0 2px var(--pbg)}
 /* Pratinjau: hitung mundur jadwal tayang/berakhir di bawah judul, sama seperti halaman publik */
-.px-ph .l .pend{display:block;margin-top:1px;font-size:.68rem;font-weight:700;opacity:.7;font-variant-numeric:tabular-nums}
+.px-ph .l .pend{display:block;width:fit-content;margin-top:3px;font-size:.58rem;font-weight:800;letter-spacing:.02em;padding:2px 8px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.px-ph .l .pend.soon{background:var(--yel);color:var(--navy)}
+.px-ph .l .pend.end{background:var(--red);color:#fff}
 
 /* Pratinjau: link berharga juga rata tengah */
 .px-ph .l.cat{justify-content:center}
@@ -710,5 +712,8 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 
 /* Jadwal tayang link */
 .px-tag.jdw{background:#ffd23f;color:var(--navy)}
+.px-tag.jdw.soon{background:var(--yel);color:var(--navy)}
+.px-tag.jdw.end{background:var(--red);color:#fff}
+.px-tag.jdw.done{background:#8a8a94;color:#fff}
 .px-sch-l{display:grid;gap:4px;font-weight:700;font-size:.8rem;flex:1;min-width:0}
 .px-sch-l input{width:100%}

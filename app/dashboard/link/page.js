@@ -33,12 +33,12 @@ function SchedTag({ l }) {
   }, [has]);
   const show = l.show_at ? wibMs(l.show_at) : null;
   const hide = l.hide_at ? wibMs(l.hide_at) : null;
-  let t = '';
-  if (show && show > now) t = `Tayang dalam ${fmtLeft(show - now)}`;
-  else if (hide && hide <= now) t = 'Berakhir';
-  else if (hide) t = `Berakhir dalam ${fmtLeft(hide - now)}`;
+  let t = '', cls = '';
+  if (show && show > now) { t = `Tayang dalam ${fmtLeft(show - now)}`; cls = 'soon'; }
+  else if (hide && hide <= now) { t = 'Berakhir'; cls = 'done'; }
+  else if (hide) { t = `Berakhir dalam ${fmtLeft(hide - now)}`; cls = 'end'; }
   if (!t || Number.isNaN(show) || Number.isNaN(hide)) return null;
-  return <span className="px-tag jdw" style={{ fontVariantNumeric: 'tabular-nums' }}>{t}</span>;
+  return <span className={'px-tag jdw ' + cls} style={{ fontVariantNumeric: 'tabular-nums' }}>{t}</span>;
 }
 const Grip = () => (<svg {...S} strokeWidth="2.8"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" /></svg>);
 
