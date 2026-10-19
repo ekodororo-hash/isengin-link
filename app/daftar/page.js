@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle } from '@/lib/themes';
+import useUsernameCheck from '../useUsernameCheck';
 
 const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/david'], ['Video terbaru di YouTube', 'https://youtube.com/@david'], ['Kirim email', 'mailto:david@email.com']];
 
@@ -18,6 +19,7 @@ export default function Daftar() {
   const [refShown, setRefShown] = useState(false);
   const [refFull, setRefFull] = useState(false); // undangan dari kode ini sudah penuh (batas teman per pengundang)
   const [refMax, setRefMax] = useState(10);
+  const cek = useUsernameCheck(username);
   const nm = username || 'david';
 
   // Pesan error hilang otomatis setelah beberapa detik, tidak menempel permanen.
@@ -113,6 +115,7 @@ export default function Daftar() {
               <input id="u" value={username} maxLength={20} autoComplete="username" spellCheck={false}
                 onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
             </div>
+            {cek && <p className={'un-hint ' + cek.cls} role="status" aria-live="polite">{cek.cls === 'ok' ? '✓ ' : '✕ '}{cek.text}</p>}
             <label htmlFor="p">Sandi</label>
             <div className="au-field">
               <input id="p" type={show ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={password} autoComplete="new-password" onChange={(e) => setP(e.target.value)} />

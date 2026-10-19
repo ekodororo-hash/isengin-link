@@ -15,6 +15,9 @@ body:has(.lp-wrap){background:#ffd23f}
 .lp-btn:active,.lp-theme button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--navy)}
 .lp-btn:focus-visible,.lp-theme button:focus-visible,.lp-link:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
 .lp-err{flex:1 1 100%;margin:0;color:#a00018;font-weight:700}
+.un-hint{margin:-4px 0 10px;font-size:.88rem;font-weight:700;min-height:1.2em}
+.un-hint.ok{color:#0a6b2d}
+.un-hint.bad{color:#a00018}
 .lp-theme{display:flex;gap:8px;margin-top:30px;align-items:center;flex-wrap:wrap}
 .lp-theme button{border:3px solid var(--navy);background:#fff;color:var(--navy);font-family:Bungee,sans-serif;font-size:.8rem;border-radius:999px;box-shadow:3px 3px 0 var(--navy);padding:6px 14px;cursor:pointer}
 .lp-theme button[aria-pressed="true"]{background:var(--red);color:#fff}

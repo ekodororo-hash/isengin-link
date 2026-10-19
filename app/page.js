@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { themeStyle } from '@/lib/themes';
 import { LinkIcon, NamedIcon } from './icons';
 import Bawah from './Bawah';
+import useUsernameCheck from './useUsernameCheck';
 
 const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/david'], ['Video terbaru di YouTube', 'https://youtube.com/@david'], ['Kirim email', 'mailto:david@email.com']];
 
@@ -15,6 +16,7 @@ export default function Home() {
   const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
+  const cek = useUsernameCheck(username, mode === 'register');
   const t = 'neo';
   const nm = username || 'david';
   const [ref, setRef] = useState('');
@@ -75,6 +77,7 @@ export default function Home() {
             <input id="u" value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete="username" spellCheck={false}
               onChange={(e) => setU(e.target.value.toLowerCase().replace(mode === 'register' ? /[^a-z0-9_]/g : /[^a-z0-9_@.+-]/g, ''))} />
           </div>
+          {mode === 'register' && cek && <p className={'un-hint ' + cek.cls} role="status" aria-live="polite">{cek.cls === 'ok' ? '✓ ' : '✕ '}{cek.text}</p>}
           <label htmlFor="p">Sandi</label>
           <div className="lp-field">
             <input id="p" type={show ? 'text' : 'password'} placeholder={mode === 'register' ? 'Minimal 6 karakter' : ''} value={password} onChange={(e) => setP(e.target.value)}
