@@ -20,6 +20,21 @@ const Img = () => (<svg {...S}><rect x="3.5" y="5" width="17" height="14" rx="2.
 const Badge = () => (<svg className="px-ok" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="#2fb344" stroke="#1f2255" strokeWidth="1.6" /><path d="M4.6 8.3l2.3 2.3 4.5-4.7" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" /></svg>);
 const Play = () => (<svg {...S}><rect x="3" y="5" width="18" height="14" rx="3" /><path d="M10 9.5v5l4.5-2.5z" /></svg>);
 const Qr = () => (<svg {...S}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></svg>);
+// Bagian opsional yang bisa dibuka-tutup. Awalnya terbuka hanya kalau sudah ada isinya (dihitung saat editor link dibuka).
+// Tombolnya berkelas "g" supaya tidak dicegat modal Pro (lihat onClickCapture di bawah).
+function Acc({ title, hint, has, cls, children }) {
+  const [o, setO] = useState(!!has);
+  return (
+    <div className={'px-cat px-acc ' + (cls || '') + (o ? ' open' : '')}>
+      <button type="button" className="px-acc-h g" aria-expanded={o} onClick={() => setO(!o)}>
+        <span className="px-acc-t">{title}<span className="px-hint-i">{hint}</span></span>
+        {has && !o && <span className="px-acc-on">aktif</span>}
+        <svg className="px-acc-c" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+      </button>
+      {o && children}
+    </div>
+  );
+}
 // Kolom jadwal berisi waktu WIB (YYYY-MM-DDTHH:mm); ubah ke epoch ms.
 const wibMs = (s) => new Date(s + ':00+07:00').getTime();
 // Label jadwal dengan hitung mundur berjalan: "Tayang dalam ..." sebelum tayang, "Berakhir dalam ..." selagi tayang, "Berakhir" sesudahnya.
@@ -290,8 +305,7 @@ export default function LinkPage() {
                     <input aria-label={`Judul link ${i + 1}`} placeholder="Judul" value={l.title} maxLength={60} onChange={(e) => setL(i, 'title', e.target.value)} />
                     <input aria-label={`Alamat link ${i + 1}`} placeholder="https://..." value={l.url} onChange={(e) => setL(i, 'url', e.target.value)} />
                   </div>
-                  <fieldset className="px-cat">
-                    <legend>Katalog produk <span className="px-hint-i">opsional</span></legend>
+                  <Acc title="Katalog produk" hint="opsional" has={!!(l.price || l.old_price || l.label)}>
                     <div className="px-lk-f">
                       <input aria-label={`Harga link ${i + 1}`} placeholder="Harga, mis. 45000" inputMode="text" maxLength={24} value={l.price || ''} onChange={(e) => setL(i, 'price', e.target.value)} />
                       <input aria-label={`Harga coret link ${i + 1}`} placeholder="Harga coret (sebelum diskon)" maxLength={24} value={l.old_price || ''} onChange={(e) => setL(i, 'old_price', e.target.value)} />
@@ -301,9 +315,8 @@ export default function LinkPage() {
                         <button key={v || 'x'} type="button" aria-pressed={(l.label || '') === v} onClick={() => setL(i, 'label', v)}>{t}</button>
                       ))}
                     </div>
-                  </fieldset>
-                  <fieldset className="px-cat px-grd">
-                    <legend>Sorotan dan pengaman <span className="px-hint-i">opsional</span></legend>
+                  </Acc>
+                  <Acc title="Sorotan dan pengaman" hint="opsional" has={!!(l.featured || l.guard)} cls="px-grd">
                     <label className="px-ck">
                       <input type="checkbox" checked={l.featured === true} disabled={!l.featured && feats >= 2} onChange={(e) => setL(i, 'featured', e.target.checked)} />
                       Sorot link ini (bingkai dan bintang di halamanmu){!l.featured && feats >= 2 ? ' · maksimal 2 link' : ''}
@@ -318,9 +331,8 @@ export default function LinkPage() {
                       <p className="px-hint">Alamat link tidak tampil di halaman publik. Pengunjung harus memasukkan sandi dulu. Bagikan sandinya sendiri ke orang yang boleh membuka.</p>
                     </>)}
                     {l.guard === 'adult' && <p className="px-hint">Pengunjung melihat peringatan konten dewasa dulu dan harus memilih “Saya 18+” untuk lanjut.</p>}
-                  </fieldset>
-                  <fieldset className="px-cat px-sch">
-                    <legend>Jadwal tayang <span className="px-hint-i">opsional, waktu WIB</span></legend>
+                  </Acc>
+                  <Acc title="Jadwal tayang" hint="opsional, waktu WIB" has={!!(l.show_at || l.hide_at)} cls="px-sch">
                     <div className="px-lk-f">
                       <label className="px-sch-l">Tampil mulai
                         <input type="datetime-local" aria-label={`Tampil mulai link ${i + 1}`} value={l.show_at || ''} onChange={(e) => setL(i, 'show_at', e.target.value)} />
@@ -331,7 +343,7 @@ export default function LinkPage() {
                     </div>
                     {(l.show_at || l.hide_at) && <button type="button" className="px-btn g sm" onClick={() => set('links', m.links.map((x, j) => (j === i ? { ...x, show_at: '', hide_at: '' } : x)))}>Hapus jadwal</button>}
                     <p className="px-hint">Cocok untuk promo atau flash sale: link muncul dan hilang otomatis dari halaman publik. Kosongkan untuk tampil terus.</p>
-                  </fieldset>
+                  </Acc>
                   <div className="px-lk-t">
                     {l.thumb && <button className="px-btn g sm" onClick={() => setL(i, 'thumb', '')}>Hapus gambar</button>}
                   </div>
