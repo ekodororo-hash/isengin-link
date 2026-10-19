@@ -9,17 +9,17 @@ export const metadata = {
 const NILAI = [
   {
     h: 'Kesederhanaan',
-    p: 'Fungsi dasar dapat digunakan dalam hitungan menit, tanpa memerlukan keahlian teknis.',
+    p: 'Bisa langsung dipakai dalam hitungan menit, tanpa perlu keahlian teknis.',
     i: <path d="M4 20l16-16M4 12l8-8M4 20l8-8" />,
   },
   {
     h: 'Transparansi Harga',
-    p: 'Paket Gratis tersedia tanpa batas waktu. Paket Pro hanya diperuntukkan bagi fitur tambahan, bukan syarat penggunaan dasar.',
+    p: 'Paket Gratis tidak ada batas waktu. Paket Pro hanya untuk fitur tambahan, bukan syarat untuk memakai fitur dasar.',
     i: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9.2a2.5 2.5 0 0 1 5 0c0 2-2.5 2-2.5 4M12 17h.01" /></>,
   },
   {
-    h: 'Kepemilikan Data Penuh',
-    p: 'Seluruh konten yang Anda unggah tetap menjadi hak Anda sepenuhnya, dengan opsi ekspor data kapan pun diperlukan.',
+    h: 'Datamu Tetap Milikmu',
+    p: 'Semua konten yang kamu unggah tetap menjadi hakmu sepenuhnya, dengan opsi ekspor data kapan pun kamu butuh.',
     i: <><rect x="4" y="4" width="16" height="16" rx="3" /><path d="M9 9h6v6H9z" /></>,
   },
 ];
@@ -61,20 +61,20 @@ export default function TentangKami() {
       </header>
       <main>
         <div className="ft-hero">
-          <h1>Satu platform tautan untuk <em>seluruh kebutuhan</em> Anda.</h1>
-          <p className="ft-lead">isengin.site membantu individu dan pelaku usaha menampilkan seluruh tautan penting, mulai dari toko, konten, hingga kontak, dalam satu halaman yang profesional dan mudah dikelola.</p>
+          <h1>Satu link untuk <em>semua kontenmu</em>.</h1>
+          <p className="ft-lead">isengin.site membantu kamu menaruh semua link penting, mulai dari toko, konten, sampai kontak, di satu halaman yang rapi dan mudah diatur.</p>
         </div>
         <div className="ft-wrap">
           <section aria-labelledby="cerita">
-            <h2 id="cerita">Latar Belakang Kami</h2>
+            <h2 id="cerita">Kenapa isengin.site dibuat</h2>
             <p className="ft-sub" style={{ maxWidth: '640px' }}>
-              isengin.site dikembangkan untuk menjawab kebutuhan sederhana namun mendasar, yaitu menyatukan berbagai tautan penting, mulai dari media sosial, toko daring, portofolio, hingga kontak, dalam satu halaman yang terorganisir. Kami percaya setiap individu dan pelaku usaha berhak memiliki etalase digital yang mudah dikelola dan mencerminkan identitas mereka secara profesional.
+              isengin.site dibuat untuk satu kebutuhan sederhana: menyatukan link media sosial, toko online, portofolio, dan kontak di satu halaman yang rapi. Kami percaya siapa pun, baik pribadi maupun pemilik usaha, berhak punya etalase digital yang mudah diatur dan mencerminkan dirinya.
             </p>
           </section>
 
           <section aria-labelledby="nilai">
-            <h2 id="nilai">Nilai yang Kami Junjung</h2>
-            <p className="ft-sub">Prinsip yang menjadi acuan dalam setiap pengembangan fitur.</p>
+            <h2 id="nilai">Prinsip kami</h2>
+            <p className="ft-sub">Pegangan kami setiap kali menambah fitur.</p>
             <div className="ft-grid">
               {NILAI.map((n) => (
                 <div className="ft-card" key={n.h}>
@@ -90,7 +90,7 @@ export default function TentangKami() {
 
           <section aria-labelledby="kontak">
             <h2 id="kontak">Hubungi Kami</h2>
-            <p className="ft-sub">Silakan pilih kanal berikut untuk pertanyaan, masukan, atau kerja sama.</p>
+            <p className="ft-sub">Punya pertanyaan, masukan, atau ajakan kerja sama? Hubungi lewat salah satu kanal ini.</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '20px' }}>
               {KONTAK.map((k) => (
                 <a
@@ -115,8 +115,8 @@ export default function TentangKami() {
           </section>
 
           <div className="ft-final">
-            <h2>Mulai Kelola Tautan Anda Hari Ini</h2>
-            <Link className="ft-btn" href="/daftar">Daftar Sekarang</Link>
+            <h2>Siap punya satu link untuk semuanya?</h2>
+            <Link className="ft-btn" href="/daftar">Daftar gratis</Link>
           </div>
         </div>
       </main>
