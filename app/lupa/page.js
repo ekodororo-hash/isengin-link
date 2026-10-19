@@ -127,7 +127,7 @@ export default function Lupa() {
                 </div>
                 <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Mengirim...' : 'Kirim kode'}</button>
               </form>
-              <p className="au-note" style={{ marginTop: 14 }}>Belum punya email terverifikasi? <Link href="/tentang-kami" style={{ color: 'inherit' }}>Hubungi admin</Link>.</p>
+              <p className="au-note" style={{ marginTop: 14, textAlign: 'center' }}>Belum punya email terverifikasi? <Link href="/tentang-kami" style={{ color: 'inherit' }}>Hubungi admin</Link>.</p>
             </>
           ) : (
             <>

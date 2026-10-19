@@ -75,7 +75,7 @@ export default function Daftar() {
         <Link className="au-logo" href="/">ISENGIN.SITE</Link>
         <div className="au-demo" aria-hidden="true">
           <div className="lp-iph">
-            <div className="lp-phone" data-t="neo" style={themeStyle('neo')}>
+            <div className="lp-phone" data-t="krem" style={themeStyle('krem')}>
               <div className="lp-isl" />
               <div className="lp-url">isengin.site/{nm}</div>
               <div className="lp-ava">{nm[0].toUpperCase()}</div>
