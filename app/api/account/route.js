@@ -97,7 +97,11 @@ export async function PUT(req) {
     const byIp = await hit(`mailv:ip:${ipOf(req)}`, 10, 3600);
     if (byIp.over) return tooMany(byIp);
     const code = await issueCode(id, 'verify', email);
-    if (!(await sendMail({ to: email, ...codeMail(code, 'verify') }))) return bad('Email belum bisa dikirim. Coba lagi sebentar lagi.', 502);
+    if (!(await sendMail({ to: email, ...codeMail(code, 'verify') }))) {
+      // Gagal kirim: buang kodenya supaya halaman tidak menampilkan kotak "Kode dikirim" untuk email yang tidak pernah terkirim.
+      await dropCodes(id, 'verify');
+      return bad('Email belum bisa dikirim. Coba lagi sebentar lagi.', 502);
+    }
   } catch (e) {
     console.error('Kirim kode verifikasi gagal (sudah jalankan schema-update.sql?):', e.message);
     return bad('Email belum bisa disimpan. Jalankan schema-update.sql di database.', 500);
