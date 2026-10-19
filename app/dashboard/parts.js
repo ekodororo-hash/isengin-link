@@ -8,6 +8,29 @@ import { socialList } from '@/lib/socials';
 import { fmtPrice, labelText } from '@/lib/catalog';
 import { fontCss } from '@/lib/style';
 import { effectiveLook, thumbOk } from '@/lib/pro';
+import { fmtLeft } from '../countdown';
+
+// Kolom jadwal berisi waktu WIB (YYYY-MM-DDTHH:mm); ubah ke epoch ms.
+const wibMs = (s) => new Date(s + ':00+07:00').getTime();
+// Sama seperti EndCount/SoonRow di halaman publik, tapi untuk pratinjau dasbor:
+// "Tayang dalam ..." sebelum tayang, "Berakhir dalam ..." selagi tayang, tidak ada sesudahnya.
+function SchedNote({ l }) {
+  const [now, setNow] = useState(() => Date.now());
+  const has = !!(l.show_at || l.hide_at);
+  useEffect(() => {
+    if (!has) return undefined;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [has]);
+  if (!has) return null;
+  const show = l.show_at ? wibMs(l.show_at) : null;
+  const hide = l.hide_at ? wibMs(l.hide_at) : null;
+  let t = '';
+  if (show && show > now) t = `Tayang dalam ${fmtLeft(show - now)}`;
+  else if (hide && hide > now) t = `Berakhir dalam ${fmtLeft(hide - now)}`;
+  if (!t) return null;
+  return <span className="pend">{t}</span>;
+}
 
 // Pratinjau: di desktop tampil di samping form. Di HP berupa tombol melayang "Pratinjau" yang membuka lembar pratinjau, jadi tidak perlu scroll ke bawah.
 export function PreviewDock({ children, low }) {
@@ -50,7 +73,7 @@ export function Phone({ trial }) {
         return (
           <div className={'l' + (price || old ? ' cat' : '') + (l.label === 'habis' ? ' soldout' : '') + (l.featured ? ' feat' : '')} key={l.id || l._k || i}>
             {th ? <img className="t" src={th} alt="" /> : <LinkIcon url={l.url} size={16} />}
-            <span>{l.title || 'Judul link'}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}</span>
+            <span>{l.title || 'Judul link'}{(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}<SchedNote l={l} /></span>
             {l.label && <span className={'pbd ' + l.label}>{labelText(l.label)}</span>}
             {(l.featured || l.guard) && <span className="pind">{l.featured && <svg className="pstar" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-label="Sorotan"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z" /></svg>}{l.guard === 'pass' && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-label="Terkunci"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>}{l.guard === 'adult' && <span className="p18">18+</span>}</span>}
           </div>
