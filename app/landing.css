@@ -10,7 +10,7 @@ body:has(.lp-wrap){background:#ffd23f}
 .lp-field input{border:0;outline:0;flex:1;min-width:0;font:inherit;font-weight:700;color:var(--navy);background:transparent;padding:12px 2px}
 .lp-field:focus-within{box-shadow:4px 4px 0 var(--red)}
 .lp-show{flex:none;border:0;background:none;padding:6px 0 6px 6px;font:inherit;font-size:.82rem;font-weight:800;color:var(--navy);cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
-.lp-btn{min-height:52px;padding:0 22px;border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);background:var(--red);color:#fff;font-family:Bungee,sans-serif;font-size:.9rem;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.lp-btn{flex:1 1 100%;width:100%;min-height:52px;padding:0 22px;border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);background:var(--red);color:#fff;font-family:Bungee,sans-serif;font-size:.9rem;cursor:pointer;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .lp-btn.alt{background:#fff;color:var(--navy)}
 .lp-btn:active,.lp-theme button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--navy)}
 .lp-btn:focus-visible,.lp-theme button:focus-visible,.lp-link:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
@@ -45,7 +45,7 @@ body:has(.lp-wrap){background:#ffd23f}
 @media(max-width:560px){
 .lp-wrap{padding:28px 16px 44px;gap:32px}
 .lp-lead{font-size:1rem;margin-bottom:22px}
-.lp-btn{flex:1 1 100%;padding:8px 14px;font-size:.8rem}
+.lp-btn{padding:8px 14px;font-size:.8rem}
 .lp-phone{padding:24px 16px 18px;box-shadow:6px 6px 0 var(--navy)}
 }
 
@@ -95,7 +95,7 @@ body:has(.legal-wrap){background:#ffd23f}
 
 /* bar atas: tombol masuk dan daftar */
 .lp-nav{max-width:1040px;margin:0 auto;padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:"Plus Jakarta Sans",system-ui,sans-serif}
-.lp-brand{font-family:Bungee,sans-serif;font-size:1rem;color:#1f2255;text-decoration:none}
+.lp-brand{font-family:Bungee,sans-serif;font-size:1rem;color:#1f2255;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .lp-nbtn{display:flex;gap:10px}
 .lp-nb{display:inline-flex;align-items:center;min-height:42px;padding:0 20px;border:3px solid #1f2255;border-radius:999px;box-shadow:3px 3px 0 #1f2255;background:#fff;color:#1f2255;font-family:Bungee,sans-serif;font-size:.8rem;text-decoration:none;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .lp-nb.r{background:#ff5a43;color:#fff}
