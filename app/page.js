@@ -74,7 +74,7 @@ export default function Home() {
           <div className="un-row"><label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>{mode === 'register' && <UnHint cek={cek} />}</div>
           <div className="lp-field">
             {mode === 'register' && <span>isengin.site/</span>}
-            <input id="u" value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete="username" spellCheck={false}
+            <input id="u" value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete={mode === 'register' ? 'off' : 'username'} spellCheck={false}
               onChange={(e) => setU(e.target.value.toLowerCase().replace(mode === 'register' ? /[^a-z0-9_]/g : /[^a-z0-9_@.+-]/g, ''))} />
           </div>
           <label htmlFor="p">Sandi</label>

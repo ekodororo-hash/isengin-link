@@ -112,7 +112,7 @@ export default function Daftar() {
             <div className="un-row"><label htmlFor="u">Alamat halamanmu</label><UnHint cek={cek} /></div>
             <div className="au-field">
               <span>isengin.site/</span>
-              <input id="u" value={username} maxLength={20} autoComplete="username" spellCheck={false}
+              <input id="u" value={username} maxLength={20} autoComplete="off" spellCheck={false}
                 onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
             </div>
             <label htmlFor="p">Sandi</label>
