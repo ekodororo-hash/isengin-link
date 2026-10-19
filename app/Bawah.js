@@ -72,12 +72,12 @@ export default function Bawah() {
               <tbody>
                 <tr className="g"><th colSpan={3}>Dasar</th></tr>
                 <tr><td>Halaman, link, tema, dan statistik dasar</td><td><span className="ya">Ya</span></td><td><span className="ya">Ya</span></td></tr>
-                <tr><td>Statistik harian per link</td><td>7 hari</td><td>30 hari</td></tr>
+                <tr><td>Rentang statistik</td><td>7 dan 30 hari</td><td>90 hari, semua, dan pilih tanggal</td></tr>
                 <tr><td>Gambar di link</td><td>3 gambar</td><td>Tanpa batas</td></tr>
                 <tr className="g"><th colSpan={3}>Tampilan</th></tr>
                 <tr><td>Latar belakang gambar</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
                 <tr><td>Warna kustom</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
-                <tr><td>Tema selain Kobalt, Permen, Hutan</td><td className="no">Tidak</td><td><span className="ya">Ya</span></td></tr>
+                <tr><td>Pilihan tema</td><td>4 tema</td><td>10 tema</td></tr>
                 <tr><td>Pilihan font</td><td>2 font</td><td>5 font</td></tr>
                 <tr><td>Pilihan gaya tombol</td><td>2 gaya</td><td>5 gaya</td></tr>
                 <tr className="g"><th colSpan={3}>Domain dan branding</th></tr>

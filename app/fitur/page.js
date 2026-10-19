@@ -33,7 +33,7 @@ const ROWS = [
   ['Tampilan'],
   ['Latar belakang gambar', 'Tidak', 'Ya'],
   ['Warna kustom', 'Tidak', 'Ya'],
-  ['Tema selain Kobalt, Permen, Hutan', 'Tidak', 'Ya'],
+  ['Pilihan tema', '4 tema', '10 tema'],
   ['Pilihan font', '2 font', '5 font'],
   ['Pilihan gaya tombol', '2 gaya', '5 gaya'],
   ['Domain dan branding'],
