@@ -8,51 +8,64 @@ import { issueCode, checkCode, dropCodes } from '@/lib/codes';
 import { sendMail, codeMail } from '@/lib/mail';
 const EMAIL_RE = /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/;
 const bad = (error, status = 400) => Response.json({ error }, { status });
+// Halaman Lupa sandi menerima email atau nama pengguna (boleh diawali @).
+function whoKey(raw) {
+  const w = String(raw || '').trim().toLowerCase().replace(/^@/, '').slice(0, 120);
+  if (EMAIL_RE.test(w)) return { by: 'email', val: w };
+  if (/^[a-z0-9_]{3,20}$/.test(w)) return { by: 'username', val: w };
+  return null;
+}
+// Samarkan email di layar: b***@gmail.com
+const mask = (em) => { const [l, d] = String(em).split('@'); return `${l.slice(0, 1)}***@${d}`; };
+const findBy = (w) => (w.by === 'email'
+  ? sql`select id, username, email, email_verified_at from users where email=${w.val} and active is not false`
+  : sql`select id, username, email, email_verified_at from users where username=${w.val} and active is not false`);
 export async function POST(req) {
-  const { mode, username = '', password = '', ref = '', email = '', code = '' } = await req.json();
+  const { mode, username = '', password = '', ref = '', email = '', code = '', who = '' } = await req.json();
   if (mode === 'logout') { clearSession(); return Response.json({ ok: true }); }
-  // Lupa sandi, langkah 1: kirim kode 6 angka ke email yang sudah diverifikasi.
-  // Sengaja memberi tahu bila email tidak terdaftar atau belum diverifikasi (lebih jelas bagi pengguna).
-  // Konsekuensinya email bisa ditebak, jadi percobaan dibatasi ketat per IP dan per email.
+  // Lupa sandi, langkah 1: kirim kode 6 angka ke email terverifikasi milik akun.
+  // Akun dicari lewat email atau nama pengguna; layar hanya menerima email yang disamarkan.
+  // Sengaja memberi tahu bila akun tidak ada atau belum punya email terverifikasi (lebih jelas bagi pengguna).
+  // Konsekuensinya akun bisa ditebak, jadi percobaan dibatasi ketat per IP dan per email/nama pengguna.
   if (mode === 'forgot') {
-    const em = String(email).trim().toLowerCase().slice(0, 120);
     const ip = ipOf(req);
     const byIp = await hit(`forgot:ip:${ip}`, 8, 3600);
     if (byIp.over) return tooMany(byIp);
-    if (!EMAIL_RE.test(em)) return bad('Format email belum benar.');
-    const byMail = await hit(`forgot:e:${em}`, 3, 3600);
-    if (byMail.over) return tooMany(byMail);
+    const w = whoKey(who || email);
+    if (!w) return bad('Isi email atau nama pengguna yang benar.');
+    const byWho = await hit(`forgot:${w.by === 'email' ? 'e' : 'u'}:${w.val}`, 3, 3600);
+    if (byWho.over) return tooMany(byWho);
     try {
-      const u = (await sql`select id, email_verified_at from users where email=${em} and active is not false`)[0];
-      if (!u) return bad('Email tidak terdaftar.', 404);
-      if (!u.email_verified_at) return bad('Email ini belum diverifikasi, jadi belum bisa dipakai reset sandi. Hubungi admin.', 403);
-      const c = await issueCode(u.id, 'reset', em);
-      if (!(await sendMail({ to: em, ...codeMail(c, 'reset') }))) {
+      const u = (await findBy(w))[0];
+      if (!u) return bad(w.by === 'email' ? 'Email tidak terdaftar.' : 'Nama pengguna tidak ditemukan.', 404);
+      if (!u.email || !u.email_verified_at) return bad(w.by === 'email' ? 'Email ini belum diverifikasi, jadi belum bisa dipakai reset sandi. Hubungi admin.' : 'Akun ini belum punya email terverifikasi, jadi belum bisa reset sandi. Hubungi admin.', 403);
+      const c = await issueCode(u.id, 'reset', u.email);
+      if (!(await sendMail({ to: u.email, ...codeMail(c, 'reset') }))) {
         await dropCodes(u.id, 'reset');
         return bad('Email belum bisa dikirim. Coba lagi sebentar lagi.', 502);
       }
+      return Response.json({ ok: true, sent: mask(u.email) });
     } catch (e) {
       console.error('Kirim kode reset gagal (sudah jalankan schema-update.sql?):', e.message);
       return bad('Reset sandi belum bisa dipakai. Coba lagi nanti.', 500);
     }
-    return Response.json({ ok: true });
   }
   // Lupa sandi, langkah 2: cek kode, pasang sandi baru, tutup sesi lama, lalu langsung masuk.
   if (mode === 'reset') {
-    const em = String(email).trim().toLowerCase().slice(0, 120);
     const pw = String(password);
     const byIp = await hit(`reset:ip:${ipOf(req)}`, 20, 3600);
     if (byIp.over) return tooMany(byIp);
     if (pw.length < 8) return bad('Sandi baru minimal 8 karakter.');
     if (pw.length > 100) return bad('Sandi baru terlalu panjang.');
     const WRONG = 'Kode salah atau sudah kedaluwarsa. Minta kode baru.';
-    if (!EMAIL_RE.test(em)) return bad(WRONG);
+    const w = whoKey(who || email);
+    if (!w) return bad(WRONG);
     try {
-      const u = (await sql`select id, username from users where email=${em} and email_verified_at is not null and active is not false`)[0];
-      if (!u) return bad(WRONG);
+      const u = (await findBy(w))[0];
+      if (!u || !u.email_verified_at) return bad(WRONG);
       const c = await checkCode(u.id, 'reset', code);
       if (c.error) return bad(c.error);
-      if (c.email !== em) return bad(WRONG);
+      if (c.email !== u.email) return bad(WRONG);
       await sql`update users set password_hash=${await bcrypt.hash(pw, 10)}, pw_changed_at=now() where id=${u.id}`;
       await dropCodes(u.id);
       await clear(`login:u:${u.username}`);

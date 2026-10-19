@@ -8,7 +8,8 @@ const lnk = { background: 'none', border: 0, padding: 0, font: 'inherit', fontWe
 
 export default function Lupa() {
   const [step, setStep] = useState(1);
-  const [email, setEmail] = useState('');
+  const [who, setWho] = useState('');
+  const [sent, setSent] = useState('');
   const [code, setCode] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
@@ -36,12 +37,12 @@ export default function Lupa() {
 
   async function sendCode(e) {
     e?.preventDefault();
-    const em = email.trim().toLowerCase();
-    if (!em) { setErr('Isi email terlebih dahulu.'); return; }
+    const w = who.trim().toLowerCase().replace(/^@/, '');
+    if (!w) { setErr('Isi email atau nama pengguna terlebih dahulu.'); return; }
     setErr(''); setBusy(true);
     try {
-      const { ok, d } = await post({ mode: 'forgot', email: em });
-      if (ok) { setEmail(em); setCode(''); setStep(2); setWait(60); }
+      const { ok, d } = await post({ mode: 'forgot', who: w });
+      if (ok) { setWho(w); setSent(d.sent || ''); setCode(''); setStep(2); setWait(60); }
       else setErr(d.error || 'Gagal.');
     } catch { setErr('Gagal terhubung. Coba lagi.'); }
     setBusy(false);
@@ -54,7 +55,7 @@ export default function Lupa() {
     if (pw !== pw2) { setErr('Konfirmasi sandi tidak sama.'); return; }
     setErr(''); setBusy(true);
     try {
-      const { ok, d } = await post({ mode: 'reset', email, code, password: pw });
+      const { ok, d } = await post({ mode: 'reset', who, code, password: pw });
       if (ok) { location.href = '/dashboard'; return; }
       setErr(d.error || 'Gagal.');
     } catch { setErr('Gagal terhubung. Coba lagi.'); }
@@ -77,23 +78,23 @@ export default function Lupa() {
           <h1 className="au-h1">Lupa sandi</h1>
           {step === 1 ? (
             <>
-              <p className="au-sub">Masukkan email akunmu. Kami kirim kode 6 angka untuk membuat sandi baru.</p>
+              <p className="au-sub">Masukkan email atau nama pengguna akunmu. Kami kirim kode 6 angka ke email terverifikasi di akun itu untuk membuat sandi baru.</p>
               <form className="au-form" onSubmit={sendCode}>
                 <div className="au-ugroup">
                   {err && <p className="au-err" role="alert">{err}</p>}
-                  <label htmlFor="em">Email</label>
+                  <label htmlFor="em">Email atau nama pengguna</label>
                   <div className="au-field">
-                    <input id="em" type="email" value={email} maxLength={120} autoComplete="email" spellCheck={false} placeholder="nama@email.com"
-                      onChange={(e) => setEmail(e.target.value)} />
+                    <input id="em" value={who} maxLength={120} autoComplete="username" autoCapitalize="none" spellCheck={false} placeholder="nama@email.com atau nama pengguna"
+                      onChange={(e) => setWho(e.target.value)} />
                   </div>
                 </div>
                 <button className="au-btn" type="submit" disabled={busy}>{busy ? 'Mengirim...' : 'Kirim kode'}</button>
               </form>
-              <p className="au-note" style={{ marginTop: 14 }}>Hanya email yang sudah diverifikasi di Pengaturan yang bisa dipakai. Kalau akunmu belum punya email terverifikasi, <Link href="/tentang-kami" style={{ color: 'inherit' }}>hubungi admin</Link>.</p>
+              <p className="au-note" style={{ marginTop: 14 }}>Lupa email mana yang kamu pakai? Isi nama penggunamu saja. Kode hanya dikirim ke email yang sudah diverifikasi di Pengaturan. Kalau akunmu belum punya email terverifikasi, <Link href="/tentang-kami" style={{ color: 'inherit' }}>hubungi admin</Link>.</p>
             </>
           ) : (
             <>
-              <p className="au-sub">Kode 6 angka sudah dikirim ke <b>{email}</b>. Cek folder Spam juga. Kode berlaku 10 menit.</p>
+              <p className="au-sub">Kode 6 angka sudah dikirim ke <b>{sent}</b>. Cek folder Spam juga. Kode berlaku 10 menit.</p>
               <form className="au-form" onSubmit={reset}>
                 <div className="au-ugroup">
                   {err && <p className="au-err" role="alert">{err}</p>}
@@ -119,7 +120,7 @@ export default function Lupa() {
                 <button type="button" style={{ ...lnk, opacity: wait > 0 ? 0.5 : 1, cursor: wait > 0 ? 'default' : 'pointer' }} disabled={wait > 0 || busy} onClick={sendCode}>
                   {wait > 0 ? `Kirim ulang kode (${wait} detik)` : 'Kirim ulang kode'}
                 </button>
-                <button type="button" style={lnk} onClick={() => { setStep(1); setErr(''); }}>Ganti email</button>
+                <button type="button" style={lnk} onClick={() => { setStep(1); setErr(''); }}>Ganti akun</button>
               </p>
             </>
           )}
