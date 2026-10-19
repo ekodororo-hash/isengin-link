@@ -10,13 +10,12 @@ import useUsernameCheck, { UnHint } from './useUsernameCheck';
 const LINKS = [['Pesan lewat WhatsApp', 'https://wa.me/6281234567890'], ['Preset Lightroom (toko)', 'https://tokopedia.com/david'], ['Video terbaru di YouTube', 'https://youtube.com/@david'], ['Kirim email', 'mailto:david@email.com']];
 
 export default function Home() {
-  const [mode, setMode] = useState('register');
   const [username, setU] = useState('');
   const [password, setP] = useState('');
   const [show, setShow] = useState(false);
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
-  const cek = useUsernameCheck(username, mode === 'register');
+  const cek = useUsernameCheck(username, true);
   const t = 'neo';
   const nm = username || 'david';
   const [ref, setRef] = useState('');
@@ -49,7 +48,7 @@ export default function Home() {
     if (!username.trim() || !password) { setErr('Isi nama atau sandi terlebih dahulu.'); return; }
     setErr(''); setBusy(true);
     try {
-      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode, username, password, ref }) });
+      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mode: 'register', username, password, ref }) });
       const d = await r.json();
       if (r.ok) { location.href = '/dashboard'; return; }
       setErr(d.error || 'Gagal.');
@@ -71,27 +70,24 @@ export default function Home() {
         <h1 className="lp-h1">Satu link untuk semua kontenmu.</h1>
         <p className="lp-lead">Kumpulkan WhatsApp, Instagram, toko online, dan video di satu halaman. Pasang di bio, dan lihat berapa kali tiap link diklik.</p>
         <div className="lp-claim">
-          {refShown && mode === 'register' && <p className="lp-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
+          {refShown && <p className="lp-note">Kamu diundang <b>@{ref}</b>. Kalian berdua dapat bonus Pro setelah halamanmu berisi link.</p>}
           <div className="lp-ugroup">
           {err && <p className="lp-err" role="alert">{err}</p>}
-          <div className="un-row"><label htmlFor="u">{mode === 'register' ? 'Pilih alamat halamanmu' : 'Nama pengguna atau email'}</label>{mode === 'register' && <UnHint cek={cek} />}</div>
+          <div className="un-row"><label htmlFor="u">Pilih alamat halamanmu</label><UnHint cek={cek} /></div>
           <div className="lp-field">
-            {mode === 'register' && <span>isengin.site/</span>}
-            <input id="u" value={username} maxLength={mode === 'register' ? 20 : 120} autoComplete={mode === 'register' ? 'off' : 'username'} spellCheck={false}
-              onChange={(e) => setU(e.target.value.toLowerCase().replace(mode === 'register' ? /[^a-z0-9_]/g : /[^a-z0-9_@.+-]/g, ''))} />
+            <span>isengin.site/</span>
+            <input id="u" value={username} maxLength={20} autoComplete="off" spellCheck={false}
+              onChange={(e) => setU(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))} />
           </div>
           </div>
           <label htmlFor="p">Sandi</label>
           <div className="lp-field">
-            <input id="p" type={show ? 'text' : 'password'} placeholder={mode === 'register' ? 'Minimal 6 karakter' : ''} value={password} onChange={(e) => setP(e.target.value)}
-              autoComplete={mode === 'register' ? 'new-password' : 'current-password'} />
+            <input id="p" type={show ? 'text' : 'password'} placeholder="Minimal 6 karakter" value={password} onChange={(e) => setP(e.target.value)}
+              autoComplete="new-password" />
             <button type="button" className="lp-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
-          {mode !== 'register' && <p style={{ width: '100%', textAlign: 'right', margin: '0 0 4px', fontSize: '.85rem', fontWeight: 700 }}><Link href="/lupa" style={{ color: 'inherit' }}>Lupa sandi?</Link></p>}
-          <button className="lp-btn" onClick={go} disabled={busy}>{busy ? 'Memproses...' : (mode === 'register' ? 'Klaim nama' : 'Masuk')}</button>
-          <button className="lp-btn alt" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setErr(''); }}>
-            {mode === 'register' ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar'}
-          </button>
+          <button className="lp-btn" onClick={go} disabled={busy}>{busy ? 'Memproses...' : 'Klaim nama'}</button>
+          <Link className="lp-btn alt" href="/masuk">Sudah punya akun? Masuk</Link>
         </div>
       </section>
 

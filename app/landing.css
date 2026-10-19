@@ -1,6 +1,10 @@
 body:has(.lp-wrap){background:#ffd23f}
 .lp-wrap{--navy:#1f2255;--red:#ff5a43;--cream:#fffbe8;max-width:1040px;margin:0 auto;padding:40px 20px 56px;display:grid;gap:40px;grid-template-columns:1fr;align-items:center;color:var(--navy);font-family:"Plus Jakarta Sans",system-ui,sans-serif}
-@media(min-width:860px){.lp-wrap{grid-template-columns:1.1fr .9fr;padding-top:72px}}
+@media(min-width:860px){
+.lp-wrap{grid-template-columns:.9fr 1.1fr;padding-top:72px}
+.lp-wrap>section:first-child{order:2}
+.lp-wrap>section:last-child{order:1}
+}
 .lp-h1{font-family:Bungee,sans-serif;font-weight:400;text-transform:uppercase;font-size:clamp(2rem,6vw,3.6rem);line-height:1.05;margin:0 0 16px}
 .lp-lead{font-weight:600;font-size:1.1rem;max-width:44ch;margin:0 0 28px}
 .lp-claim{display:flex;flex-wrap:wrap;gap:12px;max-width:460px}
@@ -10,7 +14,7 @@ body:has(.lp-wrap){background:#ffd23f}
 .lp-field input{border:0;outline:0;flex:1;min-width:0;font:inherit;font-weight:700;color:var(--navy);background:transparent;padding:12px 2px}
 .lp-field:focus-within{box-shadow:4px 4px 0 var(--red)}
 .lp-show{flex:none;border:0;background:none;padding:6px 0 6px 6px;font:inherit;font-size:.82rem;font-weight:800;color:var(--navy);cursor:pointer;text-decoration:none;-webkit-tap-highlight-color:transparent}
-.lp-btn{flex:1 1 100%;width:100%;min-height:52px;padding:0 22px;border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);background:var(--red);color:#fff;font-family:Bungee,sans-serif;font-size:.9rem;cursor:pointer;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.lp-btn{flex:1 1 100%;width:100%;min-height:52px;padding:0 22px;border:3px solid var(--navy);border-radius:999px;box-shadow:4px 4px 0 var(--navy);background:var(--red);color:#fff;font-family:Bungee,sans-serif;font-size:.9rem;cursor:pointer;transition:transform .1s,box-shadow .1s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;display:flex;align-items:center;justify-content:center;text-align:center;text-decoration:none;box-sizing:border-box}
 .lp-btn.alt{background:#fff;color:var(--navy)}
 .lp-btn:active,.lp-theme button:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--navy)}
 .lp-btn:focus-visible,.lp-theme button:focus-visible,.lp-link:focus-visible{outline:3px dashed var(--navy);outline-offset:3px}
