@@ -8,7 +8,7 @@ const STATUS = { paid: 'Lunas', pending: 'Menunggu pembayaran', expire: 'Kedaluw
 const ROWS = [
   ['Dasar'],
   ['Halaman, link, tema, dan statistik dasar', 'Ya', 'Ya'],
-  ['Statistik harian per link', '7 hari', '30 hari'],
+  ['Rentang statistik', '7 dan 30 hari', '90 hari, semua, dan pilih tanggal'],
   ['Gambar di link', '3 gambar', 'Tanpa batas'],
   ['Tampilan'],
   ['Latar belakang gambar', 'Tidak', 'Ya'],

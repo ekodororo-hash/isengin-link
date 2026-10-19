@@ -33,12 +33,7 @@ async function load(id) {
     sql`select (plan_until > now()) as pro, plan_until from users where id=${id}`.catch(() => []),
   ]);
   const pro = plan[0]?.pro === true;
-  // Statistik per link: Pro 30 hari, gratis 7 hari (zona Jakarta). Hanya hari yang ada isinya.
-  const linkDays = await sql`select ls.link_id, to_char(ls.day,'YYYY-MM-DD') as day, ls.clicks
-      from link_stats ls join links l on l.id=ls.link_id
-      where l.user_id=${id} and ls.day >= ((now() at time zone 'Asia/Jakarta')::date - ${pro ? 29 : 6}::int)
-      order by ls.day`.catch((e) => { console.error('Statistik per link gagal (sudah jalankan schema-update.sql?):', e.message); return []; });
-  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: kindOf(l.kind), featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, stat_days: pro ? 30 : 7, link_days: linkDays, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
+  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: kindOf(l.kind), featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
 }
 export async function GET() {
   const id = await getUserId();

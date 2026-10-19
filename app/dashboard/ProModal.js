@@ -31,15 +31,15 @@ const FITUR = {
     },
   },
   stat: {
-    judul: 'Lihat statistik 30 hari',
-    teks: () => 'Paket Gratis menyimpan 7 hari. Pro menampilkan sampai 30 hari per link.',
-    kedua: 'Tetap 7 hari',
+    judul: 'Buka statistik lengkap',
+    teks: () => 'Paket Gratis melihat 7 dan 30 hari. Pro menambah 90 hari, semua data, dan pilih tanggal sendiri.',
+    kedua: 'Tetap 30 hari',
     isi: () => (<>
       <div className="pm-bars" aria-hidden="true">
         {BAR7.map((h, n) => <i key={n} style={{ height: h + '%' }} />)}
         {BAR8.map((h, n) => <i key={'o' + n} className="off" style={{ height: h + '%' }} />)}
       </div>
-      <div className="pm-leg"><span>7 hari (Gratis)</span><span>30 hari (Pro)</span></div>
+      <div className="pm-leg"><span>7 dan 30 hari (Gratis)</span><span>Lebih lama (Pro)</span></div>
     </>),
   },
   tema: {

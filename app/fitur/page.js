@@ -19,7 +19,7 @@ const FEATURES = [
   { h: 'Katalog harga', p: 'Tampilkan harga, harga coret, dan label seperti habis atau promo untuk jualan online.', i: <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01" /> },
   { h: 'Link terkunci', p: 'Lindungi link dengan sandi, atau beri penanda 18+ sebelum pengunjung membukanya.', i: <><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></> },
   { h: 'Tampilan sesukamu', p: 'Pilih tema, font, dan gaya tombol. Di Pro: warna kustom dan gambar latar.', i: <><circle cx="12" cy="12" r="9" /><circle cx="8.5" cy="10" r="1" /><circle cx="12" cy="7.5" r="1" /><circle cx="15.5" cy="10" r="1" /><path d="M12 21a2.5 2.5 0 0 1 0-5h2a2 2 0 0 0 2-2" /></> },
-  { h: 'Statistik klik', p: 'Lihat kunjungan dan klik tiap link. Riwayat harian 7 hari, 30 hari di Pro.', i: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> },
+  { h: 'Statistik klik', p: 'Lihat kunjungan dan klik tiap link. Rentang 7 dan 30 hari, di Pro sampai 90 hari, semua, dan tanggal pilihanmu.', i: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> },
   { h: 'Kode QR', p: 'Unduh kode QR halamanmu untuk kartu nama, brosur, atau etalase tokomu.', i: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><path d="M14 14h3v3h-3zM20 14v.01M14 20v.01M20 20v.01" /></> },
   { h: 'Lencana verifikasi', p: 'Akun resmi bisa mengajukan lencana verifikasi di samping nama. Pengajuan ditinjau manual.', i: <path d="M12 3l2.4 1.8 3-.1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3-.1L12 21l-2.4-1.8-3 .1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3 .1zM8.5 12l2.5 2.5 4.5-5" /> },
   { h: 'Domain sendiri', pro: true, p: 'Pakai domain sendiri seperti link.tokokamu.com, tanpa branding isengin.', i: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" /></> },
@@ -28,7 +28,7 @@ const FEATURES = [
 const ROWS = [
   ['Dasar'],
   ['Halaman, link, tema, dan statistik dasar', 'Ya', 'Ya'],
-  ['Statistik harian per link', '7 hari', '30 hari'],
+  ['Rentang statistik', '7 dan 30 hari', '90 hari, semua, dan pilih tanggal'],
   ['Gambar di link', '3 gambar', 'Tanpa batas'],
   ['Tampilan'],
   ['Latar belakang gambar', 'Tidak', 'Ya'],

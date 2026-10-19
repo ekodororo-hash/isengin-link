@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import ProModal from './ProModal';
 import { useDash } from './DashContext';
 import { LinkIcon, NamedIcon } from '../icons';
 import { themeStyle, bgStyle } from '@/lib/themes';
@@ -74,75 +73,61 @@ export function SaveBar({ children }) {
 }
 
 const BLN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-const lab = (d) => `${+d.slice(8)} ${BLN[+d.slice(5, 7) - 1]}`;
+const lab = (d, y) => `${+d.slice(8)} ${BLN[+d.slice(5, 7) - 1]}${y ? ' ' + d.slice(0, 4) : ''}`;
+const yr = (a, b) => a.slice(0, 4) !== b.slice(0, 4);
+// Rentang panjang: batang dirapatkan supaya tetap muat.
+const dense = (n) => (n > 60 ? { gap: 1 } : n > 31 ? { gap: 2 } : undefined);
+const thin = (n) => (n > 60 ? { borderWidth: 1, borderRadius: 0 } : undefined);
 
-export function DailyChart({ daily = [] }) {
-  const [days, setDays] = useState(14);
+// Grafik harian untuk satu rentang (daftar hari lengkap dari /api/statistik). Pilihan rentang ada di halaman Statistik.
+export function DailyChart({ daily = [], label = '' }) {
   const [k, setK] = useState('clicks');
-  const rows = daily.slice(-days);
-  if (!rows.length) return null;
-  const mx = Math.max(1, ...rows.map((r) => r[k]));
-  const sum = rows.reduce((a, r) => a + r[k], 0);
+  if (!daily.length) return null;
+  const n = daily.length, y = yr(daily[0].day, daily[n - 1].day);
+  const mx = Math.max(1, ...daily.map((r) => r[k]));
+  const sum = daily.reduce((a, r) => a + r[k], 0);
   const nm = k === 'clicks' ? 'klik' : 'kunjungan';
-  const pick = (opts, val, on) => opts.map(([v, t]) => <button key={v} aria-pressed={val === v} onClick={() => on(v)}>{t}</button>);
   return (
     <div className="px-card px-chartcard">
       <div className="px-ch-head">
         <b>Per hari</b>
-        <div className="px-seg" role="group" aria-label="Jenis data">{pick([['clicks', 'Klik'], ['views', 'Kunjungan']], k, setK)}</div>
-        <div className="px-seg" role="group" aria-label="Rentang waktu">{pick([[7, '7 hari'], [14, '14 hari'], [30, '30 hari']], days, setDays)}</div>
+        <div className="px-seg" role="group" aria-label="Jenis data">
+          {[['clicks', 'Klik'], ['views', 'Kunjungan']].map(([v, t]) => <button key={v} aria-pressed={k === v} onClick={() => setK(v)}>{t}</button>)}
+        </div>
       </div>
-      <p className="px-ch-sum">{sum} {nm} dalam {days} hari terakhir</p>
-      <div className="px-chart" role="img" aria-label={`Grafik ${nm} per hari, total ${sum} dalam ${days} hari`}>
-        {rows.map((r) => (
-          <div key={r.day} className="px-col" title={`${lab(r.day)}: ${r[k]} ${nm}`}>
-            {days <= 14 && <span className="px-val">{r[k] || ''}</span>}
-            <i style={{ height: `calc((100% - 18px) * ${r[k] / mx})` }} />
+      <p className="px-ch-sum">{sum} {nm} {label}</p>
+      <div className="px-chart" style={dense(n)} role="img" aria-label={`Grafik ${nm} per hari, total ${sum} ${label}`}>
+        {daily.map((r) => (
+          <div key={r.day} className="px-col" title={`${lab(r.day, y)}: ${r[k]} ${nm}`}>
+            {n <= 14 && <span className="px-val">{r[k] || ''}</span>}
+            <i style={{ height: `calc((100% - ${n <= 14 ? 18 : 0}px) * ${r[k] / mx})`, ...thin(n) }} />
           </div>
         ))}
       </div>
-      <div className="px-ch-axis"><span>{lab(rows[0].day)}</span><span>{lab(rows[rows.length - 1].day)}</span></div>
+      <div className="px-ch-axis"><span>{lab(daily[0].day, y)}</span><span>{lab(daily[n - 1].day, y)}</span></div>
     </div>
   );
 }
 
-// Tanggal hari ini di zona Jakarta (YYYY-MM-DD) dan mundur k hari, sama dengan zona yang dipakai server.
-const TODAY = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta' }).format(new Date());
-const dayAt = (k) => { const d = new Date(TODAY() + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() - k); return d.toISOString().slice(0, 10); };
-const lastDays = (n) => Array.from({ length: n }, (_, i) => dayAt(n - 1 - i));
-
-// Peringkat link terlaris. Pilihan "Semua" memakai total seumur hidup; 7 dan 30 hari memakai statistik harian per link.
-// Gratis dibatasi 7 hari; tombol 30 hari membuka modal Pro. Klik nama link untuk melihat grafik hariannya.
-export function LinkRank() {
+// Peringkat link terlaris dalam satu rentang, dari statistik harian per link. Klik nama link untuk melihat grafik hariannya.
+// days: daftar hari dalam rentang; linkDays: baris {link_id, day, clicks} dari /api/statistik.
+export function LinkRank({ days = [], linkDays = [], label = '' }) {
   const { m } = useDash();
-  const [pm, setPm] = useState(null);
-  const [range, setRange] = useState('all');
   const [open, setOpen] = useState(null);
   const links = m.links.filter((l) => (l.kind || 'link') === 'link');
-  const n = range === 'all' ? 0 : range;
-  const chartDays = lastDays(n || m.stat_days || 7);
   const byLink = {};
-  for (const r of m.link_days || []) (byLink[r.link_id] ||= {})[r.day] = r.clicks;
-  const sumDays = (id, days) => days.reduce((a, d) => a + (byLink[id]?.[d] || 0), 0);
-  const rows = links.map((l) => ({ l, v: n ? sumDays(l.id, lastDays(n)) : l.clicks || 0 })).sort((a, b) => b.v - a.v);
+  for (const r of linkDays) (byLink[r.link_id] ||= {})[r.day] = r.clicks;
+  const rows = links.map((l) => ({ l, v: days.reduce((a, d) => a + (byLink[l.id]?.[d] || 0), 0) })).sort((a, b) => b.v - a.v);
   const mx = Math.max(1, ...rows.map((r) => r.v));
-  const opts = [['all', 'Semua'], [7, '7 hari'], [30, m.pro ? '30 hari' : '30 hari · Pro']];
-  const pick = (v) => { if (v === 30 && !m.pro) { setPm('stat'); return; } setRange(v); };
+  const y = days.length > 1 && yr(days[0], days[days.length - 1]);
   return (
-    <>
-    <ProModal fitur={pm} onClose={() => setPm(null)} />
-    <div className="px-card">
-      <div className="px-ch-head">
-        <b>Peringkat link</b>
-        <div className="px-seg" role="group" aria-label="Rentang waktu">
-          {opts.map(([v, t]) => <button key={v} aria-pressed={range === v} onClick={() => pick(v)}>{t}</button>)}
-        </div>
-      </div>
-      <p className="px-ch-sum">{range === 'all' ? 'Total klik sejak link dibuat.' : `Klik dalam ${range} hari terakhir.`} Ketuk nama link untuk grafik harian.{!m.pro && ' Gratis: 7 hari.'}</p>
+    <div className="px-card px-mt">
+      <div className="px-ch-head"><b>Peringkat link</b></div>
+      <p className="px-ch-sum">Klik per link {label}. Ketuk nama link untuk grafik harian.</p>
       {rows.length === 0 && <p className="px-empty">Belum ada link.</p>}
       {rows.map(({ l, v }, i) => {
         const key = l.id || l._k || i, on = open === key;
-        const vals = chartDays.map((d) => byLink[l.id]?.[d] || 0), cm = Math.max(1, ...vals);
+        const vals = days.map((d) => byLink[l.id]?.[d] || 0), cm = Math.max(1, ...vals);
         return (
           <div key={key}>
             <div className="px-bar">
@@ -151,18 +136,17 @@ export function LinkRank() {
             </div>
             {on && (l.id ? (
               <div className="px-mini-w">
-                <div className="px-chart px-mini" role="img" aria-label={`Klik per hari untuk ${l.title}, ${vals.reduce((a, b) => a + b, 0)} dalam ${chartDays.length} hari`}>
-                  {chartDays.map((d, j) => (
-                    <div key={d} className="px-col" title={`${lab(d)}: ${vals[j]} klik`}><i style={{ height: `calc(100% * ${vals[j] / cm})` }} /></div>
+                <div className="px-chart px-mini" style={dense(days.length)} role="img" aria-label={`Klik per hari untuk ${l.title}, ${v} ${label}`}>
+                  {days.map((d, j) => (
+                    <div key={d} className="px-col" title={`${lab(d, y)}: ${vals[j]} klik`}><i style={{ height: `calc(100% * ${vals[j] / cm})`, ...thin(days.length) }} /></div>
                   ))}
                 </div>
-                <div className="px-ch-axis"><span>{lab(chartDays[0])}</span><span>{vals.reduce((a, b) => a + b, 0)} klik dalam {chartDays.length} hari</span><span>{lab(chartDays[chartDays.length - 1])}</span></div>
+                <div className="px-ch-axis"><span>{lab(days[0], y)}</span><span>{v} klik {label}</span><span>{lab(days[days.length - 1], y)}</span></div>
               </div>
             ) : <p className="px-hint">Simpan dulu supaya statistiknya mulai tercatat.</p>)}
           </div>
         );
       })}
     </div>
-    </>
   );
 }
