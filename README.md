@@ -1,6 +1,6 @@
 # isengin.site link-in-bio
 
-Halaman link-in-bio dengan Next.js, database Neon, dan penyimpanan foto Supabase Storage.
+Halaman link-in-bio dengan Next.js, database Neon, dan penyimpanan foto Supabase Storage
 
 ## Halaman
 
