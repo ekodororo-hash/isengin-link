@@ -87,6 +87,7 @@ export default function Home() {
               autoComplete={mode === 'register' ? 'new-password' : 'current-password'} />
             <button type="button" className="lp-show" onClick={() => setShow((v) => !v)} aria-pressed={show}>{show ? 'Sembunyikan' : 'Tampilkan'}</button>
           </div>
+          {mode !== 'register' && <p style={{ textAlign: 'right', margin: '0 0 4px', fontSize: '.85rem', fontWeight: 700 }}><Link href="/lupa" style={{ color: 'inherit' }}>Lupa sandi?</Link></p>}
           <button className="lp-btn" onClick={go} disabled={busy}>{busy ? 'Memproses...' : (mode === 'register' ? 'Klaim nama' : 'Masuk')}</button>
           <button className="lp-btn alt" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setErr(''); }}>
             {mode === 'register' ? 'Sudah punya akun? Masuk' : 'Belum punya akun? Daftar'}
