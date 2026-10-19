@@ -669,3 +669,39 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 @media(max-width:420px){.px-det{grid-template-columns:1fr}}
 .px-grid.px-g3{grid-template-columns:repeat(3,1fr)}
 @media(max-width:700px){.px-grid.px-g3{grid-template-columns:1fr 1fr}}
+
+/* Statistik: pilihan rentang waktu, tanggal kustom, dan kartu agar rapi di HP */
+.px-main .px-seg.px-seg-range{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.4fr);gap:8px;margin-top:12px}
+@media(min-width:561px){.px-main .px-seg.px-seg-range{grid-template-columns:repeat(2,minmax(0,110px)) minmax(0,140px)}}
+.px-main .px-seg.px-seg-range button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:0;width:100%;white-space:nowrap;font-size:.72rem;line-height:1;padding:10px 4px;min-height:42px}
+.px-more{position:relative;min-width:0;display:block}
+.px-more-lbl{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.px-caret{flex:none;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid currentColor}
+.px-more-dots{display:inline-flex;gap:3px;align-items:center}
+.px-more-dots span{width:5px;height:5px;border-radius:50%;background:currentColor;display:block}
+.px-menu{position:absolute;right:0;top:calc(100% + 10px);z-index:20;min-width:210px;display:grid;gap:6px;padding:8px;background:var(--cream);border:3px solid var(--navy);border-radius:18px;box-shadow:4px 4px 0 var(--navy)}
+.px-main .px-seg.px-seg-range .px-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;box-shadow:none;border-width:2px;border-radius:12px;padding:10px 12px;min-height:40px;font-size:.78rem;text-align:left;background:#fff}
+.px-main .px-seg.px-seg-range .px-menu button[aria-checked="true"]{background:var(--red);color:#fff}
+.px-pro-tag{font-family:"Plus Jakarta Sans",system-ui,sans-serif;font-size:.62rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;line-height:1;padding:3px 6px;border-radius:99px;background:var(--yel);color:var(--navy);border:2px solid var(--navy)}
+.px-dates{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:4px 12px;align-items:end;margin-top:8px}
+.px-dates>div{min-width:0}
+.px-dates label{margin-top:8px}
+.px-dates .px-btn{grid-column:1/-1;margin:8px 0 0;width:100%}
+@media(min-width:561px){.px-dates{grid-template-columns:1fr 1fr auto}.px-dates .px-btn{grid-column:auto;width:auto;margin:0 0 2px}}
+.px-main input[type="date"]{min-width:0;width:100%;min-height:44px;font-size:.95rem;padding:9px 10px}
+@media(max-width:560px){
+.px-app{padding:12px;gap:14px}
+.px-main{padding:4px 0 60px}
+.px-main h1{font-size:1.6rem;margin-bottom:6px}
+.px-sub{font-size:.92rem;margin-bottom:16px;line-height:1.45}
+.px-card{padding:16px;border-radius:18px;box-shadow:4px 4px 0 var(--navy)}
+.px-chartcard{margin-bottom:16px}
+.px-mt{margin-top:16px}
+.px-ch-sum{margin:12px 0 14px;font-size:.88rem;line-height:1.45}
+.px-main .px-seg:not(.px-seg-range) button{font-size:.78rem;padding:10px 4px;min-height:42px}
+.px-chart{height:140px}
+.px-bar{margin:12px 0}
+.px-bar .px-rk-n{font:inherit;font-weight:700;text-align:left;background:none;border:0;padding:6px 0;margin:-6px 0;min-height:32px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.px-bar b{font-weight:800}
+.px-ch-head .px-hint-i{display:block;line-height:1.4}
+}

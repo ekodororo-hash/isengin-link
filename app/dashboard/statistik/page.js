@@ -10,6 +10,9 @@ const tgl = (d) => `${+d.slice(8)} ${BLN[+d.slice(5, 7) - 1]} ${d.slice(0, 4)}`;
 const back = (s, n) => new Date(Date.parse(s + 'T00:00:00Z') - n * 86400000).toISOString().slice(0, 10);
 // Gratis: 7 dan 30 hari. Pro: ditambah 90 hari, Semua, dan tanggal sendiri (maks 1 tahun). Batas ini juga dijaga di /api/statistik.
 const OPTS = [['7', '7 hari', false], ['30', '30 hari', false], ['90', '90 hari', true], ['all', 'Semua', true], ['custom', 'Pilih tanggal', true]];
+const FIX = OPTS.filter((o) => !o[2]); // tombol langsung
+const MORE = OPTS.filter((o) => o[2]); // masuk menu "⋯"
+const SHORT = { '90': '90 hari', all: 'Semua', custom: 'Tanggal' };
 
 export default function Statistik() {
   const { m } = useDash();
@@ -24,9 +27,12 @@ export default function Statistik() {
   const [cf, setCf] = useState('');
   const [ct, setCt] = useState('');
   const [tick, setTick] = useState(0);
+  const [menu, setMenu] = useState(false);
+  const moreRef = useRef(null);
   const seq = useRef(0);
   const baseRange = m.pro ? '90' : '30';
   const fixed = ['7', '30', '90'].includes(sel.range);
+  const inMore = MORE.some(([v]) => v === sel.range);
 
   // Sekali per kunjungan: data dasar untuk 7/30/90 hari.
   useEffect(() => {
@@ -52,7 +58,18 @@ export default function Statistik() {
       .finally(() => { if (n === seq.current) setBusy(false); });
   }, [sel, fixed]);
 
+  // Menu rentang lainnya: tutup saat ketuk di luar atau tekan Esc.
+  useEffect(() => {
+    if (!menu) return;
+    const down = (e) => { if (moreRef.current && !moreRef.current.contains(e.target)) setMenu(false); };
+    const key = (e) => { if (e.key === 'Escape') setMenu(false); };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('keydown', key);
+    return () => { document.removeEventListener('pointerdown', down); document.removeEventListener('keydown', key); };
+  }, [menu]);
+
   const pick = (v) => {
+    setMenu(false);
     if (v !== '7' && v !== '30' && !m.pro) { setPm('stat'); return; }
     setErr('');
     if (['7', '30', '90'].includes(v)) {
@@ -99,12 +116,24 @@ export default function Statistik() {
     <div className="px-card px-chartcard">
       <div className="px-ch-head">
         <b>Rentang waktu</b>
-        <div className="px-seg" role="group" aria-label="Rentang waktu">
-          {OPTS.map(([v, t, onlyPro]) => <button key={v} aria-pressed={sel.range === v} onClick={() => pick(v)}>{onlyPro && !m.pro ? `${t} · Pro` : t}</button>)}
+        <div className="px-seg px-seg-range" role="group" aria-label="Rentang waktu">
+          {FIX.map(([v, t]) => <button key={v} aria-pressed={sel.range === v} onClick={() => pick(v)}>{t}</button>)}
+          <div className="px-more" ref={moreRef}>
+            <button className="px-more-btn" aria-haspopup="menu" aria-expanded={menu} aria-pressed={inMore} aria-label="Rentang lainnya" onClick={() => setMenu((o) => !o)}>
+              {inMore
+                ? <><span className="px-more-lbl">{SHORT[sel.range]}</span><span className="px-caret" /></>
+                : <span className="px-more-dots"><span /><span /><span /></span>}
+            </button>
+            {menu && (
+              <div className="px-menu" role="menu">
+                {MORE.map(([v, t]) => <button key={v} role="menuitemradio" aria-checked={sel.range === v} onClick={() => pick(v)}>{t}{!m.pro && <span className="px-pro-tag">Pro</span>}</button>)}
+              </div>
+            )}
+          </div>
         </div>
       </div>
       {sel.range === 'custom' && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'flex-end', marginTop: 14 }}>
+        <div className="px-dates">
           <div><label htmlFor="st-from">Dari</label><input id="st-from" type="date" value={cf} min={d?.min_day} max={ct || d?.today} onChange={(e) => setCf(e.target.value)} /></div>
           <div><label htmlFor="st-to">Sampai</label><input id="st-to" type="date" value={ct} min={cf || d?.min_day} max={d?.today} onChange={(e) => setCt(e.target.value)} /></div>
           <button className="px-btn" onClick={apply} disabled={busy}>Terapkan</button>
