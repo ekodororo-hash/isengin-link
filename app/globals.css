@@ -40,7 +40,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 /* gambar kecil di link */
 .plink .pth{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:rgba(0,0,0,.06)}
 .plink.has-th{padding:8px 18px 8px 8px}
-.plink.has-th .psp{width:48px}
+.plink.has-th .psp{width:20px}
 /* tema Neo (gaya dashboard: garis tebal dan bayangan) dan Neon (garis menyala) */
 .phone[data-t="neo"] .plink{border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
 .phone[data-t="neo"] .ava{border:3px solid var(--ink)}
@@ -177,6 +177,9 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 
 /* Judul benar-benar di tengah kartu: sisi kanan (spacer + titik tiga) lebih lebar 40px dari sisi kiri (ikon/gambar), jadi diimbangi di kiri */
 .plink .pt{padding-left:40px}
+/* Link bergambar: sisi kiri (gambar 48px) vs kanan (spacer + titik tiga) selisih 22px, jadi judul dan hitung mundur tepat di tengah kartu */
+.plink.has-th .pt{padding-left:22px}
+.phone[data-b="pil"] .plink.has-th .pt{padding-left:20px}
 
 /* HP: hilangkan blok biru bawaan browser saat link ditekan */
 .phone a,.phone button{-webkit-tap-highlight-color:transparent}
