@@ -12,7 +12,7 @@ export default function LinkRow({ title, url, th, cat, soldout, labelKey, labelD
   return (
     <div className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (soldout ? ' soldout' : '') + (feat ? ' feat' : '') + ((feat || guard) ? ' has-ind' : '') + ((feat && guard) ? ' ind2' : '')}>
       <a className="plink-main" href={href} rel="noopener noreferrer" target={/^mailto:/i.test(url || '') ? undefined : '_blank'}>
-        {th ? <img className="pth" src={th} alt="" width="48" height="48" loading="lazy" /> : <LinkIcon url={url} />}
+        {th ? <img className="pth" src={th} alt="" width="32" height="32" loading="lazy" /> : <LinkIcon url={url} />}
         <span className="pt">
           {title}
           {(price || old) && <span className="pp">{old && <s>{old}</s>}{price && <b>{price}</b>}</span>}
