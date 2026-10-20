@@ -116,7 +116,10 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 
 /* pembatas antar link dan centang verifikasi */
 .phead{display:flex;align-items:center;gap:12px;margin:22px 0 12px;font-size:.78rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
-.phead::before,.phead::after{content:"";flex:1;height:2px;background:currentColor;opacity:.25;border-radius:2px}
+/* Pembatas gradasi memudar: garis pudar di ujung luar, makin pekat mendekati teks (warnanya ikut warna teks tema) */
+.phead::before,.phead::after{content:"";flex:1;height:2px;border-radius:2px}
+.phead::before{background:linear-gradient(90deg,transparent,currentColor)}
+.phead::after{background:linear-gradient(90deg,currentColor,transparent)}
 .phead span{max-width:80%;text-align:center;overflow-wrap:anywhere}
 .vb{display:inline-block;vertical-align:-.18em;margin-left:.3em;color:var(--accent)}
 /* lapor halaman (halaman publik) */
