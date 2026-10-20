@@ -159,3 +159,21 @@ alter table users add column if not exists note_text text default '';
 alter table users add column if not exists note_from timestamptz;
 alter table users add column if not exists note_until timestamptz;
 alter table users add column if not exists hours text default '';
+
+-- Alamat link acak: /go/x7Kq9 (6 karakter huruf besar/kecil + angka) menggantikan /go/2 yang gampang ditebak.
+-- Link baru otomatis dapat kode lewat default kolom; link lama diisi sekali di bawah ini. Kode tidak berubah saat link diedit.
+create or replace function gen_link_code() returns text language plpgsql as $$
+declare
+  chars text := 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  r text; i int;
+begin
+  loop
+    r := '';
+    for i in 1..6 loop r := r || substr(chars, 1 + floor(random() * 62)::int, 1); end loop;
+    if not exists (select 1 from links where code = r) then return r; end if;
+  end loop;
+end $$;
+alter table links add column if not exists code text;
+update links set code = gen_link_code() where code is null;
+alter table links alter column code set default gen_link_code();
+create unique index if not exists links_code_uniq on links (code);

@@ -1,6 +1,6 @@
 import { sql } from '@/lib/db';
 import { isBot } from '@/lib/bot';
-import { normSrc } from '@/lib/source';
+import { srcFromParam, srcQuery } from '@/lib/source';
 import { smartTarget, smartHtml } from '@/lib/deeplink';
 import { cleanGuard, checkPass, guardHtml } from '@/lib/linkguard';
 import { hit, clear, ipOf } from '@/lib/limit';
@@ -8,17 +8,27 @@ import { hasCookie, dayCookie } from '@/lib/daily';
 
 const page = (html, status = 200) => new Response(html, { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex' } });
 
+// Alamat link memakai kode acak (/go/x7Kq9). Alamat lama berupa angka (/go/2) tetap diterima supaya link yang sudah dibagikan tidak mati.
+async function resolveId(raw) {
+  const r = String(raw || '');
+  if (/^\d+$/.test(r)) return Number(r) || 0;
+  if (!/^[A-Za-z0-9]{4,12}$/.test(r)) return 0;
+  return Number((await sql`select id from links where code=${r}`.catch(() => []))[0]?.id) || 0;
+}
+const slugOf = (raw) => encodeURIComponent(String(raw || ''));
+
 // opt.skip: pengaman sudah lolos (sandi benar); opt.post: balas dengan 303 karena permintaan asalnya POST.
 async function run(req, { params }, opt = {}) {
-  const id = Number(params.id) || 0;
+  const id = await resolveId(params.id);
+  const slug = slugOf(params.id);
   // Link yang disembunyikan tidak menghitung klik dan tidak diteruskan (pengunjung dikirim ke beranda).
   // Asal klik ditentukan halaman profil dan dibawa lewat ?s=; nilai di luar daftar dianggap "langsung".
-  const src = normSrc(new URL(req.url).searchParams.get('s')) || 'langsung';
+  const src = srcFromParam(new URL(req.url).searchParams.get('s')) || 'langsung';
   // Link berpengaman: peringatan 18+ (lanjut lewat ?ok=1) atau sandi (diperiksa di POST). Klik baru dihitung setelah lolos.
   if (!opt.skip) {
     const g = (await sql`select l.guard, u.username from links l join users u on u.id=l.user_id where l.id=${id} and l.hidden is not true`.catch(() => []))[0];
     const guard = cleanGuard(g?.guard);
-    const action = `/go/${id}?s=${encodeURIComponent(src)}`;
+    const action = `/go/${slug}${srcQuery(src)}`;
     const askOk = guard === 'adult' && new URL(req.url).searchParams.get('ok') !== '1';
     if (guard === 'pass' || askOk) return page(guardHtml({ kind: guard, action, back: `/${g.username}` }));
   }
@@ -92,11 +102,12 @@ export const GET = (req, ctx) => run(req, ctx);
 
 // Kirim sandi untuk link terkunci. Salah sandi dibatasi 8 kali per link per alamat IP per 15 menit.
 export async function POST(req, ctx) {
-  const id = Number(ctx.params.id) || 0;
+  const id = await resolveId(ctx.params.id);
+  const slug = slugOf(ctx.params.id);
   const row = (await sql`select l.guard, l.pass_hash, u.username from links l join users u on u.id=l.user_id where l.id=${id} and l.hidden is not true`.catch(() => []))[0];
-  if (!row || cleanGuard(row.guard) !== 'pass') return Response.redirect(new URL(`/go/${id}`, req.url).toString(), 303);
-  const src = normSrc(new URL(req.url).searchParams.get('s')) || 'langsung';
-  const action = `/go/${id}?s=${encodeURIComponent(src)}`;
+  if (!row || cleanGuard(row.guard) !== 'pass') return Response.redirect(new URL(`/go/${slug}`, req.url).toString(), 303);
+  const src = srcFromParam(new URL(req.url).searchParams.get('s')) || 'langsung';
+  const action = `/go/${slug}${srcQuery(src)}`;
   const key = `lp:${id}:${ipOf(req)}`;
   const t = await hit(key, 8, 900);
   if (t.over) return page(guardHtml({ kind: 'pass', action, back: `/${row.username}`, error: `Terlalu banyak percobaan. Coba lagi sekitar ${Math.max(1, Math.ceil(t.wait / 60))} menit lagi.` }), 429);
