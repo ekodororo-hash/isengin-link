@@ -10,9 +10,10 @@ import { cleanGuard, hashPass, PASS_MIN, PASS_MAX } from '@/lib/linkguard';
 import { isBlobUrl, ownBlob, userBlobs, dropBlobs } from '@/lib/blob';
 import { pending, pendingBonus } from '@/lib/referral';
 import { kindOf, embedOf } from '@/lib/embed';
+import { cleanHours } from '@/lib/hours';
 const fix = (u) => (/^(https?:|mailto:)/i.test(u.trim()) ? u.trim() : 'https://' + u.trim());
 async function load(id) {
-  const [u, links, daily, sources, extra, look, more, plan, store] = await Promise.all([
+  const [u, links, daily, sources, extra, look, more, plan, store, note] = await Promise.all([
     sql`select username,display_name,bio,theme,photo_url,views from users where id=${id}`,
     sql`select id,title,url,clicks,thumb,hidden,price,old_price,label,kind,featured,guard,(coalesce(pass_hash,'') <> '') as has_pass,
         to_char(show_at at time zone 'Asia/Jakarta','YYYY-MM-DD"T"HH24:MI') as show_at, to_char(hide_at at time zone 'Asia/Jakarta','YYYY-MM-DD"T"HH24:MI') as hide_at
@@ -35,9 +36,10 @@ async function load(id) {
     sql`select bg,verified from users where id=${id}`.catch(() => []),
     sql`select (plan_until > now()) as pro, plan_until from users where id=${id}`.catch(() => []),
     sql`select store_name, store_addr from users where id=${id}`.catch(() => []),
+    sql`select note_text, hours, to_char(note_from at time zone 'Asia/Jakarta','YYYY-MM-DD"T"HH24:MI') as note_from, to_char(note_until at time zone 'Asia/Jakarta','YYYY-MM-DD"T"HH24:MI') as note_until from users where id=${id}`.catch(() => []),
   ]);
   const pro = plan[0]?.pro === true;
-  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: kindOf(l.kind), featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true, show_at: l.show_at || '', hide_at: l.hide_at || '' })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, store_name: store[0]?.store_name || '', store_addr: store[0]?.store_addr || '', btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
+  return { ...u[0], links: links.map((l) => ({ ...l, thumb: l.thumb || '', hidden: l.hidden === true, price: l.price || '', old_price: l.old_price || '', label: l.label || '', kind: kindOf(l.kind), featured: l.featured === true, guard: cleanGuard(l.guard), has_pass: l.has_pass === true, show_at: l.show_at || '', hide_at: l.hide_at || '' })), announce: (await sql`select id,text,level from announcements where active order by id desc limit 1`.catch(() => []))[0] || null, bg: cleanBg(more[0]?.bg), verified: more[0]?.verified === true, pro, plan_until: plan[0]?.plan_until || null, store_name: store[0]?.store_name || '', store_addr: store[0]?.store_addr || '', note_text: note[0]?.note_text || '', note_from: note[0]?.note_from || '', note_until: note[0]?.note_until || '', hours: cleanHours(note[0]?.hours), btn_style: cleanBtn(look[0]?.btn_style), font_key: cleanFont(look[0]?.font_key), daily, sources, socials: parseSocials(extra[0]?.socials), colors: cleanColors(extra[0]?.colors) };
 }
 export async function GET() {
   const id = await getUserId();
@@ -101,6 +103,9 @@ export async function PUT(req) {
   const bad = await flaggedUrls(urls);
   if (bad.length) return Response.json({ error: `Alamat ini ditandai berbahaya oleh Google Safe Browsing dan tidak bisa disimpan: ${bad.slice(0, 3).join(', ')}` }, { status: 400 });
   // Dua kelompok kolom paralel: link yang sudah ada (punya id, diubah) dan yang baru (ditambah).
+  // Pengumuman profil: waktu tampil dan hilang (WIB), hilang harus sesudah tampil.
+  const nf = okAt(b.note_from), nu = okAt(b.note_until);
+  if (nf && nu && nu <= nf) return Response.json({ error: 'Pengumuman: waktu hilang harus sesudah waktu tampil.' }, { status: 400 });
   const cols = () => ({ id: [], title: [], url: [], position: [], thumb: [], hidden: [], price: [], old_price: [], label: [], kind: [], featured: [], guard: [], pass_hash: [], show_at: [], hide_at: [] });
   const old = cols(), fresh = cols();
   let feat = 0; // paling banyak 2 link sorotan
@@ -149,6 +154,8 @@ export async function PUT(req) {
           store_name=${String(b.store_name || '').trim().slice(0, 60)}, store_addr=${String(b.store_addr || '').trim().slice(0, 200)},
           socials=${JSON.stringify(cleanSocials(b.socials))}, colors=${JSON.stringify(cleanColors(b.colors))}, bg=${JSON.stringify(bg)}
           where id=${id}`,
+      sql`update users set note_text=${String(b.note_text || '').trim().slice(0, 200)}, note_from=nullif(${nf},'')::timestamp at time zone 'Asia/Jakarta', note_until=nullif(${nu},'')::timestamp at time zone 'Asia/Jakarta',
+          hours=${JSON.stringify(cleanHours(b.hours))} where id=${id}`,
       sql`delete from links where user_id=${id} and id <> all(${old.id}::int[])`,
       sql`update links set title=v.title, url=v.url, position=v.position, thumb=v.thumb, hidden=v.hidden,
           price=v.price, old_price=v.old_price, label=v.label, kind=v.kind,

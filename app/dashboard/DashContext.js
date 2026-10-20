@@ -18,7 +18,7 @@ const MENU = [['/dashboard', 'Ringkasan'], ['/dashboard/statistik', 'Statistik']
 const SECTIONS = [['link', 'Link'], ['profil', 'Profil'], ['tampilan', 'Tampilan']];
 const parts = (x) => ({
   link: JSON.stringify(x.links.map((l) => [l.id || 0, l.title, l.url, l.thumb || '', l.hidden === true, l.price || '', l.old_price || '', l.label || '', l.kind === 'header' ? 'h' : l.kind === 'embed' ? 'e' : l.kind === 'qris' ? 'q' : ''])),
-  profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim())]),
+  profil: JSON.stringify([x.display_name || '', x.bio || '', x.photo_url || '', SOCIALS.map((k) => (x.socials?.[k.key] || '').trim()), x.note_text || '', x.note_from || '', x.note_until || '', x.hours || []]),
   tampilan: JSON.stringify([x.theme, COLOR_KEYS.map((k) => x.colors?.[k] || ''), x.btn_style || 'bulat', x.font_key || 'standar', x.bg || {}]),
 });
 

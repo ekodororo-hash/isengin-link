@@ -3,9 +3,14 @@ import { useDash } from '../DashContext';
 import { Phone, PreviewDock, SaveBar } from '../parts';
 import { SOCIALS, socialHref } from '@/lib/socials';
 import { NamedIcon } from '../../icons';
+import { DAYS } from '@/lib/hours';
 export default function Profil() {
   const { m, set, up } = useDash();
   const soc = m.socials || {};
+  // Jam buka: daftar 7 teks "JJ:MM-JJ:MM" (kosong = libur). Isian setengah jadi ("09:00-") ikut tersimpan sementara dan dibuang saat disimpan.
+  const hrs = DAYS.map((_, i) => (m.hours || [])[i] || '');
+  const setDay = (i, a, c) => { const n = [...hrs]; n[i] = a || c ? `${a}-${c}` : ''; set('hours', n); };
+  const copyMon = () => { const n = [...hrs]; for (let i = 1; i <= 5; i++) n[i] = hrs[0]; set('hours', n); };
   return (<>
     <h1>Profil</h1><p className="px-sub">Foto, nama, bio, dan ikon sosial media yang tampil di halamanmu.</p>
     <div className="px-two">
@@ -51,6 +56,37 @@ export default function Profil() {
           <input id="sn" value={m.store_name || ''} maxLength={60} placeholder="mis. Warung Bu Tini" onChange={(e) => set('store_name', e.target.value)} />
           <label htmlFor="sa">Alamat <span className="px-hint-i">{(m.store_addr || '').length}/200</span></label>
           <textarea id="sa" rows={3} maxLength={200} placeholder="Jl. Jenderal Sudirman No. 10, Purbalingga, Jawa Tengah" value={m.store_addr || ''} onChange={(e) => set('store_addr', e.target.value)} />
+        </section>
+        <section className="px-sec">
+          <h2>Pengumuman</h2>
+          <p className="px-hint">Satu kalimat di atas link, misalnya libur atau promo. Isi waktu tampil dan hilang (WIB) kalau ingin muncul dan hilang otomatis. Kosongkan teks untuk menyembunyikannya.</p>
+          <label htmlFor="nt">Teks <span className="px-hint-i">{(m.note_text || '').length}/200</span></label>
+          <textarea id="nt" rows={3} maxLength={200} placeholder="mis. Libur 20 sampai 25 Oktober. Pesanan dibalas setelahnya." value={m.note_text || ''} onChange={(e) => set('note_text', e.target.value)} />
+          <div className="px-lk-f">
+            <label className="px-sch-l">Tampil mulai
+              <input type="datetime-local" aria-label="Pengumuman tampil mulai" value={m.note_from || ''} onChange={(e) => set('note_from', e.target.value)} />
+            </label>
+            <label className="px-sch-l">Hilang pada
+              <input type="datetime-local" aria-label="Pengumuman hilang pada" value={m.note_until || ''} min={m.note_from || undefined} onChange={(e) => set('note_until', e.target.value)} />
+            </label>
+          </div>
+          {(m.note_from || m.note_until) && <button type="button" className="px-btn g sm" onClick={() => { set('note_from', ''); set('note_until', ''); }}>Hapus jadwal</button>}
+        </section>
+        <section className="px-sec">
+          <h2>Jam buka</h2>
+          <p className="px-hint">Waktu WIB. Pengunjung melihat “Buka sekarang” atau “Tutup” sesuai jam saat halaman dibuka. Hari yang dikosongkan dianggap libur, dan kalau semua dikosongkan blok ini tidak tampil.</p>
+          {DAYS.map((d, i) => {
+            const [a = '', c = ''] = hrs[i].split('-');
+            return (
+              <div className="px-hr" key={d}>
+                <b>{d}</b>
+                <input type="time" aria-label={`${d} buka`} value={a} onChange={(e) => setDay(i, e.target.value, c)} />
+                <input type="time" aria-label={`${d} tutup`} value={c} onChange={(e) => setDay(i, a, e.target.value)} />
+                {hrs[i] ? <button type="button" className="px-btn g sm" aria-label={`Libur hari ${d}`} title="Libur" onClick={() => setDay(i, '', '')}>×</button> : <span className="px-hint-i">Libur</span>}
+              </div>
+            );
+          })}
+          {hrs[0] && <button type="button" className="px-btn g sm" onClick={copyMon}>Salin jam Senin ke Selasa sampai Sabtu</button>}
         </section>
         <SaveBar />
       </div>

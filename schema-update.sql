@@ -153,3 +153,9 @@ alter table links add column if not exists show_at timestamptz;
 alter table links add column if not exists hide_at timestamptz;
 alter table users add column if not exists store_name text default '';
 alter table users add column if not exists store_addr text default '';
+
+-- Pengumuman di halaman publik (tampil mulai note_from, hilang sejak note_until; kosong = tanpa batas) dan jam buka toko (JSON 7 hari, Senin sampai Minggu)
+alter table users add column if not exists note_text text default '';
+alter table users add column if not exists note_from timestamptz;
+alter table users add column if not exists note_until timestamptz;
+alter table users add column if not exists hours text default '';

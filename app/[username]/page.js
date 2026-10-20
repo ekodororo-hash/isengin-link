@@ -16,6 +16,8 @@ import EmbedBox from './EmbedBox';
 import QrisButton from './QrisButton';
 import { embedOf } from '@/lib/embed';
 import HomePromo from './HomePromo';
+import HoursCard from './HoursCard';
+import { cleanHours } from '@/lib/hours';
 import ViewBeacon from './ViewBeacon';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 export const dynamic = 'force-dynamic';
@@ -62,6 +64,10 @@ export default async function Profile({ params, searchParams }) {
   const look = (await sql`select btn_style,font_key from users where id=${u.id}`.catch(() => []))[0] || {};
   const store = (await sql`select store_name, store_addr from users where id=${u.id}`.catch(() => []))[0] || {};
   const storeAddr = String(store.store_addr || '').trim();
+  // Pengumuman (tampil hanya dalam rentang waktunya) dan jam buka; dibaca terpisah supaya halaman tetap terbuka walau schema-update.sql belum dijalankan.
+  const more2 = (await sql`select note_text, hours, (coalesce(note_text,'') <> '' and (note_from is null or note_from <= now()) and (note_until is null or note_until > now())) as note_on from users where id=${u.id}`.catch(() => []))[0] || {};
+  const noteText = more2.note_on === true ? String(more2.note_text || '').trim() : '';
+  const hoursList = cleanHours(more2.hours);
   const name = u.display_name || u.username;
   // Fitur Pro (tema Neon dan tema berwarna lain, font dan gaya tombol tertentu, warna kustom, latar gambar) hanya tampil bila paket aktif.
   const eff = effectiveLook({ theme: u.theme, font_key: cleanFont(look.font_key), btn_style: cleanBtn(look.btn_style), colors: extra.colors, bg: more.bg }, pro);
@@ -83,6 +89,12 @@ export default async function Profile({ params, searchParams }) {
         {socials.length > 0 && (
           <div className="socials">
             {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer" target={/^https?:/i.test(x.href) ? '_blank' : undefined}><NamedIcon name={x.key} /></a>)}
+          </div>
+        )}
+        {noteText && (
+          <div className="pstore pnote" role="note">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z" /><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12" /></svg>
+            <div className="pstore-t"><span>{noteText}</span></div>
           </div>
         )}
         {links.map((l, i) => {
@@ -124,6 +136,7 @@ export default async function Profile({ params, searchParams }) {
             <a className="pstore-go" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([store.store_name, storeAddr].filter(Boolean).join(' '))}`} target="_blank" rel="noopener noreferrer">Buka peta</a>
           </div>
         )}
+        {hoursList.length > 0 && <HoursCard hours={hoursList} nowMs={Date.now()} />}
         </div>
         <div className="pub-bottom">
         {/* titik tiga lapor (kanan atas) selalu tampil, termasuk di akun Pro */}
