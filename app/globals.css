@@ -262,13 +262,9 @@ button.plink-main{background:none;border:0;padding:0;font:inherit;text-align:inh
 /* Pengumuman dan jam buka di halaman publik: memakai kartu yang sama dengan alamat toko */
 .pnote{margin:0 0 16px;align-items:flex-start}
 .pnote .pstore-t span{opacity:1;font-weight:600}
-.phours{align-items:flex-start}
+.phours{margin:12px 0 4px;align-items:flex-start}
 .phours .ph-s{opacity:1;display:block}
+.phours .ph-d{display:block;font-size:.8rem;margin-top:3px}
 .phours .ph-pill{display:inline-block;font-size:.74rem;font-weight:800;padding:2px 9px;border-radius:99px;margin-right:7px}
 .phours .ph-pill.o{background:#c8f0cf;color:#14401c}
 .phours .ph-pill.c{background:#ffd1c9;color:#7a1f10}
-.ph-l{list-style:none;margin:8px 0 0;padding:0;font-size:.8rem}
-.ph-l li{display:flex;justify-content:space-between;gap:12px;padding:2px 0}
-.ph-l li.now{font-weight:800}
-.ph-l li.tz{opacity:.6;font-size:.72rem}
-button.pstore-go{border:0;cursor:pointer;font-family:inherit}

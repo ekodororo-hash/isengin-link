@@ -97,6 +97,7 @@ export default async function Profile({ params, searchParams }) {
             {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer" target={/^https?:/i.test(x.href) ? '_blank' : undefined}><NamedIcon name={x.key} /></a>)}
           </div>
         )}
+        {hoursList.length > 0 && <HoursCard hours={hoursList} nowMs={Date.now()} />}
         {links.map((l, i) => {
           if (l.soon === true && Number(l.show_ms) > 0) return <SoonRow key={l.id} title={l.title} showMs={Number(l.show_ms)} />;
           if (l.kind === 'header') return <h2 key={l.id} className="phead"><span>{l.title}</span></h2>;
@@ -136,7 +137,6 @@ export default async function Profile({ params, searchParams }) {
             <a className="pstore-go" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([store.store_name, storeAddr].filter(Boolean).join(' '))}`} target="_blank" rel="noopener noreferrer">Buka peta</a>
           </div>
         )}
-        {hoursList.length > 0 && <HoursCard hours={hoursList} nowMs={Date.now()} />}
         </div>
         <div className="pub-bottom">
         {/* titik tiga lapor (kanan atas) selalu tampil, termasuk di akun Pro */}
