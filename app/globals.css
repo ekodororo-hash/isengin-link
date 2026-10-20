@@ -38,8 +38,8 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .soc{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--pbtn);color:var(--ink);text-decoration:none}
 .soc:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 /* gambar kecil di link */
-.plink .pth{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none;background:rgba(0,0,0,.06)}
-.plink.has-th{padding:8px 18px 8px 8px}
+.plink .pth{width:32px;height:32px;border-radius:50%;object-fit:cover;flex:none;background:rgba(0,0,0,.06)}
+.plink.has-th{padding:11px 18px 11px 12px}
 .plink.has-th .psp{width:20px}
 /* tema Neo (gaya dashboard: garis tebal dan bayangan) dan Neon (garis menyala) */
 .phone[data-t="neo"] .plink{border:3px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
@@ -65,7 +65,7 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 .phone[data-b="kotak"] .plink{border-radius:4px}
 .phone[data-b="garis"] .plink{background:transparent;border:2px solid var(--ink);border-radius:14px}
 .phone[data-b="timbul"] .plink{border:2px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink)}
-.phone[data-b="pil"] .plink.has-th{padding-left:10px}
+.phone[data-b="pil"] .plink.has-th{padding-left:14px}
 .phone[data-b="pil"] .plink.cat{border-radius:28px}
 
 /* tombol titik tiga di tiap tautan (buka modal "Bagikan tautan") */
@@ -177,9 +177,9 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 
 /* Judul benar-benar di tengah kartu: sisi kanan (spacer + titik tiga) lebih lebar 40px dari sisi kiri (ikon/gambar), jadi diimbangi di kiri */
 .plink .pt{padding-left:40px}
-/* Link bergambar: sisi kiri (gambar 48px) vs kanan (spacer + titik tiga) selisih 22px, jadi judul dan hitung mundur tepat di tengah kartu */
-.plink.has-th .pt{padding-left:22px}
-.phone[data-b="pil"] .plink.has-th .pt{padding-left:20px}
+/* Link bergambar: sisi kiri (gambar 32px) vs kanan (spacer + titik tiga) selisih 34px, jadi judul dan hitung mundur tepat di tengah kartu */
+.plink.has-th .pt{padding-left:34px}
+.phone[data-b="pil"] .plink.has-th .pt{padding-left:32px}
 /* Link belum tayang tidak punya titik tiga, jadi tidak perlu imbang di kiri */
 .plink.soon .pt{padding-left:0}
 
