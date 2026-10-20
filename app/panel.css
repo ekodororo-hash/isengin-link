@@ -735,3 +735,11 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-hr b{font-size:.85rem}
 .px-hr input{width:100%;min-width:0}
 .px-hr .px-hint-i{margin:0;text-align:center}
+
+/* Bagian Profil yang bisa dibuka-tutup */
+.px-sacc>h2{margin:0}
+.px-sacc.open>h2{margin-bottom:10px}
+.px-sacc-b{display:flex;align-items:center;gap:8px;width:100%;margin:0;padding:0;background:none;border:0;box-shadow:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.px-sacc-t{flex:1;min-width:0}
+.px-sacc.open .px-acc-c{transform:rotate(180deg)}
+.px-app .px-sacc-b:active{transform:none}

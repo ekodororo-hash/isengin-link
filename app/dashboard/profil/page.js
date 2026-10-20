@@ -1,9 +1,26 @@
 'use client';
+import { useState } from 'react';
 import { useDash } from '../DashContext';
 import { Phone, PreviewDock, SaveBar } from '../parts';
 import { SOCIALS, socialHref } from '@/lib/socials';
 import { NamedIcon } from '../../icons';
 import { DAYS } from '@/lib/hours';
+// Bagian profil yang bisa dibuka-tutup. Awalnya terbuka hanya kalau sudah ada isinya (dihitung saat halaman dibuka).
+function Sec({ title, has, children }) {
+  const [o, setO] = useState(!!has);
+  return (
+    <section className={'px-sec px-sacc' + (o ? ' open' : '')}>
+      <h2>
+        <button type="button" className="px-sacc-b" aria-expanded={o} onClick={() => setO(!o)}>
+          <span className="px-sacc-t">{title}</span>
+          {has && !o && <span className="px-acc-on">aktif</span>}
+          <svg className="px-acc-c" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" /></svg>
+        </button>
+      </h2>
+      {o && children}
+    </section>
+  );
+}
 export default function Profil() {
   const { m, set, up } = useDash();
   const soc = m.socials || {};
@@ -31,8 +48,7 @@ export default function Profil() {
           <label htmlFor="b">Bio <span className="px-hint-i">{(m.bio || '').length}/160</span></label>
           <textarea id="b" rows={3} maxLength={160} value={m.bio || ''} onChange={(e) => set('bio', e.target.value)} />
         </section>
-        <section className="px-sec">
-          <h2>Ikon sosial media</h2>
+        <Sec title="Ikon sosial media" has={!!(SOCIALS.some((x) => (soc[x.key] || '').trim()))}>
           <p className="px-hint">Tampil sebagai ikon kecil di bawah bio. Isi username, nomor, atau link lengkap, dan kosongkan yang tidak dipakai. Klik ikon ini tidak masuk hitungan klik link.</p>
           <div className="px-socs">
             {SOCIALS.map((s) => {
@@ -48,17 +64,15 @@ export default function Profil() {
               );
             })}
           </div>
-        </section>
-        <section className="px-sec">
-          <h2>Alamat toko</h2>
+        </Sec>
+        <Sec title="Alamat toko" has={!!(m.store_name || m.store_addr)}>
           <p className="px-hint">Untuk usaha lokal. Tampil sebagai kartu alamat di bawah link, lengkap dengan tombol “Buka peta” ke Google Maps. Kosongkan alamat untuk menyembunyikannya.</p>
           <label htmlFor="sn">Nama toko <span className="px-hint-i">opsional</span></label>
           <input id="sn" value={m.store_name || ''} maxLength={60} placeholder="mis. Warung Bu Tini" onChange={(e) => set('store_name', e.target.value)} />
           <label htmlFor="sa">Alamat <span className="px-hint-i">{(m.store_addr || '').length}/200</span></label>
           <textarea id="sa" rows={3} maxLength={200} placeholder="Jl. Jenderal Sudirman No. 10, Purbalingga, Jawa Tengah" value={m.store_addr || ''} onChange={(e) => set('store_addr', e.target.value)} />
-        </section>
-        <section className="px-sec">
-          <h2>Pengumuman</h2>
+        </Sec>
+        <Sec title="Pengumuman" has={!!(m.note_text || m.note_from || m.note_until)}>
           <p className="px-hint">Satu kalimat di atas link, misalnya libur atau promo. Isi waktu tampil dan hilang (WIB) kalau ingin muncul dan hilang otomatis. Kosongkan teks untuk menyembunyikannya.</p>
           <label htmlFor="nt">Teks <span className="px-hint-i">{(m.note_text || '').length}/200</span></label>
           <textarea id="nt" rows={3} maxLength={200} placeholder="mis. Libur 20 sampai 25 Oktober. Pesanan dibalas setelahnya." value={m.note_text || ''} onChange={(e) => set('note_text', e.target.value)} />
@@ -71,9 +85,8 @@ export default function Profil() {
             </label>
           </div>
           {(m.note_from || m.note_until) && <button type="button" className="px-btn g sm" onClick={() => { set('note_from', ''); set('note_until', ''); }}>Hapus jadwal</button>}
-        </section>
-        <section className="px-sec">
-          <h2>Jam buka</h2>
+        </Sec>
+        <Sec title="Jam buka" has={!!(hrs.some(Boolean))}>
           <p className="px-hint">Waktu WIB. Pengunjung melihat “Buka sekarang” atau “Tutup” sesuai jam saat halaman dibuka. Hari yang dikosongkan dianggap libur, dan kalau semua dikosongkan blok ini tidak tampil.</p>
           {DAYS.map((d, i) => {
             const [a = '', c = ''] = hrs[i].split('-');
@@ -87,7 +100,7 @@ export default function Profil() {
             );
           })}
           {hrs[0] && <button type="button" className="px-btn g sm" onClick={copyMon}>Salin jam Senin ke Selasa sampai Sabtu</button>}
-        </section>
+        </Sec>
         <SaveBar />
       </div>
       <PreviewDock low><Phone /></PreviewDock>
