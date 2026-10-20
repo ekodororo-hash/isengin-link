@@ -743,3 +743,12 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-sacc-t{flex:1;min-width:0}
 .px-sacc.open .px-acc-c{transform:rotate(180deg)}
 .px-app .px-sacc-b:active{transform:none}
+
+/* Pengumuman dan jam buka di pratinjau */
+.px-ph .pv-card{display:flex;align-items:flex-start;gap:8px;background:var(--pb);border-radius:12px;padding:8px 10px;margin-bottom:8px;text-align:left;font-weight:600;font-size:.72rem;line-height:1.35}
+.px-ph .pv-card svg{flex:none;margin-top:1px}
+.px-ph .pv-card span{min-width:0;overflow-wrap:anywhere}
+.px-ph .pv-card .pv-d{display:block;font-style:normal;font-weight:500;margin-top:2px}
+.px-ph .pv-pill{display:inline-block;font-size:.6rem;font-weight:800;padding:1px 7px;border-radius:99px;margin-right:6px}
+.px-ph .pv-pill.o{background:#c8f0cf;color:#14401c}
+.px-ph .pv-pill.c{background:#ffd1c9;color:#7a1f10}

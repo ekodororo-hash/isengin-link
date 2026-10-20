@@ -9,6 +9,7 @@ import { fmtPrice, labelText } from '@/lib/catalog';
 import { fontCss } from '@/lib/style';
 import { effectiveLook, thumbOk } from '@/lib/pro';
 import { fmtLeft } from '../countdown';
+import { cleanHours, statusAt, summary } from '@/lib/hours';
 
 // Kolom jadwal berisi waktu WIB (YYYY-MM-DDTHH:mm); ubah ke epoch ms.
 const wibMs = (s) => new Date(s + ':00+07:00').getTime();
@@ -59,11 +60,29 @@ export function Phone({ trial }) {
   const vis = m.links.filter((l) => !l.hidden);
   const n = m.display_name || m.username;
   const soc = socialList(m.socials);
+  // Pengumuman dan jam buka, sama seperti halaman publik (waktu WIB; pengumuman hanya dalam rentang waktunya).
+  const nowW = new Date(Date.now() + 7 * 3600000).toISOString().slice(0, 16);
+  const note = (m.note_text || '').trim();
+  const noteOn = note && (!m.note_from || m.note_from <= nowW) && (!m.note_until || m.note_until > nowW);
+  const hrs = cleanHours(m.hours);
+  const hs = statusAt(hrs, Date.now());
   return (
     <div className="px-ph" data-t={eff.theme} data-b={eff.btn_style} style={{ ...themeStyle(eff.theme, eff.colors), ...bgStyle(eff.bg, eff.theme, eff.colors), '--pfont': fontCss(eff.font_key) }}>
+      {noteOn && (
+        <div className="pv-card">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M18 8a3 3 0 0 1 0 6" /><path d="M10 8v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-5" /><path d="M12 8l4.524-3.77A.9.9 0 0 1 18 4.922v12.156a.9.9 0 0 1-1.476.692L12 14H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h8" /></svg>
+          <span>{note}</span>
+        </div>
+      )}
       {m.photo_url ? <img className="a" src={m.photo_url} alt="" /> : <div className="a">{n[0].toUpperCase()}</div>}
       <h3>{n}{m.verified && <Verified size={14} />}</h3><p>{m.bio}</p>
       {soc.length > 0 && <div className="so">{soc.map((x) => <span className="s" key={x.key}><NamedIcon name={x.key} size={14} /></span>)}</div>}
+      {hs && (
+        <div className="pv-card">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+          <span><b className={'pv-pill ' + (hs.open ? 'o' : 'c')}>{hs.label}</b>{hs.detail}{summary(hrs).map((t) => <i className="pv-d" key={t}>{t}</i>)}</span>
+        </div>
+      )}
       {vis.map((l, i) => {
         if (l.kind === 'header') return <div className="hd" key={l.id || l._k || i}><span>{l.title || 'Judul pembatas'}</span></div>;
         if (l.kind === 'embed') return <div className="l" key={l.id || l._k || i}><span>▶ {l.title || 'Video / musik'}</span></div>;
