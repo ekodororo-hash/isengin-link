@@ -10,7 +10,7 @@ import EndCount from './EndCount';
 export default function LinkRow({ title, url, th, cat, soldout, labelKey, labelDisplay, price, old, feat, guard, href, hideMs, pageUsername, pageName }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (soldout ? ' soldout' : '') + (feat ? ' feat' : '') + ((feat || guard) ? ' has-ind' : '') + ((feat && guard) ? ' ind2' : '')}>
+    <div className={'plink' + (th ? ' has-th' : '') + (cat ? ' cat' : '') + (soldout ? ' soldout' : '') + (feat ? ' feat' : '') + (hideMs > 0 ? ' has-end' : '') + (labelKey ? ' has-lbl' : '') + ((feat || guard) ? ' has-ind' : '') + ((feat && guard) ? ' ind2' : '')}>
       <a className="plink-main" href={href} rel="noopener noreferrer" target={/^mailto:/i.test(url || '') ? undefined : '_blank'}>
         {th ? <img className="pth" src={th} alt="" width="32" height="32" loading="lazy" /> : <LinkIcon url={url} />}
         <span className="pt">

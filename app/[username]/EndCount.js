@@ -15,5 +15,5 @@ export default function EndCount({ hideMs }) {
     return () => clearInterval(id);
   }, [hideMs]);
   if (now == null || hideMs - now <= 0) return null;
-  return <span className="pend end">Berakhir dalam {fmtLeft(hideMs - now)}</span>;
+  return <span className="pend end">Sisa {fmtLeft(hideMs - now)}</span>;
 }

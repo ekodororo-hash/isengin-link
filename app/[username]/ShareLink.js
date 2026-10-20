@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { NamedIcon, LinkIcon } from '../icons';
 
 const REASONS = [['penipuan', 'Penipuan atau phishing'], ['dewasa', 'Konten dewasa'], ['kekerasan', 'Kekerasan atau kebencian'], ['tiruan', 'Menyamar sebagai orang lain'], ['spam', 'Spam'], ['lainnya', 'Lainnya']];
@@ -69,7 +70,8 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, is
     setBusy(false);
   }
 
-  return (
+  // Dirender lewat portal ke <body> supaya tidak terjebak di lapisan (stacking context) kotak link, jadi selalu di atas semua elemen halaman.
+  return createPortal(
     <div className="shm-ov" role="dialog" aria-modal="true" aria-label={isPage ? 'Bagikan halaman' : 'Bagikan tautan'} onClick={onClose}>
       <div className="shm" onClick={(e) => e.stopPropagation()}>
         <div className="shm-top">
@@ -118,6 +120,7 @@ export default function ShareLink({ title, url, path, pageUsername, pageName, is
           <button type="button" className="shm-report" onClick={() => setRepOpen(true)}>Laporkan tautan ini</button>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

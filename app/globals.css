@@ -155,7 +155,11 @@ input:focus,textarea:focus{outline:3px solid #ffd84d;border-color:#ffd84d}
 
 /* Label (Promo, Stok terbatas, dll) kecil di pojok kanan atas; judul tetap rata tengah */
 .plink{position:relative}
-.plink .pend{display:block;width:fit-content;margin:3px auto 0;font-size:.66rem;font-weight:800;letter-spacing:.02em;padding:3px 9px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.plink .pend{position:absolute;top:4px;right:10px;z-index:1;display:block;margin:0;font-size:.7rem;line-height:14px;font-weight:700;letter-spacing:.01em;padding:1px 8px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+/* Chip hitung mundur ada di pojok kanan atas, tidak menambah tinggi kotak. Titik tiga turun sedikit supaya tidak tertabrak; kalau ada label (Promo dll) chip pindah ke kanan bawah */
+.plink.has-end .plink-dots{transform:translateY(7px)}
+.plink.has-end.has-lbl .pend{top:auto;bottom:4px}
+.plink.has-end.has-lbl .plink-dots{transform:translateY(-7px)}
 .plink .pend.soon{background:#ffd23f;color:#1f2255}
 .plink .pend.end{background:#ff5a43;color:#fff}
 .plink.soon{opacity:.85;border-style:dashed;cursor:default}
@@ -268,3 +272,10 @@ button.plink-main{background:none;border:0;padding:0;font:inherit;text-align:inh
 .phours .ph-pill{display:inline-block;font-size:.74rem;font-weight:800;padding:2px 9px;border-radius:99px;margin-right:7px}
 .phours .ph-pill.o{background:#c8f0cf;color:#14401c}
 .phours .ph-pill.c{background:#ffd1c9;color:#7a1f10}
+
+/* Link berharga (harga coret): judul dan harga dirapatkan supaya tinggi kotak sama dengan kotak biasa (judul 20px + harga 16px + padding 9px atas-bawah = 54px) */
+.plink.cat{padding-top:9px;padding-bottom:9px}
+.plink.cat .pt{line-height:20px}
+.plink.cat .pp{margin-top:0;line-height:16px;gap:0 8px;align-items:center}
+.plink.cat .pp s{font-size:.75rem;line-height:16px}
+.plink.cat .pp b{font-size:.9rem;line-height:16px}
