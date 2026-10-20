@@ -5,9 +5,9 @@ import { Phone, PreviewDock, SaveBar } from '../parts';
 import { SOCIALS, socialHref } from '@/lib/socials';
 import { NamedIcon } from '../../icons';
 import { DAYS } from '@/lib/hours';
-// Bagian profil yang bisa dibuka-tutup. Awalnya terbuka hanya kalau sudah ada isinya (dihitung saat halaman dibuka).
+// Bagian profil yang bisa dibuka-tutup. Selalu tertutup saat halaman dibuka; "aktif" menandai bagian yang sudah ada isinya.
 function Sec({ title, has, children }) {
-  const [o, setO] = useState(!!has);
+  const [o, setO] = useState(false);
   return (
     <section className={'px-sec px-sacc' + (o ? ' open' : '')}>
       <h2>
