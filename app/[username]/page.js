@@ -83,18 +83,18 @@ export default async function Profile({ params, searchParams }) {
         <ViewBeacon username={u.username} />
         {!pro && <HomePromo pageUsername={u.username} pageName={name} />}
         <Report username={u.username} name={name} />
+        {noteText && (
+          <div className="pstore pnote" role="note">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M18 8a3 3 0 0 1 0 6" /><path d="M10 8v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-5" /><path d="M12 8l4.524-3.77A.9.9 0 0 1 18 4.922v12.156a.9.9 0 0 1-1.476.692L12 14H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h8" /></svg>
+            <div className="pstore-t"><span>{noteText}</span></div>
+          </div>
+        )}
         {u.photo_url ? <img className="ava" src={u.photo_url} alt={name} /> : <div className="ava" aria-hidden="true">{name[0].toUpperCase()}</div>}
         <h1 className="name">{name}{more.verified === true && <Verified />}</h1>
         {u.bio && <p className="bio">{u.bio}</p>}
         {socials.length > 0 && (
           <div className="socials">
             {socials.map((x) => <a key={x.key} className="soc" href={x.href} aria-label={x.label} rel="noopener noreferrer" target={/^https?:/i.test(x.href) ? '_blank' : undefined}><NamedIcon name={x.key} /></a>)}
-          </div>
-        )}
-        {noteText && (
-          <div className="pstore pnote" role="note">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z" /><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12" /></svg>
-            <div className="pstore-t"><span>{noteText}</span></div>
           </div>
         )}
         {links.map((l, i) => {

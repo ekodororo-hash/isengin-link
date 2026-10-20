@@ -260,7 +260,7 @@ button.plink-main{background:none;border:0;padding:0;font:inherit;text-align:inh
 .phone[data-b="timbul"] .pstore{border:2px solid var(--ink);border-radius:10px;box-shadow:4px 4px 0 var(--ink)}
 
 /* Pengumuman dan jam buka di halaman publik: memakai kartu yang sama dengan alamat toko */
-.pnote{margin:12px 0 4px;align-items:flex-start}
+.pnote{margin:0 0 16px;align-items:flex-start}
 .pnote .pstore-t span{opacity:1;font-weight:600}
 .phours{align-items:flex-start}
 .phours .ph-s{opacity:1;display:block}
