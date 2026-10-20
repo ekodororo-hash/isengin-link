@@ -752,3 +752,12 @@ html:has(.px-app),body:has(.px-app){background:#ffd23f}
 .px-ph .pv-pill{display:inline-block;font-size:.6rem;font-weight:800;padding:1px 7px;border-radius:99px;margin-right:6px}
 .px-ph .pv-pill.o{background:#c8f0cf;color:#14401c}
 .px-ph .pv-pill.c{background:#ffd1c9;color:#7a1f10}
+
+/* Pratinjau sama seperti halaman publik: chip hitung mundur di pojok kanan atas (tidak menambah tinggi), dan baris berharga dirapatkan supaya tinggi kotak sama */
+.px-ph .l .pend{position:absolute;top:3px;right:8px;z-index:1;margin:0;font-size:.58rem;line-height:12px;padding:1px 6px}
+.px-ph .l.has-lbl .pend{top:auto;bottom:3px}
+.px-ph .l.cat{padding-top:4.5px;padding-bottom:4.5px}
+.px-ph .l.cat>span:first-of-type{line-height:18px}
+.px-ph .pp{gap:0 6px;align-items:center;line-height:14px}
+.px-ph .pp s{font-size:.7rem;line-height:14px}
+.px-ph .pp b{font-size:.8rem;line-height:14px}
